@@ -44,7 +44,7 @@ class GoogleLoginController extends Controller
 
             return redirect()->intended('dashboard');
         } catch (Exception $e) {
-            return redirect('/login')->withErrors(['msg' => 'Login Google Gagal!']);
+            dd($e->getMessage()); //Jangan Lupa dirubah jangan di vardump
         }
     }
 }
