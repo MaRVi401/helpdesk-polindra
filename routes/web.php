@@ -61,14 +61,14 @@ Route::middleware('auth')->group(function () {
 
 
     // 3. Grup Rute untuk Admin & Super Admin
-    Route::middleware('role:super_admin,admin')->prefix('admin')->name('admin.')->group(function () {
+    Route::middleware('role:super_admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', function () {
             return view('admin.dashboard');
         })->name('dashboard');
     });
 
     // 4. Grup Rute untuk Mahasiswa
-    Route::middleware('role:mahasiswa')->prefix('mahasiswa')->name('mahasiswa.')->group(function () { // Diperbaiki: Middleware hanya untuk role 'mahasiswa'
+    Route::middleware('role:mahasiswa')->prefix('mahasiswa')->name('mahasiswa.')->group(function () {
         Route::get('/dashboard', function () {
             return view('mahasiswa.dashboard');
         })->name('dashboard');
