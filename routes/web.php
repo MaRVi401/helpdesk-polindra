@@ -1,9 +1,11 @@
 <?php
-use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\DashboardController;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GoogleLoginController;
 
 Route::get('/', function () {
@@ -26,6 +28,11 @@ Route::middleware('guest')->group(function () {
 
 // --- ROUTE FOR ALREADY LOGGED IN USERS (AUTH) ---
 Route::middleware('auth')->group(function () {
+
+    Route::get('/lengkapi-profil', [ProfileController::class, 'showCompletionForm'])->name('profile.completion.form');
+
+    // Route untuk menyimpan data dari form
+    Route::post('/lengkapi-profil', [ProfileController::class, 'saveCompletionForm'])->name('profile.completion.save');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 

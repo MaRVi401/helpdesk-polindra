@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Laravel\Socialite\Facades\Socialite;
+use App\Models\User;
+use App\Models\Mahasiswa; // Pastikan Mahasiswa di-import
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use App\Models\User;
-use App\Models\Mahasiswa;
-use Exception;
+use Laravel\Socialite\Facades\Socialite;
 
 class GoogleLoginController extends Controller
 {
@@ -15,43 +15,46 @@ class GoogleLoginController extends Controller
     {
         return Socialite::driver('google')->redirect();
     }
+
     public function handleGoogleCallback()
     {
         try {
             $googleUser = Socialite::driver('google')->stateless()->user();
-            $user = User::where('email', $googleUser->getEmail())->first();
-            if ($user) {
-                Auth::login($user);
-                return redirect()->intended('dashboard');
-            }
-
-            // Define a variable to hold new users outside of transactions
-            $newUser = null;
-
-            // Execute transaction only to create data
-            DB::transaction(function () use ($googleUser, &$newUser) {
-                $createdUser = User::create([
-                    'name' => $googleUser->getName(),
+            
+            // Cari user berdasarkan email. Jika tidak ada, buat baru.
+            $user = User::firstOrCreate(
+                [
                     'email' => $googleUser->getEmail(),
+                ],
+                [
+                    'name' => $googleUser->getName(),
                     'google_id' => $googleUser->getId(),
                     'avatar' => $googleUser->getAvatar(),
                     'role' => 'mahasiswa',
-                    'password' => null,
-                ]);
+                    'password' => null, // Password tidak diperlukan untuk OAuth
+                ]
+            );
 
-                Mahasiswa::create([
-                    'user_id' => $createdUser->id,
-                    'nim' => null
-                ]);
-                $newUser = $createdUser;
-            });
-            // Login after the database transaction is complete
-            if ($newUser) {
-                Auth::login($newUser);
+            // Login user yang ditemukan atau yang baru dibuat
+            Auth::login($user);
+
+            // Periksa apakah user ini sudah memiliki data profil mahasiswa
+            $mahasiswaExists = Mahasiswa::where('user_id', $user->id)->exists();
+
+            if ($mahasiswaExists) {
+                // Jika sudah ada, arahkan ke dashboard
+                return redirect()->intended('dashboard');
+            } else {
+                // JIKA PENGGUNA BARU: Simpan penanda di session
+                session(['needs_profile_completion' => true]);
+                
+                // dan arahkan ke halaman untuk melengkapi profil
+                return redirect('/lengkapi-profil');
             }
-            return redirect()->intended('dashboard');
+
         } catch (Exception $e) {
-            dd($e);
+            // Jika terjadi error, kembali ke halaman login dengan pesan error
+            return redirect('/login')->with('error', 'Gagal login dengan Google. Silakan coba lagi.');
         }
     }
 }
