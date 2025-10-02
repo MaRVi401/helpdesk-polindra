@@ -13,7 +13,6 @@ class AdminUnitSeeder extends Seeder
      */
     public function run(): void
     {
-
         $user = User::create([
             'name' => 'Admin Layanan Unit',
             'email' => 'admin@gmail.com',

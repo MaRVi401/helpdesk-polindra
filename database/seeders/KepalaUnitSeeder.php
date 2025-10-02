@@ -13,7 +13,6 @@ class KepalaUnitSeeder extends Seeder
      */
     public function run(): void
     {
-
         $user = User::create([
             'name' => 'Kepala Unit Layanan',
             'email' => 'kepala@gmail.com',

@@ -15,24 +15,20 @@ class GoogleLoginController extends Controller
     {
         return Socialite::driver('google')->redirect();
     }
-
-    // app/Http/Controllers/GoogleLoginController.php
-
     public function handleGoogleCallback()
     {
         try {
             $googleUser = Socialite::driver('google')->stateless()->user();
             $user = User::where('email', $googleUser->getEmail())->first();
-
             if ($user) {
                 Auth::login($user);
                 return redirect()->intended('dashboard');
             }
 
-            // Definisikan variabel untuk menampung user baru di luar transaksi
+            // Define a variable to hold new users outside of transactions
             $newUser = null;
 
-            // Jalankan transaksi HANYA untuk membuat data
+            // Execute transaction only to create data
             DB::transaction(function () use ($googleUser, &$newUser) {
                 $createdUser = User::create([
                     'name' => $googleUser->getName(),
@@ -47,16 +43,12 @@ class GoogleLoginController extends Controller
                     'user_id' => $createdUser->id,
                     'nim' => null
                 ]);
-
-                // Simpan user yang baru dibuat ke variabel
                 $newUser = $createdUser;
             });
-
-            // Lakukan login SETELAH transaksi database selesai
+            // Login after the database transaction is complete
             if ($newUser) {
                 Auth::login($newUser);
             }
-
             return redirect()->intended('dashboard');
         } catch (Exception $e) {
             dd($e);

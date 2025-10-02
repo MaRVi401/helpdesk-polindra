@@ -1,87 +1,56 @@
 <?php
-
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\GoogleLoginController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-*/
-
-// Halaman utama
 Route::get('/', function () {
     return view('welcome');
 });
 
-// --- RUTE UNTUK PENGGUNA YANG BELUM LOGIN (GUEST) ---
+// --- ROUTE FOR USERS WHO HAVE NOT LOGGED IN (GUEST) ---
 Route::middleware('guest')->group(function () {
     Route::get('/login', function () {
-        return view('login');
-    })->name('login');
+        return view('auth.login');
+    })->name('auth.login');
 
-    Route::post('/login', [LoginController::class, 'store'])->name('login.store');
+    // Login Users
+    Route::post('/login', [AuthController::class, 'login'])->name('login');
 
-    // Rute Otentikasi Google
+    // Google Authentication Route
     Route::get('auth/google', [GoogleLoginController::class, 'redirectToGoogle'])->name('google.login');
     Route::get('auth/google/callback', [GoogleLoginController::class, 'handleGoogleCallback']);
 });
 
-
-// --- RUTE UNTUK PENGGUNA YANG SUDAH LOGIN (AUTH) ---
+// --- ROUTE FOR ALREADY LOGGED IN USERS (AUTH) ---
 Route::middleware('auth')->group(function () {
 
-    // 1. Rute Dispatcher Dashboard
-    Route::get('/dashboard', function () {
-        $role = Auth::user()->role;
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-        if ($role == 'super_admin') {
-            return redirect()->route('admin.dashboard');
-        } elseif ($role == 'mahasiswa') {
-            return redirect()->route('mahasiswa.dashboard');
-        } elseif ($role == 'kepala_unit') {
-            return redirect()->route('kepala_unit.dashboard');
-        } elseif ($role == 'admin_unit') {
-            return redirect()->route('admin_unit.dashboard');
-        } else {
-            return redirect('/');
-        }
-    })->name('dashboard');
+    // Logout Users
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    // 2. Rute Logout
-    Route::post('/logout', function (Request $request) {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        return redirect('/login');
-    })->name('logout');
-
-
-    // 3. Grup Rute untuk Admin & Super Admin
+    // Super Admin
     Route::middleware('role:super_admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', function () {
             return view('admin.dashboard');
         })->name('dashboard');
     });
-
-    // 4. Grup Rute untuk Mahasiswa
+    // Mahasiswa
     Route::middleware('role:mahasiswa')->prefix('mahasiswa')->name('mahasiswa.')->group(function () {
         Route::get('/dashboard', function () {
             return view('mahasiswa.dashboard');
         })->name('dashboard');
     });
-
-    // 5. Grup Rute untuk Kepala Unit
+    // Kepala Unit
     Route::middleware('role:kepala_unit')->prefix('kepala-unit')->name('kepala_unit.')->group(function () {
         Route::get('/dashboard', function () {
             return view('kepala_unit.dashboard');
         })->name('dashboard');
     });
-
-    // 6. Grup Rute untuk Admin Unit
+    // Admin Unit
     Route::middleware('role:admin_unit')->prefix('admin-unit')->name('admin_unit.')->group(function () {
         Route::get('/dashboard', function () {
             return view('admin_unit.dashboard');
