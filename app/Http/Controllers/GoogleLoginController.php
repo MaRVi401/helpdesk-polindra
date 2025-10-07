@@ -48,8 +48,8 @@ class GoogleLoginController extends Controller
                     'name' => $googleUser->getName(),
                     'google_id' => $googleUser->getId(),
                     'avatar' => $googleUser->getAvatar(),
-                    'role' => 'mahasiswa', // Asumsi semua yang login dengan domain ini adalah mahasiswa
-                    'password' => null, // Password tidak diperlukan untuk OAuth
+                    'role' => 'mahasiswa',
+                    'password' => null,
                 ]
             );
 
