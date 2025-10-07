@@ -32,7 +32,7 @@ class UserRoleSeeder extends Seeder
             'user_id' => $superAdminUser->id,
             'unit_id' => $unitTikId,
             'jabatan_id' => $jabatanSuperAdminId,
-            'nik' => '1111111111111111'
+            'nik' => '11111'
         ]);
 
         // 2. Buat Kepala Unit
@@ -46,7 +46,7 @@ class UserRoleSeeder extends Seeder
             'user_id' => $kepalaUnitUser->id,
             'unit_id' => $unitTikId,
             'jabatan_id' => $jabatanKepalaId,
-            'nik' => '2222222222222222'
+            'nik' => '222222'
         ]);
 
         // Update unit untuk menunjuk kepala unit yang baru dibuat
@@ -65,7 +65,7 @@ class UserRoleSeeder extends Seeder
             'user_id' => $adminUnitUser->id,
             'unit_id' => $unitTikId,
             'jabatan_id' => $jabatanStaffId,
-            'nik' => '3333333333333333'
+            'nik' => '33333'
         ]);
     }
 }
