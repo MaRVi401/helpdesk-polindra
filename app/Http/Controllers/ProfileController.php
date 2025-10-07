@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Mahasiswa;
-use App\Models\ProgramStudi; // <-- Jangan lupa import model ini
+use App\Models\ProgramStudi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
