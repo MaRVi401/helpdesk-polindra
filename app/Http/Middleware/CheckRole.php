@@ -17,7 +17,7 @@ class CheckRole
     public function handle(Request $request, Closure $next, ...$roles)
     {
         if (!Auth::check() || !in_array(Auth::user()->role, $roles)) {
-            abort(403, 'AKSES DITOLAK.');
+            abort(403, 'ACCESS DENIED.');
         }
         return $next($request);
     }

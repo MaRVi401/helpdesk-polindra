@@ -28,13 +28,12 @@ class AuthController extends Controller
                     'user_id' => Auth::id(),
                     'email' => $credentials['email']
                 ]);
-
                 return redirect()->intended(route('dashboard'));
             }
             // If credentials are wrong
-            throw ValidationException::withMessages([
-                'email' => 'Email atau Password yang Anda masukkan salah.',
-            ]);
+            return back()
+                ->withInput($request->only('email'))
+                ->with('error', 'Email atau Password salah.');
 
         } catch (ValidationException $e) {
             // Re-throw validation exceptions
@@ -44,10 +43,9 @@ class AuthController extends Controller
                 'error' => $e->getMessage(),
                 'email' => $request->email ?? 'unknown'
             ]);
-
-            return back()->withErrors([
-                'email' => 'Terjadi kesalahan saat login. Silakan coba lagi.',
-            ])->onlyInput('email');
+            return back()
+                ->withInput($request->only('email'))
+                ->with('error', 'Terjadi kesalahan saat login. Silakan coba lagi.');
         }
     }
     public function logout(Request $request)
