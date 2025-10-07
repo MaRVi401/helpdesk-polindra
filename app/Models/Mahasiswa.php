@@ -9,9 +9,16 @@ class Mahasiswa extends Model
 {
     use HasFactory;
 
-    // Menentukan nama tabel secara eksplisit
+    /**
+     *
+     * @var string
+     */
     protected $table = 'mahasiswa';
 
+    /**
+     * 
+     * @var array
+     */
     protected $fillable = [
         'user_id',
         'program_studi_id',

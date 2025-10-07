@@ -7,6 +7,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GoogleLoginController;
+use App\Http\Controllers\Admin\KelolaPengguna\MahasiswaController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -50,6 +51,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/dashboard', function () {
             return view('admin.dashboard');
         })->name('dashboard');
+        
+        // Kelola Pengguna - Mahasiswa
+        Route::resource('mahasiswa', MahasiswaController::class);
+
     });
     // Mahasiswa
     Route::middleware('role:mahasiswa')->prefix('mahasiswa')->name('mahasiswa.')->group(function () {

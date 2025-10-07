@@ -14,9 +14,18 @@ class ProfileController extends Controller
      */
     public function showCompletionForm()
     {
-        // Get all study program data from the database to display in the dropdown
+        // Ambil data program studi
         $programStudi = ProgramStudi::orderBy('program_studi')->get();
-        return view('auth.complete-profile', compact('programStudi'));
+
+        // Buat daftar tahun secara dinamis (contoh: 10 tahun ke belakang)
+        $years = [];
+        $currentYear = date('Y');
+        for ($year = $currentYear; $year >= $currentYear - 5; $year--) {
+            $years[] = $year;
+        }
+
+        // Kirim kedua data (programStudi dan years) ke view
+        return view('auth.complete-profile', compact('programStudi', 'years'));
     }
 
     /**
