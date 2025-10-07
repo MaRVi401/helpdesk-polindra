@@ -12,6 +12,12 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+
+
+Route::get('/test', function () {
+    return view('dashboard');
+});
+
 // --- ROUTE FOR USERS WHO HAVE NOT LOGGED IN (GUEST) ---
 Route::middleware('guest')->group(function () {
     Route::get('/login', function () {
