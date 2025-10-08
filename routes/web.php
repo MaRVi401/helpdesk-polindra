@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GoogleLoginController;
 use App\Http\Controllers\Admin\KelolaPengguna\MahasiswaController;
+use App\Http\Controllers\Admin\KelolaPengguna\StaffController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -54,6 +55,8 @@ Route::middleware('auth')->group(function () {
         
         // Kelola Pengguna - Mahasiswa
         Route::resource('mahasiswa', MahasiswaController::class);
+        // Kelola Pengguna - Staff
+        Route::resource('staff', StaffController::class);
 
     });
     // Mahasiswa

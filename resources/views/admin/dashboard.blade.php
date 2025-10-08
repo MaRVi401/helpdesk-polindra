@@ -20,7 +20,7 @@
     <nav>
         <ul>
             <li><a href="{{ route('admin.mahasiswa.index') }}">Kelola Data Mahasiswa</a></li>
-            
+            <li><a href="{{ route('admin.staff.index') }}">Kelola Data Staff</a></li>
             {{-- Tambahkan link ke fitur admin lainnya di sini nanti --}}
             {{-- <li><a href="#">Kelola Program Studi</a></li> --}}
             {{-- <li><a href="#">Kelola Unit</a></li> --}}

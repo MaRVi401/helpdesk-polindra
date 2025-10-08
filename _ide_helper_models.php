@@ -171,6 +171,8 @@ namespace App\Models{
  * @property string $nama_jabatan
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Staff> $staff
+ * @property-read int|null $staff_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Jabatan newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Jabatan newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Jabatan query()
