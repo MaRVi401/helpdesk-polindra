@@ -52,13 +52,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/dashboard', function () {
             return view('admin.dashboard');
         })->name('dashboard');
-        
+
         // Kelola Pengguna - Mahasiswa
         Route::resource('mahasiswa', MahasiswaController::class);
+        Route::get('mahasiswa/export/excel', [MahasiswaController::class, 'exportExcel'])->name('mahasiswa.export.excel');
+
         // Kelola Pengguna - Staff
         Route::resource('staff', StaffController::class);
         Route::get('staff/export/excel', [StaffController::class, 'exportExcel'])->name('staff.export.excel');
-
     });
     // Mahasiswa
     Route::middleware('role:mahasiswa')->prefix('mahasiswa')->name('mahasiswa.')->group(function () {

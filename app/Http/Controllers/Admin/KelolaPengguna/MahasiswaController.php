@@ -8,13 +8,43 @@ use App\Models\User;
 use App\Models\ProgramStudi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Exports\KelolaPengguna\MahasiswaExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class MahasiswaController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $mahasiswas = Mahasiswa::with(['user', 'programStudi'])->latest()->paginate(10);
-        return view('admin.kelolapengguna.mahasiswa.index', compact('mahasiswas'));
+        // Ambil input dari request
+        $searchQuery = $request->input('q');
+        $perPage = $request->input('per_page', 10);
+
+        // Mulai query ke model Mahasiswa
+        $mahasiswaQuery = Mahasiswa::with(['user', 'programStudi']);
+
+        // Terapkan filter pencarian jika ada
+        if ($searchQuery) {
+            $mahasiswaQuery->where(function ($query) use ($searchQuery) {
+                $query->where('nim', 'like', "%{$searchQuery}%")
+                    ->orWhere('tahun_masuk', 'like', "%{$searchQuery}%")
+                    ->orWhereHas('user', function ($userQuery) use ($searchQuery) {
+                        $userQuery->where('name', 'like', "%{$searchQuery}%")
+                            ->orWhere('email', 'like', "%{$searchQuery}%");
+                    })
+                    ->orWhereHas('programStudi', function ($prodiQuery) use ($searchQuery) {
+                        $prodiQuery->where('program_studi', 'like', "%{$searchQuery}%");
+                    });
+            });
+        }
+
+        // Urutkan berdasarkan ID dan lakukan paginasi
+        $mahasiswas = $mahasiswaQuery->orderBy('id', 'asc')->paginate($perPage);
+
+        // Tambahkan parameter query string ke link paginasi
+        $mahasiswas->appends($request->except('page'));
+
+        // Kirim data ke view
+        return view('admin.kelolapengguna.mahasiswa.index', compact('mahasiswas', 'searchQuery', 'perPage'));
     }
 
     public function create()
@@ -96,5 +126,12 @@ class MahasiswaController extends Controller
     {
         $mahasiswa->delete();
         return redirect()->route('admin.mahasiswa.index')->with('success', 'Data mahasiswa berhasil dihapus.');
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $mahasiswaIds = $request->input('selected_mahasiswa', []);
+        $fileName = 'mahasiswa_data_' . date('Y-m-d_H-i-s') . '.xlsx';
+        return Excel::download(new MahasiswaExport($mahasiswaIds), $fileName);
     }
 }

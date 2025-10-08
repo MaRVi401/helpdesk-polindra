@@ -129,13 +129,8 @@ class StaffController extends Controller
 
     public function exportExcel(Request $request)
     {
-        // Ambil ID staff yang dipilih dari request, pastikan itu array
         $staffIds = $request->input('selected_staff', []);
-
-        // Beri nama file dengan tanggal saat ini
         $fileName = 'staff_data_' . date('Y-m-d_H-i-s') . '.xlsx';
-
-        // Panggil class StaffExport dan download filenya
         return Excel::download(new StaffExport($staffIds), $fileName);
     }
 }
