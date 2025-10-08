@@ -9,6 +9,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GoogleLoginController;
 use App\Http\Controllers\Admin\KelolaPengguna\MahasiswaController;
 use App\Http\Controllers\Admin\KelolaPengguna\StaffController;
+use App\Http\Controllers\Mahasiswa\TiketController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -66,6 +67,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/dashboard', function () {
             return view('mahasiswa.dashboard');
         })->name('dashboard');
+        
+        // Rute untuk fungsionalitas tiket mahasiswa
+        Route::get('/tiket', [TiketController::class, 'index'])->name('tiket.index');
+        Route::get('/tiket/create', [TiketController::class, 'create'])->name('tiket.create');
+        Route::post('/tiket', [TiketController::class, 'store'])->name('tiket.store');
+        Route::get('/tiket/{tiket}', [TiketController::class, 'show'])->name('tiket.show');
+        Route::post('/tiket/{tiket}/komentar', [TiketController::class, 'storeComment'])->name('tiket.komentar.store');
     });
     // Kepala Unit
     Route::middleware('role:kepala_unit')->prefix('kepala-unit')->name('kepala_unit.')->group(function () {

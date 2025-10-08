@@ -25,7 +25,6 @@
     </div>
     <div class="menu-inner-shadow"></div>
     <ul class="menu-inner py-1">
-        <!-- Dashboards -->
         <li class="menu-item">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons ti ti-smart-home"></i>
@@ -40,24 +39,21 @@
                 </li>
             </ul>
         </li>
-        <!-- Layouts -->
-        <li class="menu-item active open">
+        
+        @role('mahasiswa')
+        <li class="menu-item {{ request()->routeIs('mahasiswa.tiket.*') ? 'active open' : '' }}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons ti ti-layout-sidebar"></i>
                 <div data-i18n="Layanan">Layanan</div>
             </a>
             <ul class="menu-sub">
-                <li class="menu-item">
-                    <a href="layouts-collapsed-menu.html" class="menu-link">
-                        <div data-i18n="Contoh">Contoh</div>
-                    </a>
-                </li>
-                <li class="menu-item active">
-                    <a href="layouts-content-navbar.html" class="menu-link">
-                        <div data-i18n="Contoh 2">Contoh 2</div>
+                <li class="menu-item {{ request()->routeIs('mahasiswa.tiket.*') ? 'active' : '' }}">
+                    <a href="{{ route('mahasiswa.tiket.index') }}" class="menu-link">
+                        <div data-i18n="Tiket Saya">Tiket Saya</div>
                     </a>
                 </li>
             </ul>
         </li>
+        @endrole
     </ul>
 </aside>
