@@ -10,6 +10,8 @@ use App\Models\Jabatan;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
+use App\Exports\KelolaPengguna\StaffExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class StaffController extends Controller
 {
@@ -123,5 +125,17 @@ class StaffController extends Controller
     {
         $staff->delete();
         return redirect()->route('admin.staff.index')->with('success', 'Data staff berhasil dihapus.');
+    }
+
+    public function exportExcel(Request $request)
+    {
+        // Ambil ID staff yang dipilih dari request, pastikan itu array
+        $staffIds = $request->input('selected_staff', []);
+
+        // Beri nama file dengan tanggal saat ini
+        $fileName = 'staff_data_' . date('Y-m-d_H-i-s') . '.xlsx';
+
+        // Panggil class StaffExport dan download filenya
+        return Excel::download(new StaffExport($staffIds), $fileName);
     }
 }

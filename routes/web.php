@@ -57,6 +57,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('mahasiswa', MahasiswaController::class);
         // Kelola Pengguna - Staff
         Route::resource('staff', StaffController::class);
+        Route::get('staff/export/excel', [StaffController::class, 'exportExcel'])->name('staff.export.excel');
 
     });
     // Mahasiswa
