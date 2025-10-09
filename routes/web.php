@@ -9,6 +9,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GoogleLoginController;
 use App\Http\Controllers\Admin\KelolaPengguna\MahasiswaController;
 use App\Http\Controllers\Admin\KelolaPengguna\StaffController;
+use App\Http\Controllers\Admin\KelolaFaqController;
 use App\Http\Controllers\Mahasiswa\TiketController;
 
 Route::get('/', function () {
@@ -61,6 +62,12 @@ Route::middleware('auth')->group(function () {
         // Kelola Pengguna - Staff
         Route::resource('staff', StaffController::class);
         Route::get('staff/export/excel', [StaffController::class, 'exportExcel'])->name('staff.export.excel');
+        
+        // Kelola FAQ
+        Route::resource('kelolafaq', KelolaFaqController::class);
+        Route::get('kelolafaq/export', [KelolaFaqController::class, 'exportExcel'])->name('kelolafaq.export.excel');
+        
+
     });
     // Mahasiswa
     Route::middleware('role:mahasiswa')->prefix('mahasiswa')->name('mahasiswa.')->group(function () {
