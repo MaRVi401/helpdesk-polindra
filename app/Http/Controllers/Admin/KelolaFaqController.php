@@ -20,11 +20,11 @@ class KelolaFaqController extends Controller
         $searchQuery = $request->input('q');
         $perPage = $request->input('per_page', 10);
 
-        $query = Faq::with(['user', 'layanan'])->latest();
+        $query = Faq::with(['user', 'layanan'])->orderBy('id', 'asc');
 
         if ($searchQuery) {
             $query->where('judul', 'like', '%' . $searchQuery . '%')
-                  ->orWhere('deskripsi', 'like', '%' . $searchQuery . '%');
+                ->orWhere('deskripsi', 'like', '%' . $searchQuery . '%');
         }
 
         $faqs = $query->paginate($perPage)->withQueryString();
@@ -61,7 +61,7 @@ class KelolaFaqController extends Controller
             'status' => $request->status,
         ]);
 
-        return redirect()->route('kelolafaq.index')->with('success', 'FAQ berhasil ditambahkan.');
+        return redirect()->route('admin.kelolafaq.index')->with('success', 'FAQ berhasil ditambahkan.');
     }
 
     /**
@@ -90,7 +90,7 @@ class KelolaFaqController extends Controller
 
         $kelolafaq->update($request->all());
 
-        return redirect()->route('kelolafaq.index')->with('success', 'FAQ berhasil diperbarui.');
+        return redirect()->route('admin.kelolafaq.index')->with('success', 'FAQ berhasil diperbarui.');
     }
 
     /**
@@ -98,8 +98,12 @@ class KelolaFaqController extends Controller
      */
     public function destroy(Faq $kelolafaq)
     {
-        $kelolafaq->delete();
-        return redirect()->route('kelolafaq.index')->with('success', 'FAQ berhasil dihapus.');
+        try {
+            $kelolafaq->delete();
+            return redirect()->route('admin.kelolafaq.index')->with('success', 'FAQ berhasil dihapus.');
+        } catch (\Exception $e) {
+            return redirect()->route('admin.kelolafaq.index')->with('error', 'Gagal menghapus FAQ. Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     /**

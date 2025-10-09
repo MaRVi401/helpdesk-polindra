@@ -6,6 +6,7 @@ use App\Models\Jabatan;
 use App\Models\ProgramStudi;
 use App\Models\Unit;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class MasterDataSeeder extends Seeder
 {
@@ -14,12 +15,19 @@ class MasterDataSeeder extends Seeder
      */
     public function run(): void
     {
+        // Mengosongkan tabel dengan aman sebelum mengisi data
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        Jabatan::truncate();
+        Unit::truncate();
+        ProgramStudi::truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
         // Membuat data Jabatan
         Jabatan::create(['nama_jabatan' => 'Super Administrator']);
         Jabatan::create(['nama_jabatan' => 'Kepala Unit']);
         Jabatan::create(['nama_jabatan' => 'Staff Layanan']);
 
-        // Membuat data Unit
+        // Membuat data Unit sesuai permintaan
         Unit::create(['nama_unit' => 'UPA TIK']);
         Unit::create(['nama_unit' => 'Akademik']);
         Unit::create(['nama_unit' => 'Kemahasiswaan']);
@@ -28,5 +36,8 @@ class MasterDataSeeder extends Seeder
         ProgramStudi::create(['program_studi' => 'D3 - Teknik Informatika', 'jurusan_id' => 'TI']);
         ProgramStudi::create(['program_studi' => 'D4 - Teknik Perangkat Lunak', 'jurusan_id' => 'TI']);
         ProgramStudi::create(['program_studi' => 'D3 - Teknik Mesin', 'jurusan_id' => 'TM']);
+        
+        $this->command->info('MasterDataSeeder berhasil dijalankan.');
     }
 }
+

@@ -56,16 +56,16 @@ Route::middleware('auth')->group(function () {
         })->name('dashboard');
 
         // Kelola Pengguna - Mahasiswa
-        Route::resource('mahasiswa', MahasiswaController::class);
         Route::get('mahasiswa/export/excel', [MahasiswaController::class, 'exportExcel'])->name('mahasiswa.export.excel');
+        Route::resource('mahasiswa', MahasiswaController::class);
 
         // Kelola Pengguna - Staff
-        Route::resource('staff', StaffController::class);
         Route::get('staff/export/excel', [StaffController::class, 'exportExcel'])->name('staff.export.excel');
+        Route::resource('staff', StaffController::class);
         
         // Kelola FAQ
-        Route::resource('kelolafaq', KelolaFaqController::class);
         Route::get('kelolafaq/export', [KelolaFaqController::class, 'exportExcel'])->name('kelolafaq.export.excel');
+        Route::resource('kelolafaq', KelolaFaqController::class);
         
 
     });

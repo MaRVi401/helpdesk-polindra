@@ -11,12 +11,16 @@ class Layanan extends Model
 
     protected $table = 'layanan';
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
+        'nama',
+        'status_arsip',
         'unit_id',
-        'layanan',
-        'deskripsi',
-        'estimasi_waktu',
-        'tipe_tiket'
+        'prioritas',
     ];
 
     public function unit()
@@ -29,3 +33,4 @@ class Layanan extends Model
         return $this->belongsToMany(Staff::class, 'layanan_penanggung_jawab', 'layanan_id', 'staff_id');
     }
 }
+
