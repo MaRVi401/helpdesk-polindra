@@ -10,7 +10,6 @@ class JurusanController extends Controller
 {
     public function index()
     {
-        // FIX: Redirect ke route yang benar untuk menampilkan halaman utama
         return redirect()->route('admin.program-studi.index');
     }
 
