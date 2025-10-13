@@ -90,11 +90,6 @@ Gunakan **Vite** untuk mengompilasi SCSS menjadi CSS:
   npm run dev
   ```
 
-* **Mode production** (build final)
-
-  ```bash
-  npm run build
-  ```
 
 File hasil build akan berada di:
 
