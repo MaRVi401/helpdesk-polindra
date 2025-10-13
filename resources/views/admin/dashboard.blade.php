@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard Admin</title>
+    <style>
+        body { font-family: sans-serif; }
+        nav ul { list-style: none; padding: 0; }
+        nav li { margin-bottom: 10px; }
+        nav a { text-decoration: none; color: #007bff; }
+        nav a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <h1>Selamat Datang di Dashboard Admin, {{ Auth::user()->name }}!</h1>
+    <p>Anda bisa mengelola seluruh sistem dari sini.</p>
+
+    <hr>
+
+    <h3>Manajemen Sistem</h3>
+    <nav>
+        <ul>
+            <li><a href="{{ route('admin.mahasiswa.index') }}">Kelola Data Mahasiswa</a></li>
+            <li><a href="{{ route('admin.staff.index') }}">Kelola Data Staff</a></li>
+            <li><a href="{{ route('admin.kelolafaq.index') }}">Kelola FAQ</a></li>
+            {{-- Tambahkan link ke fitur admin lainnya di sini nanti --}}
+            {{-- <li><a href="#">Kelola Program Studi</a></li> --}}
+            {{-- <li><a href="#">Kelola Unit</a></li> --}}
+        </ul>
+    </nav>
+
+    <hr>
+    
+    <form method="POST" action="{{ route('logout') }}">
+        @csrf
+        <button type="submit">Logout</button>
+    </form>
+</body>
+</html>

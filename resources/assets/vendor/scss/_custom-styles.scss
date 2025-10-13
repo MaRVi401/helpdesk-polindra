@@ -1,0 +1,40 @@
+// This file is used for writing your custom styles
+
+// .card {
+//    background-color: #fd0000;
+//  }
+// This file is used for writing your custom styles
+
+// This file is used for writing your custom styles
+
+// ===============================
+//  FONT SIZE UTILITIES
+// ===============================
+@for $i from 10 through 40 {
+  .fs-#{$i} {
+    font-size: #{$i}px !important;
+  }
+}
+
+// ===============================
+//  WIDTH UTILITIES
+// ===============================
+
+// Width dalam pixel
+@for $i from 10 through 500 {
+  .wpx-#{$i} {
+    width: #{$i}px !important;
+  }
+}
+
+
+// ===============================
+// HEIGHT UTILITIES
+// ===============================
+
+// Height dalam pixel
+@for $i from 50 through 500 {
+  .hpx-#{$i} {
+    height: #{$i}px !important;
+  }
+}
