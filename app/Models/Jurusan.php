@@ -12,7 +12,7 @@ class Jurusan extends Model
     protected $table = 'jurusan';
     protected $guarded = ['id'];
 
-    public function programStudi()
+    public function programStudis()
     {
         return $this->hasMany(ProgramStudi::class);
     }

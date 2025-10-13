@@ -12,6 +12,8 @@ use App\Http\Controllers\Admin\KelolaPengguna\MahasiswaController;
 use App\Http\Controllers\Admin\KelolaPengguna\StaffController;
 use App\Http\Controllers\Admin\KelolaFaqController;
 use App\Http\Controllers\Mahasiswa\TiketController;
+use App\Http\Controllers\Admin\JurusanController;
+use App\Http\Controllers\Admin\ProgramStudiController;
 
 
 
@@ -19,7 +21,7 @@ use App\Http\Controllers\Mahasiswa\TiketController;
 Route::middleware('guest')->group(function () {
 
     Route::get('/login', [AuthPage::class, 'login'])->name('login.page');
-        
+
     // Login Users
     Route::post('/login', [AuthController::class, 'login'])->name('login');
 
@@ -54,19 +56,20 @@ Route::middleware('auth')->group(function () {
         // Kelola Pengguna - Staff
         Route::get('staff/export/excel', [StaffController::class, 'exportExcel'])->name('staff.export.excel');
         Route::resource('staff', StaffController::class);
-        
+
         // Kelola FAQ
         Route::get('kelolafaq/export', [KelolaFaqController::class, 'exportExcel'])->name('kelolafaq.export.excel');
         Route::resource('kelolafaq', KelolaFaqController::class);
-        
 
+        Route::resource('jurusan',JurusanController::class)->names('jurusan');
+        Route::resource('program-studi',ProgramStudiController::class)->names('program-studi');
     });
     // Mahasiswa
     Route::middleware('role:mahasiswa')->prefix('mahasiswa')->name('mahasiswa.')->group(function () {
         Route::get('/dashboard', function () {
             return view('mahasiswa.dashboard');
         })->name('dashboard');
-        
+
         // Rute untuk fungsionalitas tiket mahasiswa
         Route::get('/tiket', [TiketController::class, 'index'])->name('tiket.index');
         Route::get('/tiket/create', [TiketController::class, 'create'])->name('tiket.create');

@@ -22,9 +22,9 @@
             <li><a href="{{ route('admin.mahasiswa.index') }}">Kelola Data Mahasiswa</a></li>
             <li><a href="{{ route('admin.staff.index') }}">Kelola Data Staff</a></li>
             <li><a href="{{ route('admin.kelolafaq.index') }}">Kelola FAQ</a></li>
-            {{-- Tambahkan link ke fitur admin lainnya di sini nanti --}}
-            {{-- <li><a href="#">Kelola Program Studi</a></li> --}}
-            {{-- <li><a href="#">Kelola Unit</a></li> --}}
+            <li><a href="{{ route('admin.jurusan.index') }}">Kelola Jurusan</a></li>
+
+            {{-- Tambahkan link ke fitur admin lainnya --}}
         </ul>
     </nav>
 
