@@ -2,8 +2,9 @@
 <p align="center">
   <a href="https://laravel.com" target="_blank">
     <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo">
-    <img src="http://vanseodesign.com/blog/wp-content/uploads/2015/09/sass-logo.png" width="150" alt="SCSS Logo">
     <img src="https://desarrolloweb.com/storage/tag_images/actual/4nqulUliAHwz5h1JaZOlpJkO8I3qc9lpxakpHzma.png" width="200" alt="VITE Logo">
+    <img src="http://vanseodesign.com/blog/wp-content/uploads/2015/09/sass-logo.png" width="150" alt="SCSS Logo">
+   
   </a>
 </p>
 
@@ -31,7 +32,7 @@ Pastikan sudah menginstal:
 1. **Clone repository**
 
    ```bash
-   git clone https://github.com/USERNAME/helpdesk-polindra.git
+   git clone https://github.com/MaRVi401/helpdesk-polindra.git
    cd helpdesk-polindra
    ```
 
