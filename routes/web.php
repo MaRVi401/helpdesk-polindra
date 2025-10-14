@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Pages\TestPage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -16,6 +17,9 @@ use App\Http\Controllers\Admin\ProgramStudiController;
 use App\Http\Controllers\Admin\KelolaPengguna\StaffController;
 use App\Http\Controllers\Admin\KelolaPengguna\MahasiswaController;
 
+
+// FOR TESTING BLADE
+Route::get('/test', [TestPage::class, 'home'])->name('home.page');
 
 
 // --- ROUTE FOR USERS WHO HAVE NOT LOGGED IN (GUEST) ---
