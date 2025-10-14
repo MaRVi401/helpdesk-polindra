@@ -2,11 +2,13 @@
 <html>
 <head>
     <title>Manajemen Unit</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f8fafc; color: #2d3748; line-height: 1.5; padding: 20px; }
         .main-container { background-color: white; padding: 32px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); width: 100%; max-width: 900px; margin: 0 auto; }
         h1 { margin-top: 0; }
         .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 20px; flex-wrap: wrap; }
+        .actions-group { display: flex; gap: 10px; align-items: center; }
         .search-form { display: flex; gap: 10px; align-items: center; }
         .search-form input, .search-form select, .button { padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 0.9rem; }
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
@@ -15,8 +17,9 @@
         tbody tr:hover { background-color: #f7fafc; }
         .button { display: inline-block; padding: 8px 12px; border: 1px solid transparent; border-radius: 5px; font-weight: 600; text-decoration: none; cursor: pointer; }
         .button-primary { background-color: #4299e1; color: white; border-color: #4299e1; }
+        .button-green { background-color: #107c41; color: white; border-color: #107c41; }
         .button-danger { background: none; border: none; color: #e53e3e; cursor: pointer; font-weight: 600; padding: 0; font-family: inherit; font-size: inherit; }
-        .button-danger:hover { text-decoration: underline; }
+        .button:disabled { background-color: #cccccc; cursor: not-allowed; border-color: #cccccc; }
         .alert { padding: 1rem; margin-bottom: 1.5rem; border-radius: 4px; }
         .alert-success { color: #2f855a; background-color: #c6f6d5; }
         .alert-error { color: #9b2c2c; background-color: #fed7d7; }
@@ -29,7 +32,10 @@
         <h1>Manajemen Unit</h1>
 
         <div class="toolbar">
-            <a href="{{ route('admin.unit.create') }}" class="button button-primary">Tambah Unit</a>
+            <div class="actions-group">
+                <a href="{{ route('admin.unit.create') }}" class="button button-primary">Tambah Unit</a>
+                <button type="button" id="export-btn" class="button button-green" disabled>Ekspor Terpilih</button>
+            </div>
             <form id="search-form" action="{{ route('admin.unit.index') }}" method="GET" class="search-form">
                 <select name="per_page" onchange="this.form.submit()">
                     <option value="10" {{ ($perPage ?? 10) == 10 ? 'selected' : '' }}>10</option>
@@ -50,6 +56,7 @@
         <table>
             <thead>
                 <tr>
+                    <th style="width: 1%;"><input type="checkbox" id="select-all"></th>
                     <th>No</th>
                     <th>Nama Unit</th>
                     <th>Kepala Unit</th>
@@ -59,6 +66,7 @@
             <tbody>
                 @forelse($units as $unit)
                 <tr>
+                    <td><input type="checkbox" class="row-checkbox" value="{{ $unit->id }}"></td>
                     <td>{{ $loop->iteration + $units->firstItem() - 1 }}</td>
                     <td>{{ $unit->nama_unit }}</td>
                     <td>{{ $unit->kepalaUnit->user->name ?? 'Belum Ditentukan' }}</td>
@@ -73,7 +81,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="4" style="text-align: center;">Tidak ada data unit.</td>
+                    <td colspan="5" style="text-align: center;">Tidak ada data unit.</td>
                 </tr>
                 @endforelse
             </tbody>
@@ -85,6 +93,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // --- LOGIKA PENCARIAN OTOMATIS ---
             const searchInput = document.getElementById('search-input');
             const searchForm = document.getElementById('search-form');
             let debounceTimer;
@@ -95,6 +104,46 @@
                     searchForm.submit();
                 }, 300);
             });
+
+            // --- LOGIKA EKSPOR DATA ---
+            const selectAll = document.getElementById('select-all');
+            const checkboxes = document.querySelectorAll('.row-checkbox');
+            const exportBtn = document.getElementById('export-btn');
+
+            function toggleExportButton() {
+                const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
+                exportBtn.disabled = !anyChecked;
+            }
+
+            selectAll.addEventListener('change', function() {
+                checkboxes.forEach(cb => cb.checked = this.checked);
+                toggleExportButton();
+            });
+
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', function() {
+                    if (!this.checked) {
+                        selectAll.checked = false;
+                    } else {
+                        const allChecked = Array.from(checkboxes).every(c => c.checked);
+                        selectAll.checked = allChecked;
+                    }
+                    toggleExportButton();
+                });
+            });
+            
+            exportBtn.addEventListener('click', function() {
+                const selectedIds = Array.from(document.querySelectorAll('.row-checkbox:checked'))
+                                       .map(cb => cb.value);
+                
+                if (selectedIds.length > 0) {
+                    const baseUrl = '{{ route("admin.unit.export.excel") }}';
+                    const queryString = selectedIds.map(id => `selected_ids[]=${id}`).join('&');
+                    window.location.href = `${baseUrl}?${queryString}`;
+                }
+            });
+
+            toggleExportButton();
         });
     </script>
 </body>

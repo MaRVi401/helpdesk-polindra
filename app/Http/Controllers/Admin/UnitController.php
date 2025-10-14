@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Unit;
 use App\Models\Staff;
 use Illuminate\Http\Request;
+use App\Exports\UnitExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Validation\Rule;
 
 class UnitController extends Controller
@@ -103,5 +105,16 @@ class UnitController extends Controller
         } catch (\Exception $e) {
             return redirect()->route('admin.unit.index')->with('error', 'Terjadi kesalahan saat menghapus data.');
         }
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $selectedIds = $request->query('selected_ids', []);
+
+        if (empty($selectedIds)) {
+            return redirect()->back()->with('error', 'Tidak ada data unit yang dipilih untuk diekspor.');
+        }
+
+        return Excel::download(new UnitExport($selectedIds), 'data-unit.xlsx');
     }
 }
