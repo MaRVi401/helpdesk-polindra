@@ -42,7 +42,7 @@
             </div>
 
             <button type="submit" class="button">Update Program Studi</button>
-            <a href="{{ route('admin.program-studi.index') }}" style="margin-left: 10px;">Batal</a>
+            <a href="{{ route('admin.jurusan.index') }}" style="margin-left: 10px;">Batal</a>
         </form>
     </div>
 </body>

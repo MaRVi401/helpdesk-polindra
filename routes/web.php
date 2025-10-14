@@ -58,11 +58,19 @@ Route::middleware('auth')->group(function () {
         Route::resource('staff', StaffController::class);
 
         // Kelola FAQ
-        Route::get('kelolafaq/export', [KelolaFaqController::class, 'exportExcel'])->name('kelolafaq.export.excel');
+        Route::get('kelolafaq/export/excel', [KelolaFaqController::class, 'exportExcel'])->name('kelolafaq.export.excel');
         Route::resource('kelolafaq', KelolaFaqController::class);
-
-        Route::resource('jurusan',JurusanController::class)->names('jurusan');
-        Route::resource('program-studi',ProgramStudiController::class)->names('program-studi');
+        
+        // Kelola Jurusan
+        Route::get('jurusan/export/excel', [JurusanController::class, 'exportExcel'])->name('jurusan.export.excel');
+        Route::resource('jurusan', JurusanController::class)->names('jurusan');
+        
+        // Kelola Program Studi
+        Route::get('program-studi/export/excel', [ProgramStudiController::class, 'exportExcel'])->name('program-studi.export.excel');
+        Route::resource('program-studi', ProgramStudiController::class)->except(['index', 'show'])->names('program-studi');
+        
+        // Master Route Jurusan & Prodi
+        Route::get('jurusan/{jurusan}/program-studi', [ProgramStudiController::class, 'index'])->name('jurusan.program-studi.index');
     });
     // Mahasiswa
     Route::middleware('role:mahasiswa')->prefix('mahasiswa')->name('mahasiswa.')->group(function () {
