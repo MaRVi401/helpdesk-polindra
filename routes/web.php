@@ -1,19 +1,20 @@
 <?php
 
-use App\Http\Controllers\Pages\AuthPage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Pages\AuthPage;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Admin\UnitController;
 use App\Http\Controllers\GoogleLoginController;
-use App\Http\Controllers\Admin\KelolaPengguna\MahasiswaController;
-use App\Http\Controllers\Admin\KelolaPengguna\StaffController;
+use App\Http\Controllers\Admin\JurusanController;
 use App\Http\Controllers\Admin\KelolaFaqController;
 use App\Http\Controllers\Mahasiswa\TiketController;
-use App\Http\Controllers\Admin\JurusanController;
 use App\Http\Controllers\Admin\ProgramStudiController;
+use App\Http\Controllers\Admin\KelolaPengguna\StaffController;
+use App\Http\Controllers\Admin\KelolaPengguna\MahasiswaController;
 
 
 
@@ -71,6 +72,10 @@ Route::middleware('auth')->group(function () {
         
         // Master Route Jurusan & Prodi
         Route::get('jurusan/{jurusan}/program-studi', [ProgramStudiController::class, 'index'])->name('jurusan.program-studi.index');
+    
+        // Kelola Unit
+        Route::resource('unit', UnitController::class)->names('unit');
+    
     });
     // Mahasiswa
     Route::middleware('role:mahasiswa')->prefix('mahasiswa')->name('mahasiswa.')->group(function () {

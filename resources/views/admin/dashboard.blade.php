@@ -23,6 +23,7 @@
             <li><a href="{{ route('admin.staff.index') }}">Kelola Data Staff</a></li>
             <li><a href="{{ route('admin.kelolafaq.index') }}">Kelola FAQ</a></li>
             <li><a href="{{ route('admin.jurusan.index') }}">Kelola Jurusan</a></li>
+            <li><a href="{{ route('admin.unit.index') }}">Kelola Unit</a></li>
 
             {{-- Tambahkan link ke fitur admin lainnya --}}
         </ul>
