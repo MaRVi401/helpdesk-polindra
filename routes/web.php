@@ -1,5 +1,9 @@
 <?php
 
+
+use App\Http\Controllers\apps\EcommerceProductList;
+use App\Http\Controllers\apps\FaqList;
+use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Pages\TestPage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,9 +22,28 @@ use App\Http\Controllers\Admin\KelolaPengguna\StaffController;
 use App\Http\Controllers\Admin\KelolaPengguna\MahasiswaController;
 
 
+
 // FOR TESTING BLADE
 Route::get('/test', [TestPage::class, 'home'])->name('home.page');
 
+Route::get('/app/ecommerce/product/list', [EcommerceProductList::class, 'index'])->name('app-ecommerce-product-list');
+Route::get('/app/faq/all/list', [FaqList::class, 'index'])->name('app-faq-list');
+
+
+
+Route::prefix('app/faq')->name('faq.')->group(function () {
+    // Halaman utama
+    Route::get('/list', [FaqController::class, 'index'])->name('app-faq-list');
+    
+    // API untuk DataTable
+    Route::get('/get-list', [FaqController::class, 'getList'])->name('getList');
+    
+    // CRUD operations
+    Route::get('/add', [FaqController::class, 'create'])->name('add');
+    Route::get('/view/{id}', [FaqController::class, 'view'])->name('view');
+    Route::get('/edit/{id}', [FaqController::class, 'edit'])->name('edit');
+    Route::delete('/delete/{id}', [FaqController::class, 'delete'])->name('delete');
+});
 
 // --- ROUTE FOR USERS WHO HAVE NOT LOGGED IN (GUEST) ---
 Route::middleware('guest')->group(function () {

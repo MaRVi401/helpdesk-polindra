@@ -11,8 +11,12 @@ $configData = Helper::appClasses();
   @if (!isset($navbarFull))
   <div class="app-brand demo">
     <a href="{{ url('/') }}" class="app-brand-link">
-      <span class="app-brand-logo demo">@include('_partials.macros')</span>
-      <span class="app-brand-text demo menu-text fw-bold ms-3">{{ config('variables.templateName') }}</span>
+      <span class="app-brand-logo demo">
+        <img class="wpx-50" src="{{ asset('assets/img/logo/polindra.svg') }}" alt="Logo ServiceDesk">
+      </span>
+      <span class="app-brand-text demo menu-text fw-bold ms-3">
+        <img class="w-75" src="{{ asset('assets/img/logo/servicedesk.svg') }}" alt="Logo ServiceDesk">
+      </span>
     </a>
 
     <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
