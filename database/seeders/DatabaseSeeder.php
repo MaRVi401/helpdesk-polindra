@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             MahasiswaSeeder::class,
             LayananSeeder::class,
             UnitSeeder::class,
+            KategoriArtikelSeeder::class,
         ]);
     }
 }

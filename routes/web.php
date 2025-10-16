@@ -1,23 +1,25 @@
 <?php
 
 
-use App\Http\Controllers\apps\EcommerceProductList;
-use App\Http\Controllers\apps\FaqList;
-use App\Http\Controllers\Admin\FaqController;
-use App\Http\Controllers\Pages\TestPage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\apps\FaqList;
 use App\Http\Controllers\Pages\AuthPage;
+use App\Http\Controllers\Pages\TestPage;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\UnitController;
 use App\Http\Controllers\GoogleLoginController;
+use App\Http\Controllers\Admin\ArtikelController;
 use App\Http\Controllers\Admin\JurusanController;
 use App\Http\Controllers\Admin\KelolaFaqController;
+use App\Http\Controllers\apps\EcommerceProductList;
 use App\Http\Controllers\Mahasiswa\TiketController;
 use App\Http\Controllers\Admin\ProgramStudiController;
+use App\Http\Controllers\Admin\KategoriArtikelController;
 use App\Http\Controllers\Admin\KelolaPengguna\StaffController;
 use App\Http\Controllers\Admin\KelolaPengguna\MahasiswaController;
 
@@ -34,10 +36,10 @@ Route::get('/app/faq/all/list', [FaqList::class, 'index'])->name('app-faq-list')
 Route::prefix('app/faq')->name('faq.')->group(function () {
     // Halaman utama
     Route::get('/list', [FaqController::class, 'index'])->name('app-faq-list');
-    
+
     // API untuk DataTable
     Route::get('/get-list', [FaqController::class, 'getList'])->name('getList');
-    
+
     // CRUD operations
     Route::get('/add', [FaqController::class, 'create'])->name('add');
     Route::get('/view/{id}', [FaqController::class, 'view'])->name('view');
@@ -103,6 +105,10 @@ Route::middleware('auth')->group(function () {
         // Kelola Unit
         Route::get('unit/export/excel', [UnitController::class, 'exportExcel'])->name('unit.export.excel');
         Route::resource('unit', UnitController::class)->names('unit');
+
+        // Kelola Artikel dan Kategori Artikel
+        Route::resource('artikel', ArtikelController::class)->names('artikel');
+        Route::resource('kategori-artikel', KategoriArtikelController::class)->names('kategori-artikel');
     });
     // Mahasiswa
     Route::middleware('role:mahasiswa')->prefix('mahasiswa')->name('mahasiswa.')->group(function () {

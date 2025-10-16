@@ -24,6 +24,8 @@
             <li><a href="{{ route('admin.kelolafaq.index') }}">Kelola FAQ</a></li>
             <li><a href="{{ route('admin.jurusan.index') }}">Kelola Jurusan</a></li>
             <li><a href="{{ route('admin.unit.index') }}">Kelola Unit</a></li>
+            <li><a href="{{ route('admin.artikel.index') }}">Kelola Artikel</a></li>
+            <li><a href="{{ route('admin.kategori-artikel.index') }}">Kelola Kategori Artikel</a></li>
 
             {{-- Tambahkan link ke fitur admin lainnya --}}
         </ul>
