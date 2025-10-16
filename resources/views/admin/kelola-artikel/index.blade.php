@@ -69,12 +69,12 @@
                 <tr>
                     <td>
                         @if($artikel->gambar)
-                            <img src="{{ \Illuminate\Support\Facades\Storage::url($artikel->gambar) }}" alt="Gambar saat ini" class="current-image">
+                            <img src="{{ \Illuminate\Support\Facades\Storage::url($artikel->gambar) }}" alt="Thumbnail" class="thumbnail">
                         @else
                             <div style="width: 80px; height: 50px; background-color: #e2e8f0; border-radius: 4px; display:flex; align-items:center; justify-content:center; font-size:10px; color: #718096;">No Image</div>
                         @endif
                     </td>
-                    <td>{{ Str::limit($artikel->judul, 45) }}</td>
+                    <td>{{ \Illuminate\Support\Str::limit($artikel->judul, 45) }}</td>
                     <td>{{ $artikel->kategori->kategori ?? 'N/A' }}</td>
                     <td>
                         <span class="badge badge-{{ strtolower($artikel->status) }}">{{ $artikel->status }}</span>
@@ -102,3 +102,4 @@
     </div>
 </body>
 </html>
+
