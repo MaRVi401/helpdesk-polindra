@@ -2,35 +2,33 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\ArtikelExport;
 use App\Http\Controllers\Controller;
 use App\Models\Artikel;
 use App\Models\KategoriArtikel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ArtikelController extends Controller
 {
     public function index(Request $request)
     {
+        $searchQuery = $request->input('q');
+        $perPage = $request->input('per_page', 10);
+
         $query = Artikel::with(['user', 'kategori'])->orderBy('created_at', 'desc');
 
-        // Filter berdasarkan kategori
-        if ($request->has('kategori') && $request->kategori != '') {
-            $query->where('kategori_id', $request->kategori);
+        if ($searchQuery) {
+            $query->where('judul', 'like', "%{$searchQuery}%");
         }
 
-        // Pencarian berdasarkan judul
-        if ($request->has('q') && $request->q != '') {
-            $query->where('judul', 'like', '%' . $request->q . '%');
-        }
-
-        $artikels = $query->paginate(10)->withQueryString();
+        $artikels = $query->paginate($perPage)->withQueryString();
         $kategoris = KategoriArtikel::orderBy('kategori')->get();
 
-        return view('admin.kelola-artikel.index', compact('artikels', 'kategoris'));
+        return view('admin.kelola-artikel.index', compact('artikels', 'kategoris', 'searchQuery', 'perPage'));
     }
 
     public function create()
@@ -47,11 +45,12 @@ class ArtikelController extends Controller
             'status' => ['required', Rule::in(['Draft', 'Post'])],
             'deskripsi' => 'required|string',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ], [
+            'judul.unique' => 'Judul ini sudah digunakan oleh artikel lain.',
         ]);
 
         $path = null;
         if ($request->hasFile('gambar')) {
-            // Menyimpan gambar ke folder storage/app/public/artikel
             $path = $request->file('gambar')->store('public/artikel');
         }
 
@@ -76,20 +75,20 @@ class ArtikelController extends Controller
     public function update(Request $request, Artikel $artikel)
     {
         $request->validate([
-            'judul' => ['required','string','max:255',Rule::unique('artikel')->ignore($artikel->id)],
+            'judul' => ['required','string','max:255', Rule::unique('artikel')->ignore($artikel->id)],
             'kategori_id' => 'required|exists:kategori_artikel,id',
             'status' => ['required', Rule::in(['Draft', 'Post'])],
             'deskripsi' => 'required|string',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ], [
+            'judul.unique' => 'Judul ini sudah digunakan oleh artikel lain.',
         ]);
 
         $path = $artikel->gambar;
         if ($request->hasFile('gambar')) {
-            // Hapus gambar lama jika ada
             if ($path) {
                 Storage::delete($path);
             }
-            // Simpan gambar baru
             $path = $request->file('gambar')->store('public/artikel');
         }
 
@@ -106,13 +105,21 @@ class ArtikelController extends Controller
 
     public function destroy(Artikel $artikel)
     {
-        // Hapus gambar dari storage jika ada
         if ($artikel->gambar) {
             Storage::delete($artikel->gambar);
         }
-        
         $artikel->delete();
-        
         return redirect()->route('admin.artikel.index')->with('success', 'Artikel berhasil dihapus.');
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $selectedIds = $request->query('selected_ids', []);
+
+        if (empty($selectedIds)) {
+            return redirect()->back()->with('error', 'Tidak ada data yang dipilih untuk diekspor.');
+        }
+
+        return Excel::download(new ArtikelExport($selectedIds), 'data-artikel.xlsx');
     }
 }

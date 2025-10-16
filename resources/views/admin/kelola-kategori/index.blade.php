@@ -32,6 +32,7 @@
         <table>
             <thead>
                 <tr>
+                    <th style="width: 5%;">No.</th>
                     <th>Nama Kategori</th>
                     <th style="width: 25%;">Aksi</th>
                 </tr>
@@ -39,6 +40,7 @@
             <tbody>
                 @forelse ($kategoris as $kategori)
                 <tr>
+                    <td>{{ $kategoris->firstItem() + $loop->index }}</td>
                     <td>{{ $kategori->kategori }}</td>
                     <td>
                         <a href="{{ route('admin.kategori-artikel.edit', $kategori->id) }}">Edit</a>

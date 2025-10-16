@@ -107,6 +107,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('unit', UnitController::class)->names('unit');
 
         // Kelola Artikel dan Kategori Artikel
+        Route::get('artikel/export/excel', [ArtikelController::class, 'exportExcel'])->name('artikel.export.excel');
         Route::resource('artikel', ArtikelController::class)->names('artikel');
         Route::resource('kategori-artikel', KategoriArtikelController::class)->names('kategori-artikel');
     });
