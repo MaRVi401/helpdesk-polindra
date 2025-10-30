@@ -14,65 +14,65 @@ document.addEventListener('DOMContentLoaded', function () {
           username: {
             validators: {
               notEmpty: {
-                message: 'Please enter username'
+                message: 'Silakan masukkan nama pengguna'
               },
               stringLength: {
                 min: 6,
-                message: 'Username must be more than 6 characters'
+                message: 'Nama pengguna harus lebih dari 6 karakter'
               }
             }
           },
           email: {
             validators: {
               notEmpty: {
-                message: 'Please enter your email'
+                message: 'Silakan masukkan email Anda'
               },
               emailAddress: {
-                message: 'Please enter a valid email address'
+                message: 'Silakan masukkan alamat email yang valid'
               }
             }
           },
           'email-username': {
             validators: {
               notEmpty: {
-                message: 'Please enter email / username'
+                message: 'Silakan masukkan email / nama pengguna'
               },
               stringLength: {
                 min: 6,
-                message: 'Username must be more than 6 characters'
+                message: 'Nama pengguna harus lebih dari 6 karakter'
               }
             }
           },
           password: {
             validators: {
               notEmpty: {
-                message: 'Please enter your password'
+                message: 'Silakan masukkan password Anda'
               },
               stringLength: {
                 min: 6,
-                message: 'Password must be more than 6 characters'
+                message: 'Password harus lebih dari 6 karakter'
               }
             }
           },
           'confirm-password': {
             validators: {
               notEmpty: {
-                message: 'Please confirm password'
+                message: 'Harap konfirmasi password'
               },
               identical: {
                 compare: () => formAuthentication.querySelector('[name="password"]').value,
-                message: 'The password and its confirmation do not match'
+                message: 'Password dan konfirmasinya tidak cocok'
               },
               stringLength: {
                 min: 6,
-                message: 'Password must be more than 6 characters'
+                message: 'Password harus lebih dari 6 karakter'
               }
             }
           },
           terms: {
             validators: {
               notEmpty: {
-                message: 'Please agree to terms & conditions'
+                message: 'Harap setujui syarat & ketentuan'
               }
             }
           }

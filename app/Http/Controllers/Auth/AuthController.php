@@ -21,8 +21,10 @@ class AuthController extends Controller
                 'email' => ['required', 'email'],
                 'password' => ['required'],
             ]);
+
+            $remember = $request->has('remember');
             // Try to authenticate the user
-            if (Auth::attempt($credentials)) {
+            if (Auth::attempt($credentials, $remember)) {
                 $request->session()->regenerate();
                 Log::info('User logged in successfully', [
                     'user_id' => Auth::id(),
@@ -32,7 +34,7 @@ class AuthController extends Controller
             }
             // If credentials are wrong
             return back()
-                ->withInput($request->only('email'))
+                ->withInput($request->only('email', 'remember'))
                 ->with('error', 'Email atau Password salah.');
 
         } catch (ValidationException $e) {

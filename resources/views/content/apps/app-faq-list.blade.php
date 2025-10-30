@@ -30,7 +30,7 @@
       <table class="datatables-faq table">
         <thead>
           <tr>
-            <th></th>
+          <th></th>
             <th></th>
             <th>No</th>
             <th>Judul</th>

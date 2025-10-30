@@ -34,7 +34,7 @@ class GoogleLoginController extends Controller
             // Cek apakah email user diakhiri dengan domain yang diizinkan
             if (!str_ends_with($userEmail, $allowedDomain)) {
                 // Jika tidak sesuai, arahkan kembali ke login dengan pesan error
-                return redirect('/login')->with('error', 'Email anda tidak terdata dalam server kampus');
+                return redirect('/login')->with('error', 'Email anda tidak terdata dalam data kampus');
             }
             // -----------------------------
 
@@ -54,7 +54,7 @@ class GoogleLoginController extends Controller
             );
 
             // Login user yang ditemukan atau yang baru dibuat
-            Auth::login($user);
+            Auth::login($user, true);
 
             // Periksa apakah user ini sudah memiliki data profil mahasiswa
             $mahasiswaExists = Mahasiswa::where('user_id', $user->id)->exists();
