@@ -1,20 +1,21 @@
 {
   "menu": [
     {
-      "menuHeader": "Apps & Pages",
-      "roles": ["super_admin", "admin_unit", "kepala_unit", "mahasiswa"]
+      "menuHeader": "Apps & Pages"
     },
     {
       "name": "Dashboards",
       "icon": "menu-icon icon-base ti tabler-smart-home",
       "slug": "dashboard",
-      "roles": ["super_admin", "admin_unit", "kepala_unit", "mahasiswa"],
+      "badge": [
+        "danger",
+        "5"
+      ],
       "submenu": [
         {
           "url": "/",
           "name": "Analisis",
-          "slug": "dashboard-analisis",
-          "roles": ["super_admin", "admin_unit", "kepala_unit"]
+          "slug": "dashboard-analisis"
         }
       ]
     },
@@ -22,25 +23,21 @@
       "name": "Layanan",
       "icon": "menu-icon icon-base ti tabler-layout-grid-add",
       "slug": "layanan",
-      "roles": ["super_admin", "admin_unit", "kepala_unit"],
       "submenu": [
         {
           "url": "app/upatik",
           "name": "UPA TIK",
-          "slug": "dashboard-upatik",
-          "roles": ["super_admin", "admin_unit"]
+          "slug": "dashboard-upatik"
         },
         {
           "url": "app/akademik",
           "name": "Akademik",
-          "slug": "dashboard-akademik",
-          "roles": ["super_admin", "admin_unit"]
+          "slug": "dashboard-akademik"
         },
         {
           "url": "app/pku",
           "name": "PKU",
-          "slug": "dashboard-pku",
-          "roles": ["super_admin", "admin_unit"]
+          "slug": "dashboard-pku"
         }
       ]
     },
@@ -48,66 +45,56 @@
       "name": "Pengguna",
       "icon": "menu-icon icon-base ti tabler-user",
       "slug": "pengguna",
-      "roles": ["super_admin"],
       "submenu": [
         {
           "url": "app/mahasiswa",
           "name": "Mahasiswa",
-          "slug": "dashboard-mahasiswa",
-          "roles": ["super_admin"]
+          "slug": "dashboard-mahasiswa"
         },
         {
           "url": "app/staff",
           "name": "Staff",
-          "slug": "dashboard-staff",
-          "roles": ["super_admin"]
+          "slug": "dashboard-staff"
         },
         {
           "url": "app/orang-umum",
           "name": "Orang Umum",
-          "slug": "dashboard-orang-umum",
-          "roles": ["super_admin"]
+          "slug": "dashboard-orang-umum"
         }
       ]
     },
     {
-      "url": "faq/list",
+      "url": "app/faq/list",
       "icon": "menu-icon icon-base ti tabler-quote",
       "name": "FAQ",
-      "slug": "faq-list",
-      "roles": ["super_admin"]
+      "slug": "faq.app-faq-list"
     },
     {
       "url": "/artikel",
       "name": "Artikel",
       "icon": "menu-icon icon-base ti tabler-book",
-      "slug": "artikel",
-      "roles": ["super_admin", "admin_unit", "kepala_unit", "mahasiswa"]
+      "slug": "artikel"
     },
     {
-      "menuHeader": "Master Data",
-      "roles": ["super_admin"]
+      "menuHeader": "Master Data"
     },
     {
       "url": "/jurusan",
       "name": "Jurusan",
       "icon": "menu-icon icon-base ti tabler-building",
-      "slug": "jurusan",
-      "roles": ["super_admin"]
+      "slug": "jurusan"
     },
     {
       "url": "/unit",
       "name": "Unit",
       "icon": "menu-icon icon-base ti tabler-building-warehouse",
-      "slug": "unit",
-      "roles": ["super_admin"]
+      "slug": "unit"
     },
     {
       "url": "/jabatan",
       "name": "Jabatan",
       "icon": "menu-icon icon-base ti tabler-badge",
-      "slug": "jabatan",
-      "roles": ["super_admin"]
+      "slug": "ja"
     }
   ]
 }

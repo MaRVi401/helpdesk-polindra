@@ -1,6 +1,7 @@
 <?php
 
 
+use App\Http\Controllers\Pages\LandingPage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -33,35 +34,43 @@ Route::get('/app/faq/all/list', [FaqList::class, 'index'])->name('app-faq-list')
 
 
 
-Route::prefix('app/faq')->name('faq.')->group(function () {
-    // Halaman utama
-    Route::get('/list', [FaqController::class, 'index'])->name('app-faq-list');
 
-    // API untuk DataTable
-    Route::get('/get-list', [FaqController::class, 'getList'])->name('getList');
 
-    // CRUD operations
-    Route::get('/add', [FaqController::class, 'create'])->name('add');
-    Route::get('/view/{id}', [FaqController::class, 'view'])->name('view');
-    Route::get('/edit/{id}', [FaqController::class, 'edit'])->name('edit');
-    Route::delete('/delete/{id}', [FaqController::class, 'delete'])->name('delete');
-});
+// // Route untuk admin (harus login sebagai super_admin)
+// Route::middleware(['auth', 'role:super_admin'])->prefix('/faq')->group(function () {
+//     Route::get('/list', [FaqController::class, 'index'])->name('faq.list');
+//     Route::get('/add', [FaqController::class, 'create'])->name('add');
+//     Route::post('/add', [FaqController::class, 'store'])->name('add.faq');
+//     Route::get('/view/{id}', [FaqController::class, 'view'])->name('view');
+//     Route::get('/edit/{id}', [FaqController::class, 'edit'])->name('edit');
+//     Route::delete('/delete/{id}', [FaqController::class, 'delete'])->name('delete');
+// });
 
 // --- ROUTE FOR USERS WHO HAVE NOT LOGGED IN (GUEST) ---
 Route::middleware('guest')->group(function () {
 
-    Route::get('/login', [AuthPage::class, 'login'])->name('login.page');
+    Route::get('/', [LandingPage::class, 'landingPage'])->name('landing.page');
 
+    Route::get('/login', [AuthPage::class, 'authPage'])->name('auth.page');
     // Login Users
     Route::post('/login', [AuthController::class, 'login'])->name('login');
 
     // Google Authentication Route
     Route::get('auth/google', [GoogleLoginController::class, 'redirectToGoogle'])->name('google.login');
     Route::get('auth/google/callback', [GoogleLoginController::class, 'handleGoogleCallback']);
+
+
+    // Route::get('/faq/get-list', [FaqController::class, 'getList'])->name('getList');
 });
 
 // --- ROUTE FOR ALREADY LOGGED IN USERS (AUTH) ---
 Route::middleware('auth')->group(function () {
+
+    Route::get('/dashboard', function () {
+        return view('content.pages.dashboard');
+    })->name('dashboard');
+
+    Route::resource('faq', FaqController::class)->middleware('role:super_admin');
 
     Route::get('/lengkapi-profil', [ProfileController::class, 'showCompletionForm'])->name('profile.completion.form');
 
@@ -70,14 +79,23 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+
     // Logout Users
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+
+
+
     // Super Admin
     Route::middleware('role:super_admin')->prefix('admin')->name('admin.')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('admin.dashboard');
-        })->name('dashboard');
+
+
+        // Route::get('/add', [FaqController::class, 'create'])->name('add');
+        // Route::post('/add', [FaqController::class, 'store'])->name('add.faq');
+        // Route::get('/view/{id}', [FaqController::class, 'view'])->name('view');
+        // Route::get('/edit/{id}', [FaqController::class, 'edit'])->name('edit');
+        // Route::delete('/delete/{id}', [FaqController::class, 'delete'])->name('delete');
+
 
         // Kelola Pengguna - Mahasiswa
         Route::get('mahasiswa/export/excel', [MahasiswaController::class, 'exportExcel'])->name('mahasiswa.export.excel');
@@ -114,7 +132,7 @@ Route::middleware('auth')->group(function () {
     // Mahasiswa
     Route::middleware('role:mahasiswa')->prefix('mahasiswa')->name('mahasiswa.')->group(function () {
         Route::get('/dashboard', function () {
-            return view('mahasiswa.dashboard');
+            return view('content.pages.dashboard');
         })->name('dashboard');
 
         // Rute untuk fungsionalitas tiket mahasiswa
@@ -127,13 +145,13 @@ Route::middleware('auth')->group(function () {
     // Kepala Unit
     Route::middleware('role:kepala_unit')->prefix('kepala-unit')->name('kepala_unit.')->group(function () {
         Route::get('/dashboard', function () {
-            return view('kepala_unit.dashboard');
+            return view('content.pages.dashboard');
         })->name('dashboard');
     });
     // Admin Unit
     Route::middleware('role:admin_unit')->prefix('admin-unit')->name('admin_unit.')->group(function () {
         Route::get('/dashboard', function () {
-            return view('admin_unit.dashboard');
+            return view('content.pages.dashboard');
         })->name('dashboard');
     });
 });

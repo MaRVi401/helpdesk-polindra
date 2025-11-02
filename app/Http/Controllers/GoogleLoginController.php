@@ -31,15 +31,13 @@ class GoogleLoginController extends Controller
             $allowedDomain = '@student.polindra.ac.id';
 
             // --- VALIDASI DOMAIN EMAIL ---
-            // Cek apakah email user diakhiri dengan domain yang diizinkan
+            // Cek apakah - email user diakhiri dengan domain yang diizinkan
             if (!str_ends_with($userEmail, $allowedDomain)) {
                 // Jika tidak sesuai, arahkan kembali ke login dengan pesan error
                 return redirect('/login')->with('error', 'Email anda tidak terdata dalam data kampus');
             }
-            // -----------------------------
 
             // Cari user berdasarkan email. Jika tidak ada, buat baru.
-            // Catatan: Pastikan kolom 'email' memiliki indeks unik di database.
             $user = User::firstOrCreate(
                 [
                     'email' => $userEmail,
@@ -60,19 +58,14 @@ class GoogleLoginController extends Controller
             $mahasiswaExists = Mahasiswa::where('user_id', $user->id)->exists();
 
             if ($mahasiswaExists) {
-                // Jika sudah ada, arahkan ke dashboard
                 return redirect()->intended('dashboard');
             } else {
-                // JIKA PENGGUNA BARU: Simpan penanda di session
                 session(['needs_profile_completion' => true]);
-                
-                // dan arahkan ke halaman untuk melengkapi profil
                 return redirect('/lengkapi-profil');
             }
 
         } catch (Exception $e) {
             // Jika terjadi error, kembali ke halaman login dengan pesan error.
-            // Anda dapat logging $e->getMessage() di production untuk debugging.
             return redirect('/login')->with('error', 'Gagal login dengan Google. Silakan coba lagi.');
         }
     }

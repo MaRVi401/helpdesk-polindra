@@ -10,6 +10,6 @@ class TestPage extends Controller
   public function home()
   { 
     // $pageConfigs = ['myLayout' => 'blank'];
-    return view('content.pages.pages-home');
+    return view('content.pages.dashboard');
   }
 }

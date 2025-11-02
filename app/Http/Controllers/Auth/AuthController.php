@@ -23,7 +23,7 @@ class AuthController extends Controller
             ]);
 
             $remember = $request->has('remember');
-            // Try to authenticate the user
+            // Coba untuk mengautentikasi pengguna
             if (Auth::attempt($credentials, $remember)) {
                 $request->session()->regenerate();
                 Log::info('User logged in successfully', [
@@ -32,7 +32,7 @@ class AuthController extends Controller
                 ]);
                 return redirect()->intended(route('dashboard'));
             }
-            // If credentials are wrong
+            // Jika credentials salah
             return back()
                 ->withInput($request->only('email', 'remember'))
                 ->with('error', 'Email atau Password salah.');
@@ -62,7 +62,7 @@ class AuthController extends Controller
             Log::info('User logged out successfully', [
                 'user_id' => $userId
             ]);
-            return redirect('/login')->with('status', 'Anda telah berhasil logout.');
+            return redirect('/login')->with('status', 'Kamu telah berhasil logout.');
 
         } catch (Exception $e) {
             Log::error('Logout error', [
@@ -70,13 +70,13 @@ class AuthController extends Controller
                 'user_id' => Auth::id() ?? 'unknown'
             ]);
 
-            // Still log out even if there is an error
+            // Tetap keluar meskipun error
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
             return redirect('/login')->withErrors([
-                'message' => 'Terjadi kesalahan saat logout, tetapi Anda telah dikeluarkan dari sistem.'
+                'message' => 'Terjadi kesalahan saat logout, tetapi Kamu telah dikeluarkan dari sistem.'
             ]);
         }
     }

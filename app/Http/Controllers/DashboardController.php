@@ -10,51 +10,42 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $role = Auth::user()->role;
-
-        switch ($role) {
-            case 'super_admin':
-                return redirect()->route('admin.dashboard');
-            case 'mahasiswa':
-                return redirect()->route('mahasiswa.dashboard');
-            case 'kepala_unit':
-                return redirect()->route('kepala_unit.dashboard');
-            case 'admin_unit':
-                return redirect()->route('admin_unit.dashboard');
-            default:
-                return redirect('/');
-        }
+        // $role = Auth::user()->role;
+        $user = auth()->user();
+        
+        return view('content.pages.dashboard', compact('user'));
+        
     }
 
-    public function super_admin()
-    {
-        return view('admin.dashboard');
-    }
+    // public function super_admin()
+    // {
+    //     return view('content.pages.dashboard');
+    // }
 
-    public function mahasiswa()
-    {
-        $userId = Auth::id();
+    // public function mahasiswa()
+    // {
+    //     $userId = Auth::id();
       
-        $totalTiket = Tiket::where('id_user', $userId)->count();
-        $tiketMenunggu = Tiket::where('id_user', $userId)->where('status', 'Menunggu')->count();
-        $tiketDiproses = Tiket::where('id_user', $userId)->where('status', 'Diproses')->count();
-        $tiketSelesai = Tiket::where('id_user', $userId)->where('status', 'Selesai')->count();
+    //     $totalTiket = Tiket::where('id_user', $userId)->count();
+    //     $tiketMenunggu = Tiket::where('id_user', $userId)->where('status', 'Menunggu')->count();
+    //     $tiketDiproses = Tiket::where('id_user', $userId)->where('status', 'Diproses')->count();
+    //     $tiketSelesai = Tiket::where('id_user', $userId)->where('status', 'Selesai')->count();
 
-        return view('mahasiswa.dashboard', compact(
-            'totalTiket',
-            'tiketMenunggu',
-            'tiketDiproses',
-            'tiketSelesai'
-        ));
-    }
+    //     return view('content.pages.dashboard', compact(
+    //         'totalTiket',
+    //         'tiketMenunggu',
+    //         'tiketDiproses',
+    //         'tiketSelesai'
+    //     ));
+    // }
 
-    public function kepala_unit()
-    {
-        return view('kepala_unit.dashboard');
-    }
+    // public function kepala_unit()
+    // {
+    //     return view('content.pages.dashboard');
+    // }
 
-    public function admin_unit()
-    {
-        return view('admin_unit.dashboard');
-    }
+    // public function admin_unit()
+    // {
+    //     return view('content.pages.dashboard');
+    // }
 }
