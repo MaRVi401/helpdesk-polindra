@@ -16,7 +16,10 @@ class GoogleLoginController extends Controller
      */
     public function redirectToGoogle()
     {
-        return Socialite::driver('google')->redirect();
+        // Tambahkan parameter untuk selalu menampilkan pemilihan akun
+        return Socialite::driver('google')
+            ->with(['prompt' => 'select_account'])
+            ->redirect();
     }
 
     /**
@@ -25,15 +28,14 @@ class GoogleLoginController extends Controller
     public function handleGoogleCallback()
     {
         try {
-            // Mengambil data user dari Google
-            $googleUser = Socialite::driver('google')->stateless()->user();
+            // Hapus stateless() agar flow OAuth normal
+            $googleUser = Socialite::driver('google')->user();
             $userEmail = $googleUser->getEmail();
             $allowedDomain = '@student.polindra.ac.id';
 
             // --- VALIDASI DOMAIN EMAIL ---
-            // Cek apakah - email user diakhiri dengan domain yang diizinkan
+            // Cek apakah email user diakhiri dengan domain yang diizinkan
             if (!str_ends_with($userEmail, $allowedDomain)) {
-                // Jika tidak sesuai, arahkan kembali ke login dengan pesan error
                 return redirect('/login')->with('error', 'Email anda tidak terdata dalam data kampus');
             }
 
@@ -65,7 +67,6 @@ class GoogleLoginController extends Controller
             }
 
         } catch (Exception $e) {
-            // Jika terjadi error, kembali ke halaman login dengan pesan error.
             return redirect('/login')->with('error', 'Gagal login dengan Google. Silakan coba lagi.');
         }
     }
