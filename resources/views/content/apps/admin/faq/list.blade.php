@@ -11,7 +11,7 @@
 @endsection
 
 @section('page-script')
-  @vite(['resources/assets/js/management/faq-list.js', 'resources/assets/js/extended-ui-sweetalert2.js'])
+  @vite(['resources/assets/js/management/faq.js', 'resources/assets/js/extended-ui-sweetalert2.js'])
 
 @endsection
 

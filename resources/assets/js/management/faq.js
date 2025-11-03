@@ -323,7 +323,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
         window.location.href = baseUrl + 'faq/' + id + '/edit';
       }
 
-      // Delete FAQ - mengikuti pattern confirmColor
+      // Delete FAQ
       if (e.target.closest('.delete-faq')) {
         e.preventDefault();
         const id = e.target.closest('.delete-faq').dataset.id;
@@ -342,57 +342,28 @@ document.addEventListener('DOMContentLoaded', function (e) {
           buttonsStyling: false
         }).then(function (result) {
           if (result.value) {
-            // User klik "Ya, hapus!"
-            // Kirim request delete ke server
-            fetch(baseUrl + 'faq/' + id, {
-              method: 'DELETE',
-              headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-              }
-            })
-              .then(response => response.json())
-              .then(data => {
-                if (data.success) {
-                  // Success alert
-                  Swal.fire({
-                    icon: 'success',
-                    title: 'Terhapus!',
-                    text: 'FAQ berhasil dihapus.',
-                    customClass: {
-                      confirmButton: 'btn btn-success waves-effect waves-light'
-                    },
-                    buttonsStyling: false
-                  }).then(function () {
-                    // Reload halaman setelah alert ditutup
-                    window.location.reload();
-                  });
-                } else {
-                  // Error alert
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal!',
-                    text: data.message || 'Terjadi kesalahan saat menghapus FAQ',
-                    customClass: {
-                      confirmButton: 'btn btn-primary waves-effect waves-light'
-                    },
-                    buttonsStyling: false
-                  });
-                }
-              })
-              .catch(error => {
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Error!',
-                  text: 'Terjadi kesalahan pada server',
-                  customClass: {
-                    confirmButton: 'btn btn-primary waves-effect waves-light'
-                  },
-                  buttonsStyling: false
-                });
-                console.error('Error:', error);
-              });
-          } 
+            // Buat form dan submit
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = baseUrl + 'faq/' + id;
+
+            // CSRF Token
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_token';
+            csrfInput.value = document.querySelector('meta[name="csrf-token"]').content;
+            form.appendChild(csrfInput);
+
+            // Method DELETE
+            const methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            methodInput.value = 'DELETE';
+            form.appendChild(methodInput);
+
+            document.body.appendChild(form);
+            form.submit();
+          }
         });
       }
     });

@@ -22,7 +22,7 @@ class FaqController extends Controller
     public function create()
     {
         $data_layanan = Layanan::all();
-        return view('content.apps.admin.faq.add', compact('data_layanan'));
+        return view('content.apps.admin.faq.create', compact('data_layanan'));
     }
 
     public function store(Request $request)
@@ -72,21 +72,15 @@ class FaqController extends Controller
         return redirect()->route('faq.index')->with('success', 'FAQ berhasil diupdate.');
     }
 
-    public function destroy($id)
-    {
-        try {
-            $data_faq = Faq::findOrFail($id);
-            $data_faq->delete();
+   public function destroy($id)
+{
+    try {
+        $data_faq = Faq::findOrFail($id);
+        $data_faq->delete();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'FAQ berhasil dihapus'
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal menghapus FAQ: ' . $e->getMessage()
-            ], 500);
-        }
+        return redirect()->route('faq.index')->with('success', 'FAQ berhasil dihapus');
+    } catch (\Exception $e) {
+        return redirect()->route('faq.index')->with('error', 'Gagal menghapus FAQ: ' . $e->getMessage());
     }
+}
 }
