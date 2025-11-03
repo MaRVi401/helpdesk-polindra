@@ -71,10 +71,10 @@
       ]
     },
     {
-      "url": "faq/list",
+      "url": "/faq",
       "icon": "menu-icon icon-base ti tabler-quote",
       "name": "FAQ",
-      "slug": "faq-list",
+      "slug": "faq.index",
       "roles": ["super_admin"]
     },
     {
