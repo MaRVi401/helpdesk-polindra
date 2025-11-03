@@ -64,7 +64,10 @@ Route::middleware('guest')->group(function () {
 });
 
 // --- ROUTE FOR ALREADY LOGGED IN USERS (AUTH) ---
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'profile.completed'])->group(function () {
+    
+    Route::get('/lengkapi-profil', [ProfileController::class, 'showCompletionForm'])->name('profile.complete');
+    Route::post('/simpan-profil', [ProfileController::class, 'saveCompletionForm'])->name('profile.save');
 
     Route::get('/dashboard', function () {
         return view('content.pages.dashboard');
@@ -140,7 +143,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/tiket/create', [TiketController::class, 'create'])->name('tiket.create');
         Route::post('/tiket', [TiketController::class, 'store'])->name('tiket.store');
         Route::get('/tiket/{tiket}', [TiketController::class, 'show'])->name('tiket.show');
-        Route::post('/tiket/{tiket}/komentar', [TiketController::class, 'storeComment'])->name('tiket.komentar.store');
+        Route::post('tiket/{tiket}/komentar', [TiketController::class, 'storeKomentar'])->name('tiket.storeKomentar');
     });
     // Kepala Unit
     Route::middleware('role:kepala_unit')->prefix('kepala-unit')->name('kepala_unit.')->group(function () {

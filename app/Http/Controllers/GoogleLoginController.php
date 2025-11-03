@@ -16,7 +16,10 @@ class GoogleLoginController extends Controller
      */
     public function redirectToGoogle()
     {
-        return Socialite::driver('google')->redirect();
+        // Tambahkan parameter untuk selalu menampilkan pemilihan akun
+        return Socialite::driver('google')
+            ->with(['prompt' => 'select_account'])
+            ->redirect();
     }
 
     /**
@@ -25,15 +28,14 @@ class GoogleLoginController extends Controller
     public function handleGoogleCallback()
     {
         try {
-            // Mengambil data user dari Google
-            $googleUser = Socialite::driver('google')->stateless()->user();
+            // Hapus stateless() agar flow OAuth normal
+            $googleUser = Socialite::driver('google')->user();
             $userEmail = $googleUser->getEmail();
             $allowedDomain = '@student.polindra.ac.id';
 
             // --- VALIDASI DOMAIN EMAIL ---
-            // Cek apakah - email user diakhiri dengan domain yang diizinkan
+            // Cek apakah email user diakhiri dengan domain yang diizinkan
             if (!str_ends_with($userEmail, $allowedDomain)) {
-                // Jika tidak sesuai, arahkan kembali ke login dengan pesan error
                 return redirect('/login')->with('error', 'Email anda tidak terdata dalam data kampus');
             }
 
@@ -50,22 +52,13 @@ class GoogleLoginController extends Controller
                     'password' => null,
                 ]
             );
-
             // Login user yang ditemukan atau yang baru dibuat
             Auth::login($user, true);
 
-            // Periksa apakah user ini sudah memiliki data profil mahasiswa
-            $mahasiswaExists = Mahasiswa::where('user_id', $user->id)->exists();
-
-            if ($mahasiswaExists) {
-                return redirect()->intended('dashboard');
-            } else {
-                session(['needs_profile_completion' => true]);
-                return redirect('/lengkapi-profil');
-            }
-
+            // Redirect ke dashboard, middleware akan handle redirect ke lengkapi-profil jika perlu
+            return redirect()->intended('/dashboard');
+            
         } catch (Exception $e) {
-            // Jika terjadi error, kembali ke halaman login dengan pesan error.
             return redirect('/login')->with('error', 'Gagal login dengan Google. Silakan coba lagi.');
         }
     }
