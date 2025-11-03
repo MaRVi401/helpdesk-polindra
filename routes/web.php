@@ -140,7 +140,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/tiket/create', [TiketController::class, 'create'])->name('tiket.create');
         Route::post('/tiket', [TiketController::class, 'store'])->name('tiket.store');
         Route::get('/tiket/{tiket}', [TiketController::class, 'show'])->name('tiket.show');
-        Route::post('/tiket/{tiket}/komentar', [TiketController::class, 'storeComment'])->name('tiket.komentar.store');
+        Route::post('tiket/{tiket}/komentar', [TiketController::class, 'storeKomentar'])->name('tiket.storeKomentar');
     });
     // Kepala Unit
     Route::middleware('role:kepala_unit')->prefix('kepala-unit')->name('kepala_unit.')->group(function () {

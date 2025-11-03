@@ -49,7 +49,7 @@
                 @forelse ($tikets as $tiket)
                 <tr>
                     <td><a href="{{ route('mahasiswa.tiket.show', $tiket->id) }}"><strong>{{ $tiket->no_tiket }}</strong></a></td>
-                    <td>{{ Str::limit($tiket->judul, 35) }}</td>
+                    <td>{{ \Illuminate\Support\Str::limit($tiket->judul, 35) }}</td>
                     {{-- DISESUAIKAN: Menggunakan 'nama_layanan' dan menambahkan pengecekan jika relasi null --}}
                     <td>{{ $tiket->layanan->nama_layanan ?? '[Layanan Dihapus]' }}</td>
                     <td>
