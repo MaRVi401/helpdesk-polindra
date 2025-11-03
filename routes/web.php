@@ -64,7 +64,10 @@ Route::middleware('guest')->group(function () {
 });
 
 // --- ROUTE FOR ALREADY LOGGED IN USERS (AUTH) ---
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'profile.completed'])->group(function () {
+    
+    Route::get('/lengkapi-profil', [ProfileController::class, 'showCompletionForm'])->name('profile.complete');
+    Route::post('/simpan-profil', [ProfileController::class, 'saveCompletionForm'])->name('profile.save');
 
     Route::get('/dashboard', function () {
         return view('content.pages.dashboard');

@@ -52,20 +52,12 @@ class GoogleLoginController extends Controller
                     'password' => null,
                 ]
             );
-
             // Login user yang ditemukan atau yang baru dibuat
             Auth::login($user, true);
 
-            // Periksa apakah user ini sudah memiliki data profil mahasiswa
-            $mahasiswaExists = Mahasiswa::where('user_id', $user->id)->exists();
-
-            if ($mahasiswaExists) {
-                return redirect()->intended('dashboard');
-            } else {
-                session(['needs_profile_completion' => true]);
-                return redirect('/lengkapi-profil');
-            }
-
+            // Redirect ke dashboard, middleware akan handle redirect ke lengkapi-profil jika perlu
+            return redirect()->intended('/dashboard');
+            
         } catch (Exception $e) {
             return redirect('/login')->with('error', 'Gagal login dengan Google. Silakan coba lagi.');
         }
