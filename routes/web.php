@@ -68,7 +68,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', function () {
         return view('content.pages.dashboard');
-    })->name('dashboard');
+    })->name('dashboard');  
 
     Route::resource('faq', FaqController::class)->middleware('role:super_admin');
 
