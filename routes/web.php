@@ -65,13 +65,13 @@ Route::middleware('guest')->group(function () {
 
 // --- ROUTE FOR ALREADY LOGGED IN USERS (AUTH) ---
 Route::middleware(['auth', 'profile.completed'])->group(function () {
-    
+
     Route::get('/lengkapi-profil', [ProfileController::class, 'showCompletionForm'])->name('profile.complete');
     Route::post('/simpan-profil', [ProfileController::class, 'saveCompletionForm'])->name('profile.save');
 
     Route::get('/dashboard', function () {
         return view('content.pages.dashboard');
-    })->name('dashboard');  
+    })->name('dashboard');
 
     Route::resource('faq', FaqController::class)->middleware('role:super_admin');
 
@@ -144,6 +144,10 @@ Route::middleware(['auth', 'profile.completed'])->group(function () {
         Route::post('/tiket', [TiketController::class, 'store'])->name('tiket.store');
         Route::get('/tiket/{tiket}', [TiketController::class, 'show'])->name('tiket.show');
         Route::post('tiket/{tiket}/komentar', [TiketController::class, 'storeKomentar'])->name('tiket.storeKomentar');
+        
+        // Edit Profil Mahasiswa
+        Route::get('/profil', [ProfileController::class, 'edit'])->name('profil.edit');
+        Route::patch('/profil', [ProfileController::class, 'update'])->name('profil.update');
     });
     // Kepala Unit
     Route::middleware('role:kepala_unit')->prefix('kepala-unit')->name('kepala_unit.')->group(function () {
