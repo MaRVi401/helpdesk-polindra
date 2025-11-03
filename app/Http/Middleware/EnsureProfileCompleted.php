@@ -20,16 +20,16 @@ class EnsureProfileCompleted
         // Cek apakah user sudah login
         if (Auth::check()) {
             $user = Auth::user();
-            
+
             // Cek apakah user adalah mahasiswa dan belum punya profil
             if ($user->role === 'mahasiswa') {
                 $mahasiswaExists = Mahasiswa::where('user_id', $user->id)->exists();
-                
+
                 // Jika belum punya profil dan bukan sedang di halaman lengkapi-profil
                 if (!$mahasiswaExists && !$request->is('lengkapi-profil') && !$request->is('simpan-profil')) {
                     // Set session marker
                     session(['needs_profile_completion' => true]);
-                    
+
                     return redirect('/lengkapi-profil')
                         ->with('warning', 'Silakan lengkapi profil Anda terlebih dahulu untuk melanjutkan.');
                 }

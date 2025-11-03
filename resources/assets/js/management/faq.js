@@ -1,5 +1,5 @@
 /**
- * faq-list (Client-side version with SweetAlert2)
+ * faq (Client-side version with SweetAlert2)
  */
 
 'use strict';
