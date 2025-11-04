@@ -50,6 +50,12 @@ class FaqController extends Controller
         $data_faq = Faq::with(['layanan', 'user'])->findOrFail($id);
         return view('content.apps.admin.faq.show', compact('data_faq'));
     }
+
+    public function edit($id) {
+        $data_faq = Faq::findOrFail($id);
+        $data_layanan = Layanan::all();
+        return view('content.apps.admin.faq.edit', compact('data_faq', 'data_layanan'));
+    }
     
 
     public function update(Request $request, $id)
@@ -69,10 +75,10 @@ class FaqController extends Controller
             'status' => $request->status,
         ]);
 
-        return redirect()->route('faq.index')->with('success', 'FAQ berhasil diupdate.');
+        return redirect()->route('faq.index')->with('success', 'FAQ berhasil diperbarui.');
     }
 
-   public function destroy($id)
+    public function destroy($id)
 {
     try {
         $data_faq = Faq::findOrFail($id);

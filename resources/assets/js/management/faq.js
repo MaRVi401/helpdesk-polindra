@@ -239,6 +239,12 @@ document.addEventListener('DOMContentLoaded', function (e) {
         bottomEnd: 'paging'
       },
       language: {
+        lengthMenu: 'Tampilkan _MENU_ data per halaman',
+        zeroRecords: 'Tidak ada data yang ditemukan',
+        info: 'Menampilkan _START_ sampai _END_ dari total _TOTAL_ data',
+        infoEmpty: 'Menampilkan 0 sampai 0 dari 0 data',
+        infoFiltered: '(difilter dari total _MAX_ data)',
+        search: 'Pencarian:',
         paginate: {
           next: '<i class="icon-base ti tabler-chevron-right scaleX-n1-rtl icon-18px"></i>',
           previous: '<i class="icon-base ti tabler-chevron-left scaleX-n1-rtl icon-18px"></i>',
@@ -246,6 +252,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
           last: '<i class="icon-base ti tabler-chevrons-right scaleX-n1-rtl icon-18px"></i>'
         }
       },
+
       responsive: {
         details: {
           display: DataTable.Responsive.display.modal({

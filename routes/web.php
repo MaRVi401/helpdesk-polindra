@@ -70,20 +70,20 @@ Route::middleware('guest')->group(function () {
 Route::middleware(['auth', 'profile.completed'])->group(function () {
 
     Route::get('/lengkapi-profil', [ProfileController::class, 'showCompletionForm'])->name('profile.complete');
+    
     Route::post('/simpan-profil', [ProfileController::class, 'saveCompletionForm'])->name('profile.save');
-
-    Route::get('/dashboard', function () {
-        return view('content.pages.dashboard');
-    })->name('dashboard');
-
+    
+    // DASHBOARD USERS
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    
+    // FAQ MANAGEMENT (SUPER ADMIN)
     Route::resource('faq', FaqController::class)->middleware('role:super_admin');
 
     Route::get('/lengkapi-profil', [ProfileController::class, 'showCompletionForm'])->name('profile.completion.form');
-
     // Route untuk menyimpan data dari form
     Route::post('/lengkapi-profil', [ProfileController::class, 'saveCompletionForm'])->name('profile.completion.save');
 
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
 
 
     // Logout Users
