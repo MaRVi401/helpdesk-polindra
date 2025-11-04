@@ -46,14 +46,25 @@ class Tiket extends Model
     // Relasi ke Riwayat Status
     public function riwayatStatus()
     {
-        return $this->hasMany(RiwayatStatusTiket::class);
+        // Selalu urutkan dari yang terbaru
+        return $this->hasMany(RiwayatStatusTiket::class)->orderBy('created_at', 'desc');
+    }
+
+    /**
+     * Relasi HANYA ke status TERBARU.
+     * Ini penting untuk menampilkan status tiket saat ini di halaman index.
+     */
+    public function statusTerbaru()
+    {
+        // Mengambil satu relasi RiwayatStatusTiket yang paling baru
+        return $this->hasOne(RiwayatStatusTiket::class)->latestOfMany();
     }
 
     // Relasi ke Komentar
-    // INI YANG DIPERBAIKI: dari 'komentars' menjadi 'komentar'
     public function komentar()
     {
-        return $this->hasMany(KomentarTiket::class);
+        // Selalu urutkan dari yang terlama ke terbaru untuk dibaca
+        return $this->hasMany(KomentarTiket::class)->orderBy('created_at', 'asc');
     }
 
     // Relasi ke Jawaban (KomentarTiket)

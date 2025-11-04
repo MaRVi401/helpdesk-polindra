@@ -23,7 +23,7 @@ use App\Http\Controllers\Admin\ProgramStudiController;
 use App\Http\Controllers\Admin\KategoriArtikelController;
 use App\Http\Controllers\Admin\KelolaPengguna\StaffController;
 use App\Http\Controllers\Admin\KelolaPengguna\MahasiswaController;
-
+use App\Http\Controllers\Admin\AdminTiketController;
 
 
 // FOR TESTING BLADE
@@ -32,6 +32,8 @@ Route::get('/test', [TestPage::class, 'home'])->name('home.page');
 Route::get('/app/ecommerce/product/list', [EcommerceProductList::class, 'index'])->name('app-ecommerce-product-list');
 Route::get('/app/faq/all/list', [FaqList::class, 'index'])->name('app-faq-list');
 
+
+// Testing Super Admin - 04/11/2025
 
 
 
@@ -131,6 +133,10 @@ Route::middleware(['auth', 'profile.completed'])->group(function () {
         Route::get('artikel/export/excel', [ArtikelController::class, 'exportExcel'])->name('artikel.export.excel');
         Route::resource('artikel', ArtikelController::class)->names('artikel');
         Route::resource('kategori-artikel', KategoriArtikelController::class)->names('kategori-artikel');
+
+        // Kelola Tiket Semua Unit
+        Route::get('tiket/export/excel', [TiketController::class, 'exportExcel'])->name('tiket.export.excel');
+        Route::resource('tiket', TiketController::class);
     });
     // Mahasiswa
     Route::middleware('role:mahasiswa')->prefix('mahasiswa')->name('mahasiswa.')->group(function () {
@@ -144,7 +150,7 @@ Route::middleware(['auth', 'profile.completed'])->group(function () {
         Route::post('/tiket', [TiketController::class, 'store'])->name('tiket.store');
         Route::get('/tiket/{tiket}', [TiketController::class, 'show'])->name('tiket.show');
         Route::post('tiket/{tiket}/komentar', [TiketController::class, 'storeKomentar'])->name('tiket.storeKomentar');
-        
+
         // Edit Profil Mahasiswa
         Route::get('/profil', [ProfileController::class, 'edit'])->name('profil.edit');
         Route::patch('/profil', [ProfileController::class, 'update'])->name('profil.update');
