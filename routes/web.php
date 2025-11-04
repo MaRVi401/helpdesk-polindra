@@ -1,13 +1,13 @@
 <?php
 
 
-use App\Http\Controllers\Pages\LandingPage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\apps\FaqList;
 use App\Http\Controllers\Pages\AuthPage;
 use App\Http\Controllers\Pages\TestPage;
+use App\Http\Controllers\Pages\LandingPage;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Auth\AuthController;
@@ -16,14 +16,15 @@ use App\Http\Controllers\Admin\UnitController;
 use App\Http\Controllers\GoogleLoginController;
 use App\Http\Controllers\Admin\ArtikelController;
 use App\Http\Controllers\Admin\JurusanController;
+use App\Http\Controllers\Admin\LayananController;
 use App\Http\Controllers\Admin\KelolaFaqController;
 use App\Http\Controllers\apps\EcommerceProductList;
 use App\Http\Controllers\Mahasiswa\TiketController;
+use App\Http\Controllers\Admin\AdminTiketController;
 use App\Http\Controllers\Admin\ProgramStudiController;
 use App\Http\Controllers\Admin\KategoriArtikelController;
 use App\Http\Controllers\Admin\KelolaPengguna\StaffController;
 use App\Http\Controllers\Admin\KelolaPengguna\MahasiswaController;
-use App\Http\Controllers\Admin\AdminTiketController;
 
 
 // FOR TESTING BLADE
@@ -135,9 +136,14 @@ Route::middleware(['auth', 'profile.completed'])->group(function () {
         Route::resource('kategori-artikel', KategoriArtikelController::class)->names('kategori-artikel');
 
         // Kelola Tiket Semua Unit
-        Route::get('tiket/export/excel', [TiketController::class, 'exportExcel'])->name('tiket.export.excel');
-        Route::resource('tiket', TiketController::class);
+        Route::get('tiket/export/excel', [AdminTiketController::class, 'exportExcel'])->name('tiket.export.excel');
+        Route::resource('tiket', AdminTiketController::class);
+
+        // Kelola PIC Layanan
+        Route::resource('layanan', LayananController::class);
     });
+
+
     // Mahasiswa
     Route::middleware('role:mahasiswa')->prefix('mahasiswa')->name('mahasiswa.')->group(function () {
         Route::get('/dashboard', function () {
