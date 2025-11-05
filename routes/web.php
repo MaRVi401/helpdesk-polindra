@@ -1,6 +1,7 @@
 <?php
 
 
+use App\Http\Controllers\Admin\ArticleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -63,7 +64,7 @@ Route::middleware('guest')->group(function () {
     Route::get('auth/google/callback', [GoogleLoginController::class, 'handleGoogleCallback']);
 
 
-    // Route::get('/faq/get-list', [FaqController::class, 'getList'])->name('getList');
+    Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
 });
 
 // --- ROUTE FOR ALREADY LOGGED IN USERS (AUTH) ---
@@ -79,29 +80,21 @@ Route::middleware(['auth', 'profile.completed'])->group(function () {
     // FAQ MANAGEMENT (SUPER ADMIN)
     Route::resource('faq', FaqController::class)->middleware('role:super_admin');
 
+    // ARTICLE MANAGEMENT (SUPER ADMIN)
+    Route::resource('article', ArticleController::class)->middleware('role:super_admin');
+
     Route::get('/lengkapi-profil', [ProfileController::class, 'showCompletionForm'])->name('profile.completion.form');
     // Route untuk menyimpan data dari form
     Route::post('/lengkapi-profil', [ProfileController::class, 'saveCompletionForm'])->name('profile.completion.save');
 
 
-
-
-    // Logout Users
+    // LOGOUT USERS
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
-
-
 
     // Super Admin
     Route::middleware('role:super_admin')->prefix('admin')->name('admin.')->group(function () {
 
-
-        // Route::get('/add', [FaqController::class, 'create'])->name('add');
-        // Route::post('/add', [FaqController::class, 'store'])->name('add.faq');
-        // Route::get('/view/{id}', [FaqController::class, 'view'])->name('view');
-        // Route::get('/edit/{id}', [FaqController::class, 'edit'])->name('edit');
-        // Route::delete('/delete/{id}', [FaqController::class, 'delete'])->name('delete');
-
+        
 
         // Kelola Pengguna - Mahasiswa
         Route::get('mahasiswa/export/excel', [MahasiswaController::class, 'exportExcel'])->name('mahasiswa.export.excel');

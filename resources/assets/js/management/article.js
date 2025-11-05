@@ -1,5 +1,5 @@
 /**
- * FAQ (Client-side version with SweetAlert2)
+ * Article (Client-side version with SweetAlert2)
  */
 
 'use strict';
@@ -11,22 +11,24 @@ document.addEventListener('DOMContentLoaded', function (e) {
   bodyBg = config.colors.bodyBg;
   headingColor = config.colors.headingColor;
 
-  const dt_faq_table = document.querySelector('.datatables-faq'),
-    faqAdd = baseUrl + 'faq/create',
+  const dt_article_table = document.querySelector('.datatables-article'),
+    categoryAdd = baseUrl + 'article/create/category',
+    articleAdd = baseUrl + 'article/create',
     statusObj = {
       Post: { title: 'Post', class: 'bg-label-success' },
       Draft: { title: 'Draft', class: 'bg-label-warning' }
     };
 
-  // FAQ datatable
-  if (dt_faq_table) {
-    var dt_faq = new DataTable(dt_faq_table, {
+  // Article datatable
+  if (dt_article_table) {
+    var dt_article = new DataTable(dt_article_table, {
       columns: [
         { data: 'id' },
         { data: 'id', orderable: false, render: DataTable.render.select() },
         { data: null, name: 'no' },
         { data: 'judul' },
-        { data: 'layanan_id' },
+        { data: 'kategori_id' },
+        { data: 'gambar' },
         { data: 'status' },
         { data: 'user_id' },
         { data: 'created_at' },
@@ -79,6 +81,17 @@ document.addEventListener('DOMContentLoaded', function (e) {
         },
         {
           targets: 5,
+          orderable: false,
+          searchable: false,
+          render: function (data, type, full, meta) {
+            if (!data || data === '-') {
+              return '<span class="badge bg-label-secondary">No Image</span>';
+            }
+            return `<img src="${baseUrl}storage/${data}" alt="Gambar" width="100" height="30" class="rounded view-image-trigger" style="cursor: pointer;" data-image="${baseUrl}storage/${data}">`;
+          }
+        },
+        {
+          targets: 6,
           render: function (data, type, full, meta) {
             const status = data;
             return (
@@ -91,13 +104,13 @@ document.addEventListener('DOMContentLoaded', function (e) {
           }
         },
         {
-          targets: 6,
+          targets: 7,
           render: function (data, type, full, meta) {
             return `<span>${data}</span>`;
           }
         },
         {
-          targets: 7,
+          targets: 8,
           render: function (data, type, full, meta) {
             if (!data || data === '-') return '<span class="text-muted">-</span>';
 
@@ -121,13 +134,13 @@ document.addEventListener('DOMContentLoaded', function (e) {
           }
         },
         {
-          targets: 8,
+          targets: 9,
           title: 'Aksi',
           searchable: false,
           orderable: false,
           className: 'text-center',
           render: function (data, type, full, meta) {
-            const row = dt_faq_table.querySelectorAll('tbody tr')[meta.row];
+            const row = dt_article_table.querySelectorAll('tbody tr')[meta.row];
             const id = row.querySelector('td:last-child').dataset.id;
 
             return `
@@ -136,10 +149,10 @@ document.addEventListener('DOMContentLoaded', function (e) {
                   <i class="icon-base ti tabler-dots-vertical icon-22px"></i>
                 </button>
                 <div class="dropdown-menu dropdown-menu-end m-0">
-                  <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center view-faq" data-id="${id}"><i class="icon-base ti tabler-details me-2"></i> Detail</a>
-                  <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center edit-faq" data-id="${id}"><i class="icon-base ti tabler-pencil me-2"></i> Edit</a>
+                  <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center view-article" data-id="${id}"><i class="icon-base ti tabler-details me-2"></i> Detail</a>
+                  <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center edit-article" data-id="${id}"><i class="icon-base ti tabler-pencil me-2"></i> Edit</a>
                   <div class="dropdown-divider"></div>
-                  <a href="javascript:void(0);" class="dropdown-item text-danger d-flex align-items-center delete-faq" data-id="${id}"><i class="icon-base ti tabler-trash me-2"></i> Hapus</a>
+                  <a href="javascript:void(0);" class="dropdown-item text-danger d-flex align-items-center delete-article" data-id="${id}"><i class="icon-base ti tabler-trash me-2"></i> Hapus</a>
                 </div>
               </div>
             `;
@@ -184,7 +197,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
                       text: `<span class="d-flex align-items-center"><i class="icon-base ti tabler-printer me-1"></i>Print</span>`,
                       className: 'dropdown-item',
                       exportOptions: {
-                        columns: [2, 3, 4, 5, 6, 7]
+                        columns: [2, 3, 4, 6, 7, 8]
                       }
                     },
                     {
@@ -192,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
                       text: `<span class="d-flex align-items-center"><i class="icon-base ti tabler-file me-1"></i>Csv</span>`,
                       className: 'dropdown-item',
                       exportOptions: {
-                        columns: [2, 3, 4, 5, 6, 7]
+                        columns: [2, 3, 4, 6, 7, 8]
                       }
                     },
                     {
@@ -200,7 +213,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
                       text: `<span class="d-flex align-items-center"><i class="icon-base ti tabler-upload me-1"></i>Excel</span>`,
                       className: 'dropdown-item',
                       exportOptions: {
-                        columns: [2, 3, 4, 5, 6, 7]
+                        columns: [2, 3, 4, 6, 7, 8]
                       }
                     },
                     {
@@ -208,7 +221,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
                       text: `<span class="d-flex align-items-center"><i class="icon-base ti tabler-file-text me-1"></i>Pdf</span>`,
                       className: 'dropdown-item',
                       exportOptions: {
-                        columns: [2, 3, 4, 5, 6, 7]
+                        columns: [2, 3, 4, 6, 7, 8]
                       }
                     },
                     {
@@ -216,16 +229,23 @@ document.addEventListener('DOMContentLoaded', function (e) {
                       text: `<i class="icon-base ti tabler-copy me-1"></i>Copy`,
                       className: 'dropdown-item',
                       exportOptions: {
-                        columns: [2, 3, 4, 5, 6, 7]
+                        columns: [2, 3, 4, 6, 7, 8]
                       }
                     }
                   ]
                 },
                 {
+                  text: '<i class="icon-base ti tabler-library-plus me-0 me-sm-1 icon-16px"></i><span class="d-none d-sm-inline-block">Tambah Kategori</span>',
+                  className: 'add-new btn btn-primary me-2',
+                  action: function () {
+                    window.location.href = categoryAdd;
+                  }
+                },
+                {
                   text: '<i class="icon-base ti tabler-plus me-0 me-sm-1 icon-16px"></i><span class="d-none d-sm-inline-block">Tambah Data</span>',
                   className: 'add-new btn btn-primary',
                   action: function () {
-                    window.location.href = faqAdd;
+                    window.location.href = articleAdd;
                   }
                 }
               ]
@@ -251,7 +271,6 @@ document.addEventListener('DOMContentLoaded', function (e) {
           first: '<i class="icon-base ti tabler-chevrons-left scaleX-n1-rtl icon-18px"></i>',
           last: '<i class="icon-base ti tabler-chevrons-right scaleX-n1-rtl icon-18px"></i>'
         },
-        // Untuk row selection
         select: {
           rows: {
             _: '%d baris dipilih'
@@ -264,7 +283,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
           display: DataTable.Responsive.display.modal({
             header: function (row) {
               const data = row.data();
-              return 'Frequently Asked Questions (FAQ)';
+              return 'Detail Artikel';
             }
           }),
           type: 'column',
@@ -298,14 +317,14 @@ document.addEventListener('DOMContentLoaded', function (e) {
       initComplete: function () {
         const api = this.api();
 
-        api.columns(5).every(function () {
+        api.columns(6).every(function () {
           const column = this;
           const select = document.createElement('select');
-          select.id = 'FaqStatus';
+          select.id = 'ArticleStatus';
           select.className = 'form-select text-capitalize';
           select.innerHTML = '<option value="">Status</option>';
 
-          document.querySelector('.faq_status').appendChild(select);
+          document.querySelector('.article_status').appendChild(select);
 
           select.addEventListener('change', function () {
             const val = select.value ? `^${select.value}$` : '';
@@ -322,28 +341,67 @@ document.addEventListener('DOMContentLoaded', function (e) {
       }
     });
 
-    // Event handlers untuk tombol aksi (mengikuti pattern extended-ui-sweetalert2.js)
     document.body.addEventListener('click', function (e) {
-      // View FAQ
-      if (e.target.closest('.view-faq')) {
-        const id = e.target.closest('.view-faq').dataset.id;
-        window.location.href = baseUrl + 'faq/' + id;
-      }
-
-      // Edit FAQ
-      if (e.target.closest('.edit-faq')) {
-        const id = e.target.closest('.edit-faq').dataset.id;
-        window.location.href = baseUrl + 'faq/' + id + '/edit';
-      }
-
-      // Delete FAQ
-      if (e.target.closest('.delete-faq')) {
+      // View Image Modal
+      if (e.target.closest('.view-image-trigger')) {
         e.preventDefault();
-        const id = e.target.closest('.delete-faq').dataset.id;
+        const imageUrl = e.target.closest('.view-image-trigger').dataset.image;
+        const filename = imageUrl.split('/').pop();
+
+        // Cek apakah modal sudah ada, jika tidak buat baru
+        let imageModal = document.getElementById('imagePreviewModal');
+        if (!imageModal) {
+          imageModal = document.createElement('div');
+          imageModal.id = 'imagePreviewModal';
+          imageModal.className = 'modal fade';
+          imageModal.innerHTML = `
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Preview Gambar</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+              <img id="modalImage" src="" alt="Gambar Artikel" class="img-fluid rounded mb-3">
+              <div class="mt-3">
+                <small class="text-muted" id="modalFilename"></small>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+          document.body.appendChild(imageModal);
+        }
+
+        // Update gambar dan filename
+        document.getElementById('modalImage').src = imageUrl;
+        document.getElementById('modalFilename').innerHTML = `<i class="ti ti-file me-1"></i>${filename}`;
+
+        // Show modal
+        const modal = new bootstrap.Modal(imageModal);
+        modal.show();
+      }
+
+      // View Article
+      if (e.target.closest('.view-article')) {
+        const id = e.target.closest('.view-article').dataset.id;
+        window.location.href = baseUrl + 'article/' + id;
+      }
+
+      // Edit Article
+      if (e.target.closest('.edit-article')) {
+        const id = e.target.closest('.edit-article').dataset.id;
+        window.location.href = baseUrl + 'article/' + id + '/edit';
+      }
+
+      // Delete Article
+      if (e.target.closest('.delete-article')) {
+        e.preventDefault();
+        const id = e.target.closest('.delete-article').dataset.id;
 
         Swal.fire({
           title: 'Apakah Anda yakin?',
-          text: 'Data FAQ yang dihapus tidak dapat dikembalikan!',
+          text: 'Data artikel yang dihapus tidak dapat dikembalikan!',
           icon: 'warning',
           showCancelButton: true,
           confirmButtonText: 'Ya, hapus!',
@@ -358,7 +416,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
             // Buat form dan submit
             const form = document.createElement('form');
             form.method = 'POST';
-            form.action = baseUrl + 'faq/' + id;
+            form.action = baseUrl + 'article/' + id;
 
             // CSRF Token
             const csrfInput = document.createElement('input');
@@ -382,12 +440,12 @@ document.addEventListener('DOMContentLoaded', function (e) {
     });
   }
 
-  // Tampilkan success message dari session (toast notification)
-  if (window.faqSuccessMessage) {
+  // Tampilkan success message dari session
+  if (window.articleSuccessMessage) {
     Swal.fire({
       icon: 'success',
       title: 'Berhasil!',
-      text: window.faqSuccessMessage,
+      text: window.articleSuccessMessage,
       customClass: {
         confirmButton: 'btn btn-primary waves-effect waves-light'
       },
@@ -396,11 +454,11 @@ document.addEventListener('DOMContentLoaded', function (e) {
   }
 
   // Tampilkan error message dari session
-  if (window.faqErrorMessage) {
+  if (window.articleErrorMessage) {
     Swal.fire({
       icon: 'error',
       title: 'Gagal!',
-      text: window.faqErrorMessage,
+      text: window.articleErrorMessage,
       customClass: {
         confirmButton: 'btn btn-primary waves-effect waves-light'
       },

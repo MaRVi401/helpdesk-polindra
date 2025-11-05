@@ -11,11 +11,10 @@ use Illuminate\Http\Request;
 class FaqController extends Controller
 {
     public function index()
-    
     {
         $data_faq = Faq::with(['layanan', 'user'])
-        ->orderBy('created_at', 'asc')
-        ->get();
+            ->orderBy('created_at', 'asc')
+            ->get();
         return view('content.apps.admin.faq.list', compact('data_faq'));
     }
 
@@ -51,12 +50,13 @@ class FaqController extends Controller
         return view('content.apps.admin.faq.show', compact('data_faq'));
     }
 
-    public function edit($id) {
+    public function edit($id)
+    {
         $data_faq = Faq::findOrFail($id);
         $data_layanan = Layanan::all();
         return view('content.apps.admin.faq.edit', compact('data_faq', 'data_layanan'));
     }
-    
+
 
     public function update(Request $request, $id)
     {
@@ -79,14 +79,14 @@ class FaqController extends Controller
     }
 
     public function destroy($id)
-{
-    try {
-        $data_faq = Faq::findOrFail($id);
-        $data_faq->delete();
+    {
+        try {
+            $data_faq = Faq::findOrFail($id);
+            $data_faq->delete();
 
-        return redirect()->route('faq.index')->with('success', 'FAQ berhasil dihapus');
-    } catch (\Exception $e) {
-        return redirect()->route('faq.index')->with('error', 'Gagal menghapus FAQ: ' . $e->getMessage());
+            return redirect()->route('faq.index')->with('success', 'FAQ berhasil dihapus');
+        } catch (\Exception $e) {
+            return redirect()->route('faq.index')->with('error', 'Gagal menghapus FAQ: ' . $e->getMessage());
+        }
     }
-}
 }

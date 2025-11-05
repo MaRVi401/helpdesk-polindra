@@ -19,7 +19,7 @@
 @endsection
 
 @section('page-script')
-  @vite(['resources/assets/js/management/pages-auth.js'])
+  @vite(['resources/assets/js/management/auth.js'])
 @endsection
 
 @section('content')

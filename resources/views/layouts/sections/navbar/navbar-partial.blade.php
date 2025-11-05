@@ -69,7 +69,7 @@
     <li class="nav-item navbar-dropdown dropdown-user dropdown">
       <a class="nav-link dropdown-toggle hide-arrow p-0" href="javascript:void(0);" data-bs-toggle="dropdown">
         <div class="avatar avatar-online">
-          <img src="{{ Auth::user()->profile_photo_url }}" alt class="rounded-circle" /> 
+          <img src="{{ Auth::user()->profile_photo_url }}" alt class="rounded-circle" />
         </div>
       </a>
       <ul class="dropdown-menu dropdown-menu-end">
@@ -92,7 +92,7 @@
                 </h6>
                 <small class="text-body-secondary capitalize">
                   @if (Auth::check() && Auth::user()->role)
-                    {{ ucfirst(Auth::user()->role) }}
+                    {{ ucwords(str_replace('_', ' ', Auth::user()->role)) }}
                   @else
                     Tidak diketahui
                   @endif

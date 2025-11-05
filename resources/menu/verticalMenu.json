@@ -78,11 +78,11 @@
       "roles": ["super_admin"]
     },
     {
-      "url": "/artikel",
+      "url": "/article",
       "name": "Artikel",
       "icon": "menu-icon icon-base ti tabler-book",
-      "slug": "artikel",
-      "roles": ["super_admin", "admin_unit", "kepala_unit", "mahasiswa"]
+      "slug": "article.index",
+      "roles": ["super_admin"]
     },
     {
       "menuHeader": "Master Data",

@@ -37,34 +37,36 @@ class ArtikelController extends Controller
         return view('admin.kelola-artikel.create', compact('kategoris'));
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'judul' => 'required|string|max:255|unique:artikel,judul',
-            'kategori_id' => 'required|exists:kategori_artikel,id',
-            'status' => ['required', Rule::in(['Draft', 'Post'])],
-            'deskripsi' => 'required|string',
-            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ], [
-            'judul.unique' => 'Judul ini sudah digunakan oleh artikel lain.',
-        ]);
+ public function store(Request $request)
+{
+    $request->validate([
+        'judul' => 'required|string|max:255|unique:artikel,judul',
+        'kategori_id' => 'required|exists:kategori_artikel,id',
+        'status' => ['required', Rule::in(['Draft', 'Post'])],
+        'deskripsi' => 'required|string',
+        'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ], [
+        'judul.unique' => 'Judul ini sudah digunakan oleh artikel lain.',
+    ]);
 
-        $path = null;
-        if ($request->hasFile('gambar')) {
-            $path = $request->file('gambar')->store('public/artikel');
-        }
-
-        Artikel::create([
-            'user_id' => Auth::id(),
-            'judul' => $request->judul,
-            'kategori_id' => $request->kategori_id,
-            'status' => $request->status,
-            'deskripsi' => $request->deskripsi,
-            'gambar' => $path,
-        ]);
-
-        return redirect()->route('admin.artikel.index')->with('success', 'Artikel berhasil ditambahkan.');
+    $path = null;
+    if ($request->hasFile('gambar')) {
+        // Simpan ke storage/app/public/artikel
+        // Dan simpan path tanpa 'public/' ke database
+        $path = $request->file('gambar')->store('artikel', 'public');
     }
+
+    Artikel::create([
+        'user_id' => Auth::id(),
+        'judul' => $request->judul,
+        'kategori_id' => $request->kategori_id,
+        'status' => $request->status,
+        'deskripsi' => $request->deskripsi,
+        'gambar' => $path, // Akan menyimpan: artikel/xyz.jpg
+    ]);
+
+    return redirect()->route('admin.artikel.index')->with('success', 'Artikel berhasil ditambahkan.');
+}
 
     public function edit(Artikel $artikel)
     {
