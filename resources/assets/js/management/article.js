@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
   headingColor = config.colors.headingColor;
 
   const dt_article_table = document.querySelector('.datatables-article'),
-    categoryAdd = baseUrl + 'article/create/category',
+    categoryManage = baseUrl + 'article/category',
     articleAdd = baseUrl + 'article/create',
     statusObj = {
       Post: { title: 'Post', class: 'bg-label-success' },
@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
             if (!data || data === '-') {
               return '<span class="badge bg-label-secondary">No Image</span>';
             }
-            return `<img src="${baseUrl}storage/${data}" alt="Gambar" width="100" height="30" class="rounded view-image-trigger" style="cursor: pointer;" data-image="${baseUrl}storage/${data}">`;
+            return `<img src="${baseUrl}storage/${data}" alt="Gambar" width="100" height="50" class="rounded view-image-trigger" style="cursor: pointer;" data-image="${baseUrl}storage/${data}">`;
           }
         },
         {
@@ -235,14 +235,14 @@ document.addEventListener('DOMContentLoaded', function (e) {
                   ]
                 },
                 {
-                  text: '<i class="icon-base ti tabler-library-plus me-0 me-sm-1 icon-16px"></i><span class="d-none d-sm-inline-block">Tambah Kategori</span>',
+                  text: '<i class="icon-base ti tabler-category-plus me-0 me-sm-1 icon-20px"></i><span class="d-none d-sm-inline-block">Kelola Kategori</span>',
                   className: 'add-new btn btn-primary me-2',
                   action: function () {
-                    window.location.href = categoryAdd;
+                    window.location.href = categoryManage;
                   }
                 },
                 {
-                  text: '<i class="icon-base ti tabler-plus me-0 me-sm-1 icon-16px"></i><span class="d-none d-sm-inline-block">Tambah Data</span>',
+                  text: '<i class="icon-base ti tabler-plus me-0 me-sm-1 icon-20px"></i><span class="d-none d-sm-inline-block">Tambah Data</span>',
                   className: 'add-new btn btn-primary',
                   action: function () {
                     window.location.href = articleAdd;
@@ -283,7 +283,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
           display: DataTable.Responsive.display.modal({
             header: function (row) {
               const data = row.data();
-              return 'Detail Artikel';
+              return 'Artikel';
             }
           }),
           type: 'column',
@@ -375,7 +375,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
 
         // Update gambar dan filename
         document.getElementById('modalImage').src = imageUrl;
-        document.getElementById('modalFilename').innerHTML = `<i class="ti ti-file me-1"></i>${filename}`;
+        document.getElementById('modalFilename').innerHTML = `${filename}`;
 
         // Show modal
         const modal = new bootstrap.Modal(imageModal);
@@ -400,7 +400,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
         const id = e.target.closest('.delete-article').dataset.id;
 
         Swal.fire({
-          title: 'Apakah Anda yakin?',
+          title: 'Apakah Kamu yakin?',
           text: 'Data artikel yang dihapus tidak dapat dikembalikan!',
           icon: 'warning',
           showCancelButton: true,

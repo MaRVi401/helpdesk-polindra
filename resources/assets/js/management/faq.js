@@ -222,7 +222,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
                   ]
                 },
                 {
-                  text: '<i class="icon-base ti tabler-plus me-0 me-sm-1 icon-16px"></i><span class="d-none d-sm-inline-block">Tambah Data</span>',
+                  text: '<i class="icon-base ti tabler-plus me-0 me-sm-1 icon-20px"></i><span class="d-none d-sm-inline-block">Tambah Data</span>',
                   className: 'add-new btn btn-primary',
                   action: function () {
                     window.location.href = faqAdd;
@@ -342,7 +342,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
         const id = e.target.closest('.delete-faq').dataset.id;
 
         Swal.fire({
-          title: 'Apakah Anda yakin?',
+          title: 'Apakah Kamu yakin?',
           text: 'Data FAQ yang dihapus tidak dapat dikembalikan!',
           icon: 'warning',
           showCancelButton: true,

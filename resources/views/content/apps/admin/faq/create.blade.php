@@ -15,34 +15,48 @@
         {{-- JUDUL --}}
         <div class="mb-6">
           <label for="judul" class="form-label">Judul</label>
-          <input type="text" class="form-control" id="judul" name="judul" placeholder="Judul FAQ" required
-            aria-describedby="defaultFormControlHelp" />
+          <input type="text" class="form-control @error('judul') is-invalid @enderror" id="judul" name="judul"
+            placeholder="Judul FAQ" required value="{{ old('judul') }}" />
+          @error('judul')
+            <div class="invalid-feedback">{{ $message }}</div>
+          @enderror
         </div>
         {{-- LAYANAN --}}
         <div class="mb-6">
           <label for="layanan_id" class="form-label">Layanan</label>
-          <select class="form-select" id="layanan_id" name="layanan_id" required aria-label="Default select example">
+          <select class="form-select @error('layanan_id') is-invalid @enderror" id="layanan_id" name="layanan_id"
+            required>
             <option value="" disabled selected>Pilih layanan</option>
             @foreach ($data_layanan as $layanan)
-              <option value="{{ $layanan->id }}">
+              <option value="{{ $layanan->id }}" {{ old('layanan_id') == $layanan->id ? 'selected' : '' }}>
                 {{ $layanan->nama }}</option>
             @endforeach
           </select>
+          @error('layanan_id')
+            <div class="invalid-feedback">{{ $message }}</div>
+          @enderror
         </div>
         {{-- DESKRIPSI --}}
-        <div class="mb-6"> 
+        <div class="mb-6">
           <label for="deskripsi" class="form-label">Deskripsi</label>
-          <textarea class="form-control" id="deskripsi" name="deskripsi" placeholder="Deskripsi FAQ..." required rows="3"></textarea>
+          <textarea class="form-control @error('deskripsi') is-invalid @enderror" id="deskripsi" name="deskripsi"
+            placeholder="Deskripsi FAQ..." required rows="3">{{ old('deskripsi') }}</textarea>
+          @error('deskripsi')
+            <div class="invalid-feedback">{{ $message }}</div>
+          @enderror
         </div>
         {{-- STATUS --}}
         <div class="mb-6">
           <label for="status" class="form-label">Status</label>
-          <select class="form-select" id="status" name="status" required aria-label="Default select example" required>
+          <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required
+            required>
             <option value="" disabled selected>Pilih status</option>
-            <option value="Draft">Draft</option>
-            <option value="Post">Post</option>
+            <option value="Draft" {{ old('status') == 'Draft' ? 'selected' : '' }}>Draft</option>
+            <option value="Post" {{ old('status') == 'Post' ? 'selected' : '' }}>Post</option>
           </select>
-
+          @error('status')
+            <div class="invalid-feedback">{{ $message }}</div>
+          @enderror
         </div>
         {{-- BUTTON --}}
         <div class="mb-6">

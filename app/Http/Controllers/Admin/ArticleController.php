@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
-
 class ArticleController extends Controller
 {
   public function index(Request $request)
@@ -28,6 +27,7 @@ class ArticleController extends Controller
     $data_kategori = KategoriArtikel::orderBy('kategori')->get();
     return view('content.apps.admin.article.create', compact('data_kategori'));
   }
+
   public function store(Request $request)
   {
     $request->validate([
@@ -35,7 +35,7 @@ class ArticleController extends Controller
       'kategori_id' => 'required|exists:kategori_artikel,id',
       'status' => ['required', Rule::in(['Draft', 'Post'])],
       'deskripsi' => 'required|string',
-      'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+      'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
     ], [
       'judul.unique' => 'Judul ini sudah digunakan oleh artikel lain.',
     ]);
@@ -43,11 +43,11 @@ class ArticleController extends Controller
     $path = null;
 
     if ($request->hasFile('gambar')) {
-      // Ambil nama asli file (misal: foto1.jpg)
+      // Request nama asli file
       $originalName = $request->file('gambar')->getClientOriginalName();
 
-      // Simpan dengan nama aslinya ke folder storage/app/public/artikel
-      $path = $request->file('gambar')->storeAs('artikel', $originalName, 'public');
+      // Simpan dengan nama aslinya ke folder storage/app/public/article
+      $path = $request->file('gambar')->storeAs('article', $originalName, 'public');
     }
 
     Artikel::create([
@@ -62,35 +62,56 @@ class ArticleController extends Controller
     return redirect()->route('article.index')->with('success', 'Artikel berhasil ditambahkan.');
   }
 
-
-
-  public function edit(Artikel $artikel)
+  public function show($id)
   {
-    $kategoris = KategoriArtikel::orderBy('kategori')->get();
-    return view('admin.kelola-artikel.edit', compact('artikel', 'kategoris'));
+    $data_artikel = Artikel::with(['kategori', 'user'])->findOrFail($id);
+    return view('content.apps.admin.article.show', compact('data_artikel'));
   }
 
-  public function update(Request $request, Artikel $artikel)
+  public function edit($id)
   {
+    $data_artikel = Artikel::findOrFail($id);
+    $data_kategori = KategoriArtikel::all();
+
+    return view('content.apps.admin.article.edit', compact('data_artikel', 'data_kategori'));
+  }
+
+  public function update(Request $request, $id)
+  {
+    $data_artikel = Artikel::findOrFail($id);
+
     $request->validate([
-      'judul' => ['required', 'string', 'max:255', Rule::unique('artikel')->ignore($artikel->id)],
+      'judul' => [
+        'required',
+        'string',
+        'max:255',
+        Rule::unique('artikel')->ignore($data_artikel->id),
+      ],
       'kategori_id' => 'required|exists:kategori_artikel,id',
-      'status' => ['required', Rule::in(['Draft', 'Post'])],
+      'status' => 'required|in:Draft,Post',
       'deskripsi' => 'required|string',
-      'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+      'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
     ], [
       'judul.unique' => 'Judul ini sudah digunakan oleh artikel lain.',
     ]);
+    // Simpan path lama
+    $path = $data_artikel->gambar;
 
-    $path = $artikel->gambar;
+    // Jika upload gambar baru
     if ($request->hasFile('gambar')) {
-      if ($path) {
-        Storage::delete($path);
+      // Hapus gambar lama jika ada
+      if ($path && Storage::disk('public')->exists($path)) {
+        Storage::disk('public')->delete($path);
       }
-      $path = $request->file('gambar')->store('public/artikel');
+
+      // Request nama asli file
+      $originalName = $request->file('gambar')->getClientOriginalName();
+
+      // Simpan dengan nama aslinya ke folder storage/app/public/article
+      $path = $request->file('gambar')->storeAs('article', $originalName, 'public');
     }
 
-    $artikel->update([
+    $data_artikel->update([
       'judul' => $request->judul,
       'kategori_id' => $request->kategori_id,
       'status' => $request->status,
@@ -98,13 +119,19 @@ class ArticleController extends Controller
       'gambar' => $path,
     ]);
 
-    return redirect()->route('admin.artikel.index')->with('success', 'Artikel berhasil diperbarui.');
+    return redirect()->route('article.index')->with('success', 'Artikel berhasil diperbarui.');
   }
 
   public function destroy($id)
   {
     try {
       $data_artikel = Artikel::findOrFail($id);
+
+      // Hapus gambar jika ada
+      if ($data_artikel->gambar && Storage::disk('public')->exists($data_artikel->gambar)) {
+        Storage::disk('public')->delete($data_artikel->gambar);
+      }
+
       $data_artikel->delete();
 
       return redirect()->route('article.index')->with('success', 'Artikel berhasil dihapus');
