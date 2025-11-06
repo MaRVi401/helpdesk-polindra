@@ -16,7 +16,7 @@
 @endsection
 
 @section('content')
-  <!-- Product List Table -->
+  {{-- TABEL DAFTAR FAQ --}}
   <div class="card">
     <div class="card-header border-bottom">
       <h5 class="card-title">Frequently Asked Questions (FAQ)</h5>

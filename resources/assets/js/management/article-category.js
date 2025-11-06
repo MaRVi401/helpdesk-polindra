@@ -1,5 +1,5 @@
 /**
- * Article (Client-side version with SweetAlert2)
+ * Article Categories (Client-side version with SweetAlert2)
  */
 
 'use strict';
@@ -11,27 +11,19 @@ document.addEventListener('DOMContentLoaded', function (e) {
   bodyBg = config.colors.bodyBg;
   headingColor = config.colors.headingColor;
 
-  const dt_article_table = document.querySelector('.datatables-article'),
-    articleCategory = baseUrl + 'article-category',
-    articleAdd = baseUrl + 'article/create',
-    statusObj = {
-      Post: { title: 'Post', class: 'bg-label-success' },
-      Draft: { title: 'Draft', class: 'bg-label-warning' }
-    };
+  const dt_category_table = document.querySelector('.datatables-article-category'),
+    categoryAdd = baseUrl + 'article-category/create';
 
-  // Article datatable
-  if (dt_article_table) {
-    var dt_article = new DataTable(dt_article_table, {
+  // Article Category datatable
+  if (dt_category_table) {
+    var dt_category = new DataTable(dt_category_table, {
       columns: [
         { data: 'id' },
         { data: 'id', orderable: false, render: DataTable.render.select() },
         { data: null, name: 'no' },
-        { data: 'judul' },
-        { data: 'kategori_id' },
-        { data: 'gambar' },
-        { data: 'status' },
-        { data: 'user_id' },
+        { data: 'kategori' },
         { data: 'created_at' },
+        { data: 'updated_at' },
         { data: 'id' }
       ],
       columnDefs: [
@@ -76,41 +68,29 @@ document.addEventListener('DOMContentLoaded', function (e) {
         {
           targets: 4,
           render: function (data, type, full, meta) {
-            return `<span>${data}</span>`;
+            if (!data || data === '-') return '<span class="text-muted">-</span>';
+
+            const date = new Date(data);
+            const formattedDate = date.toLocaleDateString('id-ID', {
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric'
+            });
+            const formattedTime = date.toLocaleTimeString('id-ID', {
+              hour: '2-digit',
+              minute: '2-digit'
+            });
+
+            return `
+              <div class="d-flex flex-column">
+                <span class="fw-medium">${formattedDate}</span>
+                <small class="text-muted">${formattedTime}</small>
+              </div>
+            `;
           }
         },
         {
           targets: 5,
-          orderable: false,
-          searchable: false,
-          render: function (data, type, full, meta) {
-            if (!data || data === '-') {
-              return '<span class="badge bg-label-secondary">No Image</span>';
-            }
-            return `<img src="${baseUrl}storage/${data}" alt="Gambar" width="100" height="50" class="rounded view-image-trigger" style="cursor: pointer;" data-image="${baseUrl}storage/${data}">`;
-          }
-        },
-        {
-          targets: 6,
-          render: function (data, type, full, meta) {
-            const status = data;
-            return (
-              '<span class="badge ' +
-              statusObj[status].class +
-              '" text-capitalized>' +
-              statusObj[status].title +
-              '</span>'
-            );
-          }
-        },
-        {
-          targets: 7,
-          render: function (data, type, full, meta) {
-            return `<span>${data}</span>`;
-          }
-        },
-        {
-          targets: 8,
           render: function (data, type, full, meta) {
             if (!data || data === '-') return '<span class="text-muted">-</span>';
 
@@ -134,13 +114,13 @@ document.addEventListener('DOMContentLoaded', function (e) {
           }
         },
         {
-          targets: 9,
+          targets: 6,
           title: 'Aksi',
           searchable: false,
           orderable: false,
           className: 'text-center',
           render: function (data, type, full, meta) {
-            const row = dt_article_table.querySelectorAll('tbody tr')[meta.row];
+            const row = dt_category_table.querySelectorAll('tbody tr')[meta.row];
             const id = row.querySelector('td:last-child').dataset.id;
 
             return `
@@ -149,10 +129,9 @@ document.addEventListener('DOMContentLoaded', function (e) {
                   <i class="icon-base ti tabler-dots-vertical icon-22px"></i>
                 </button>
                 <div class="dropdown-menu dropdown-menu-end m-0">
-                  <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center view-article" data-id="${id}"><i class="icon-base ti tabler-details me-2"></i> Detail</a>
-                  <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center edit-article" data-id="${id}"><i class="icon-base ti tabler-pencil me-2"></i> Edit</a>
+                  <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center edit-category" data-id="${id}"><i class="icon-base ti tabler-pencil me-2"></i> Edit</a>
                   <div class="dropdown-divider"></div>
-                  <a href="javascript:void(0);" class="dropdown-item text-danger d-flex align-items-center delete-article" data-id="${id}"><i class="icon-base ti tabler-trash me-2"></i> Hapus</a>
+                  <a href="javascript:void(0);" class="dropdown-item text-danger d-flex align-items-center delete-category" data-id="${id}"><i class="icon-base ti tabler-trash me-2"></i> Hapus</a>
                 </div>
               </div>
             `;
@@ -163,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
         style: 'multi',
         selector: 'td:nth-child(2)'
       },
-      order: [],
+      order: [[5, 'asc']],
       displayLength: 5,
       layout: {
         topStart: {
@@ -197,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
                       text: `<span class="d-flex align-items-center"><i class="icon-base ti tabler-printer me-1"></i>Print</span>`,
                       className: 'dropdown-item',
                       exportOptions: {
-                        columns: [2, 3, 4, 6, 7, 8]
+                        columns: [2, 3, 4, 5]
                       }
                     },
                     {
@@ -205,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
                       text: `<span class="d-flex align-items-center"><i class="icon-base ti tabler-file me-1"></i>Csv</span>`,
                       className: 'dropdown-item',
                       exportOptions: {
-                        columns: [2, 3, 4, 6, 7, 8]
+                        columns: [2, 3, 4, 5]
                       }
                     },
                     {
@@ -213,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
                       text: `<span class="d-flex align-items-center"><i class="icon-base ti tabler-upload me-1"></i>Excel</span>`,
                       className: 'dropdown-item',
                       exportOptions: {
-                        columns: [2, 3, 4, 6, 7, 8]
+                        columns: [2, 3, 4, 5]
                       }
                     },
                     {
@@ -221,7 +200,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
                       text: `<span class="d-flex align-items-center"><i class="icon-base ti tabler-file-text me-1"></i>Pdf</span>`,
                       className: 'dropdown-item',
                       exportOptions: {
-                        columns: [2, 3, 4, 6, 7, 8]
+                        columns: [2, 3, 4, 5]
                       }
                     },
                     {
@@ -229,23 +208,16 @@ document.addEventListener('DOMContentLoaded', function (e) {
                       text: `<i class="icon-base ti tabler-copy me-1"></i>Copy`,
                       className: 'dropdown-item',
                       exportOptions: {
-                        columns: [2, 3, 4, 6, 7, 8]
+                        columns: [2, 3, 4, 5]
                       }
                     }
                   ]
                 },
                 {
-                  text: '<i class="icon-base ti tabler-category-plus me-0 me-sm-1 icon-20px"></i><span class="d-none d-sm-inline-block">Kelola Kategori</span>',
-                  className: 'add-new btn btn-primary me-2',
-                  action: function () {
-                    window.location.href = articleCategory;
-                  }
-                },
-                {
-                  text: '<i class="icon-base ti tabler-plus me-0 me-sm-1 icon-20px"></i><span class="d-none d-sm-inline-block">Tambah Artikel</span>',
+                  text: '<i class="icon-base ti tabler-plus me-0 me-sm-1 icon-20px"></i><span class="d-none d-sm-inline-block">Tambah Kategori</span>',
                   className: 'add-new btn btn-primary',
                   action: function () {
-                    window.location.href = articleAdd;
+                    window.location.href = categoryAdd;
                   }
                 }
               ]
@@ -284,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
           display: DataTable.Responsive.display.modal({
             header: function (row) {
               const data = row.data();
-              return 'Artikel';
+              return 'Kategori Artikel';
             }
           }),
           type: 'column',
@@ -314,95 +286,24 @@ document.addEventListener('DOMContentLoaded', function (e) {
             return false;
           }
         }
-      },
-      initComplete: function () {
-        const api = this.api();
-
-        api.columns(6).every(function () {
-          const column = this;
-          const select = document.createElement('select');
-          select.id = 'ArticleStatus';
-          select.className = 'form-select text-capitalize';
-          select.innerHTML = '<option value="">Status</option>';
-
-          document.querySelector('.article_status').appendChild(select);
-
-          select.addEventListener('change', function () {
-            const val = select.value ? `^${select.value}$` : '';
-            column.search(val, true, false).draw();
-          });
-
-          Object.keys(statusObj).forEach(function (key) {
-            const option = document.createElement('option');
-            option.value = statusObj[key].title;
-            option.textContent = statusObj[key].title;
-            select.appendChild(option);
-          });
-        });
       }
     });
 
     document.body.addEventListener('click', function (e) {
-      // View Image Modal
-      if (e.target.closest('.view-image-trigger')) {
+      // Edit Category
+      if (e.target.closest('.edit-category')) {
+        const id = e.target.closest('.edit-category').dataset.id;
+        window.location.href = baseUrl + 'article-category/' + id + '/edit';
+      }
+
+      // Delete Category
+      if (e.target.closest('.delete-category')) {
         e.preventDefault();
-        const imageUrl = e.target.closest('.view-image-trigger').dataset.image;
-        const filename = imageUrl.split('/').pop();
-
-        // Cek apakah modal sudah ada, jika tidak buat baru
-        let imageModal = document.getElementById('imagePreviewModal');
-        if (!imageModal) {
-          imageModal = document.createElement('div');
-          imageModal.id = 'imagePreviewModal';
-          imageModal.className = 'modal fade';
-          imageModal.innerHTML = `
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">Preview Gambar</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-center">
-              <img id="modalImage" src="" alt="Gambar Artikel" class="img-fluid rounded mb-3">
-              <div class="mt-3">
-                <small class="text-muted" id="modalFilename"></small>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-          document.body.appendChild(imageModal);
-        }
-
-        // Update gambar dan filename
-        document.getElementById('modalImage').src = imageUrl;
-        document.getElementById('modalFilename').innerHTML = `${filename}`;
-
-        // Show modal
-        const modal = new bootstrap.Modal(imageModal);
-        modal.show();
-      }
-
-      // View Article
-      if (e.target.closest('.view-article')) {
-        const id = e.target.closest('.view-article').dataset.id;
-        window.location.href = baseUrl + 'article/' + id;
-      }
-
-      // Edit Article
-      if (e.target.closest('.edit-article')) {
-        const id = e.target.closest('.edit-article').dataset.id;
-        window.location.href = baseUrl + 'article/' + id + '/edit';
-      }
-
-      // Delete Article
-      if (e.target.closest('.delete-article')) {
-        e.preventDefault();
-        const id = e.target.closest('.delete-article').dataset.id;
+        const id = e.target.closest('.delete-category').dataset.id;
 
         Swal.fire({
           title: 'Apakah Kamu yakin?',
-          text: 'Data artikel yang dihapus tidak dapat dikembalikan!',
+          text: 'Data kategori yang dihapus tidak dapat dikembalikan!',
           icon: 'warning',
           showCancelButton: true,
           confirmButtonText: 'Ya, hapus!',
@@ -417,7 +318,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
             // Buat form dan submit
             const form = document.createElement('form');
             form.method = 'POST';
-            form.action = baseUrl + 'article/' + id;
+            form.action = baseUrl + 'article-category/' + id;
 
             // CSRF Token
             const csrfInput = document.createElement('input');
@@ -442,11 +343,11 @@ document.addEventListener('DOMContentLoaded', function (e) {
   }
 
   // Tampilkan success message dari session
-  if (window.articleSuccessMessage) {
+  if (window.articleCategorySuccessMessage) {
     Swal.fire({
       icon: 'success',
       title: 'Berhasil!',
-      text: window.articleSuccessMessage,
+      text: window.articleCategorySuccessMessage,
       customClass: {
         confirmButton: 'btn btn-primary waves-effect waves-light'
       },
@@ -455,11 +356,11 @@ document.addEventListener('DOMContentLoaded', function (e) {
   }
 
   // Tampilkan error message dari session
-  if (window.articleErrorMessage) {
+  if (window.articleCategoryErrorMessage) {
     Swal.fire({
       icon: 'error',
       title: 'Gagal!',
-      text: window.articleErrorMessage,
+      text: window.articleCategoryErrorMessage,
       customClass: {
         confirmButton: 'btn btn-primary waves-effect waves-light'
       },

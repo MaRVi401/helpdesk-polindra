@@ -222,7 +222,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
                   ]
                 },
                 {
-                  text: '<i class="icon-base ti tabler-plus me-0 me-sm-1 icon-20px"></i><span class="d-none d-sm-inline-block">Tambah Data</span>',
+                  text: '<i class="icon-base ti tabler-plus me-0 me-sm-1 icon-20px"></i><span class="d-none d-sm-inline-block">Tambah FAQ</span>',
                   className: 'add-new btn btn-primary',
                   action: function () {
                     window.location.href = faqAdd;
@@ -245,6 +245,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
         infoEmpty: 'Menampilkan 0 sampai 0 dari 0 data',
         infoFiltered: '(difilter dari total _MAX_ data)',
         search: 'Pencarian:',
+        emptyTable: 'Tidak ada data di tabel',
         paginate: {
           next: '<i class="icon-base ti tabler-chevron-right scaleX-n1-rtl icon-18px"></i>',
           previous: '<i class="icon-base ti tabler-chevron-left scaleX-n1-rtl icon-18px"></i>',

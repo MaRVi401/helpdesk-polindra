@@ -1,7 +1,9 @@
 <?php
 
 
+use App\Http\Controllers\Admin\ArticleCategoryController;
 use App\Http\Controllers\Admin\ArticleController;
+use App\Http\Controllers\Admin\ManageArticleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -82,6 +84,7 @@ Route::middleware(['auth', 'profile.completed'])->group(function () {
 
     // ARTICLE MANAGEMENT (SUPER ADMIN)
     Route::resource('article', ArticleController::class)->middleware('role:super_admin');
+    Route::resource('article-category', ArticleCategoryController::class)->middleware('role:super_admin');
 
     Route::get('/lengkapi-profil', [ProfileController::class, 'showCompletionForm'])->name('profile.completion.form');
     // Route untuk menyimpan data dari form

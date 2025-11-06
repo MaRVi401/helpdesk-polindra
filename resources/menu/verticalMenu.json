@@ -2,19 +2,33 @@
   "menu": [
     {
       "menuHeader": "Apps & Pages",
-      "roles": ["super_admin", "admin_unit", "kepala_unit", "mahasiswa"]
+      "roles": [
+        "super_admin",
+        "admin_unit",
+        "kepala_unit",
+        "mahasiswa"
+      ]
     },
     {
       "name": "Dashboards",
       "icon": "menu-icon icon-base ti tabler-smart-home",
       "slug": "dashboard",
-      "roles": ["super_admin", "admin_unit", "kepala_unit", "mahasiswa"],
+      "roles": [
+        "super_admin",
+        "admin_unit",
+        "kepala_unit",
+        "mahasiswa"
+      ],
       "submenu": [
         {
           "url": "/",
           "name": "Analisis",
           "slug": "dashboard-analisis",
-          "roles": ["super_admin", "admin_unit", "kepala_unit"]
+          "roles": [
+            "super_admin",
+            "admin_unit",
+            "kepala_unit"
+          ]
         }
       ]
     },
@@ -22,25 +36,38 @@
       "name": "Layanan",
       "icon": "menu-icon icon-base ti tabler-layout-grid-add",
       "slug": "layanan",
-      "roles": ["super_admin", "admin_unit", "kepala_unit"],
+      "roles": [
+        "super_admin",
+        "admin_unit",
+        "kepala_unit"
+      ],
       "submenu": [
         {
           "url": "app/upatik",
           "name": "UPA TIK",
           "slug": "dashboard-upatik",
-          "roles": ["super_admin", "admin_unit"]
+          "roles": [
+            "super_admin",
+            "admin_unit"
+          ]
         },
         {
           "url": "app/akademik",
           "name": "Akademik",
           "slug": "dashboard-akademik",
-          "roles": ["super_admin", "admin_unit"]
+          "roles": [
+            "super_admin",
+            "admin_unit"
+          ]
         },
         {
           "url": "app/pku",
           "name": "PKU",
           "slug": "dashboard-pku",
-          "roles": ["super_admin", "admin_unit"]
+          "roles": [
+            "super_admin",
+            "admin_unit"
+          ]
         }
       ]
     },
@@ -48,25 +75,72 @@
       "name": "Pengguna",
       "icon": "menu-icon icon-base ti tabler-user",
       "slug": "pengguna",
-      "roles": ["super_admin"],
+      "roles": [
+        "super_admin"
+      ],
       "submenu": [
         {
           "url": "app/mahasiswa",
           "name": "Mahasiswa",
           "slug": "dashboard-mahasiswa",
-          "roles": ["super_admin"]
+          "roles": [
+            "super_admin"
+          ]
         },
         {
           "url": "app/staff",
           "name": "Staff",
           "slug": "dashboard-staff",
-          "roles": ["super_admin"]
+          "roles": [
+            "super_admin"
+          ]
         },
         {
           "url": "app/orang-umum",
           "name": "Orang Umum",
           "slug": "dashboard-orang-umum",
-          "roles": ["super_admin"]
+          "roles": [
+            "super_admin"
+          ]
+        }
+      ]
+    },
+    {
+      "url": "/article",
+      "name": "Artikel",
+      "icon": "menu-icon icon-base ti tabler-book",
+      "slug": "article",
+      "roles": [
+        "super_admin"
+      ],
+      "submenu": [
+        {
+          "url": "/article",
+          "name": "Daftar Artikel",
+          "slug": [
+            "article.index",
+            "article.show",
+            "article.edit"
+          ]
+        },
+        {
+          "url": "/article/create",
+          "name": "Tambah Artikel",
+          "slug": "article.create"
+        },
+        {
+          "url": "/article-category",
+          "name": "Daftar Kategori Artikel",
+          "slug": [
+            "article-category.index",
+            "article-category.show",
+            "article-category.edit"
+          ]
+        },
+        {
+          "url": "/article-category/create",
+          "name": "Tambah Kategori Artikel",
+          "slug": "article-category.create"
         }
       ]
     },
@@ -74,40 +148,59 @@
       "url": "/faq",
       "icon": "menu-icon icon-base ti tabler-quote",
       "name": "FAQ",
-      "slug": "faq.index",
-      "roles": ["super_admin"]
-    },
-    {
-      "url": "/article",
-      "name": "Artikel",
-      "icon": "menu-icon icon-base ti tabler-book",
-      "slug": "article.index",
-      "roles": ["super_admin"]
+      "slug": "faq",
+      "roles": [
+        "super_admin"
+      ],
+      "submenu": [
+        {
+          "url": "/faq",
+          "name": "Daftar FAQ",
+          "slug": [
+            "faq.index",
+            "faq.show",
+            "faq.edit"
+          ]
+        },
+        {
+          "url": "/faq/create",
+          "name": "Tambah FAQ",
+          "slug": "faq.create"
+        }
+      ]
     },
     {
       "menuHeader": "Master Data",
-      "roles": ["super_admin"]
+      "roles": [
+        "super_admin"
+      ]
     },
     {
       "url": "/jurusan",
       "name": "Jurusan",
       "icon": "menu-icon icon-base ti tabler-building",
       "slug": "jurusan",
-      "roles": ["super_admin"]
+      "roles": [
+        "super_admin"
+      ]
     },
     {
       "url": "/unit",
       "name": "Unit",
       "icon": "menu-icon icon-base ti tabler-building-warehouse",
       "slug": "unit",
-      "roles": ["super_admin"]
+      "roles": [
+        "super_admin"
+      ]
     },
     {
       "url": "/jabatan",
       "name": "Jabatan",
       "icon": "menu-icon icon-base ti tabler-badge",
       "slug": "jabatan",
-      "roles": ["super_admin"]
+      "roles": [
+        "super_admin"
+      ]
     }
   ]
 }
