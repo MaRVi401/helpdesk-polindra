@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\KepalaUnit; 
+namespace App\Http\Controllers\AdminUnit; 
 
 use App\Models\Tiket;
 use App\Models\Unit;
@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 
 class TiketController extends Controller
 {
+    
     /**
      * Tampilkan SEMUA tiket, dengan opsi filter.
      */
@@ -29,10 +30,10 @@ class TiketController extends Controller
             $query->where('id_unit', $request->id_unit);
         }
 
-        $tiket = $query->latest()->paginate(10)->withQueryString(); 
+        $tiket = $query->latest()->paginate(10)->withQueryString();
         $units = Unit::orderBy('nama_unit', 'asc')->get();
         
-        return view('kepala_unit.dashboard', compact('tiket', 'units'));
+        return view('admin_unit.dashboard', compact('tiket', 'units'));
     }
 
     /**
@@ -45,7 +46,7 @@ class TiketController extends Controller
         $tiket = Tiket::with(['mahasiswa.user', 'layanan', 'unit', 'komentar.user', 'riwayatStatus.user', 'detail'])
             ->findOrFail($id);
         
-        return view('kepala_unit.tiket.show', compact('tiket'));
+        return view('admin_unit.tiket.show', compact('tiket'));
     }
 
     /**
@@ -73,11 +74,11 @@ class TiketController extends Controller
                 'id_tiket' => $tiket->id,
                 'status_baru' => $newStatus,
                 'diubah_oleh' => Auth::id(),
-                'catatan' => 'Status diubah oleh Kepala Unit.'
+                'catatan' => 'Status diubah oleh Admin Unit.'
             ]);
         }
 
-        return redirect()->route('kepala_unit.tiket.show', $tiket->id)->with('success', 'Status tiket berhasil diperbarui.');
+        return redirect()->route('admin_unit.tiket.show', $tiket->id)->with('success', 'Status tiket berhasil diperbarui.');
     }
 
     /**
@@ -103,10 +104,10 @@ class TiketController extends Controller
                 'id_tiket' => $tiket->id,
                 'status_baru' => 'Sedang Dikerjakan',
                 'diubah_oleh' => Auth::id(),
-                'catatan' => 'Komentar ditambahkan oleh Kepala Unit.'
+                'catatan' => 'Komentar ditambahkan oleh Admin Unit.'
             ]);
         }
 
-        return redirect()->route('kepala_unit.tiket.show', $tiket->id)->with('success', 'Komentar berhasil ditambahkan.');
+        return redirect()->route('admin_unit.tiket.show', $tiket->id)->with('success', 'Komentar berhasil ditambahkan.');
     }
 }

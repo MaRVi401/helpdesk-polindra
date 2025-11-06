@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Staff;
+use App\Models\Jabatan;
 use App\Models\Tiket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -39,13 +41,15 @@ class DashboardController extends Controller
     //     ));
     // }
 
-    // public function kepala_unit()
-    // {
-    //     return view('content.pages.dashboard');
-    // }
+    public function kepalaUnitDashboard(Request $request)
+    {
+        return view('kepala_unit.dashboard', compact('tiket'));
+    }
+
+    
 
     // public function admin_unit()
     // {
     //     return view('content.pages.dashboard');
     // }
-}
+    }

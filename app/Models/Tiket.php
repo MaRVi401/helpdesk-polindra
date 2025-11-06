@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Tiket extends Model
 {
@@ -16,6 +18,13 @@ class Tiket extends Model
         'layanan_id',
         'deskripsi',
         'jawaban_id',
+        'id_unit', 
+        'judul', 
+        'status', 
+        'prioritas', 
+        'lampiran', 
+        'detail_id', 
+        'detail_type',
     ];
 
     /**
@@ -41,6 +50,21 @@ class Tiket extends Model
     public function pemohon()
     {
         return $this->belongsTo(User::class, 'pemohon_id');
+    }
+
+    public function mahasiswa()
+    {
+        return $this->belongsTo(Mahasiswa::class, 'pemohon_id', 'user_id');
+    }
+
+    public function detail(): \Illuminate\Database\Eloquent\Relations\MorphTo
+    {
+        return $this->morphTo();
+    }
+
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class, 'id_unit');
     }
 
     // Relasi ke Riwayat Status
