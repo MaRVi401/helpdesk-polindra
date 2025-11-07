@@ -2,8 +2,16 @@
 
 @section('title', 'Edit Artikel')
 
+@section('vendor-style')
+  @vite(['resources/assets/vendor/libs/quill/typography.scss', 'resources/assets/vendor/libs/highlight/highlight.scss', 'resources/assets/vendor/libs/quill/katex.scss', 'resources/assets/vendor/libs/quill/editor.scss'])
+@endsection
+
+@section('vendor-script')
+  @vite(['resources/assets/vendor/libs/quill/katex.js', 'resources/assets/vendor/libs/highlight/highlight.js', 'resources/assets/vendor/libs/quill/quill.js'])
+@endsection
+
 @section('page-script')
-  @vite('resources/assets/js/form-basic-inputs.js')
+  @vite(['resources/assets/js/form-basic-inputs.js', 'resources/assets/js/forms-editors.js'])
 @endsection
 
 @section('content')
@@ -40,12 +48,17 @@
           @enderror
         </div>
         {{-- DESKRIPSI --}}
-        <div class="mb-4">
+        <div class="mb-6">
           <label for="deskripsi" class="form-label">Deskripsi</label>
-          <textarea id="deskripsi" name="deskripsi" class="form-control @error('deskripsi') is-invalid @enderror"
-            placeholder="Deskripsi Artikel..." required rows="5">{{ old('deskripsi', $data_artikel->deskripsi) }}</textarea>
+          {{-- Editor area --}}
+          <div id="snow-editor" class="@error('deskripsi') is-invalid @enderror">
+            {!! old('deskripsi', $data_artikel->deskripsi) !!}
+          </div>
+          {{-- Hidden input untuk menyimpan konten --}}
+          <input type="hidden" name="deskripsi" id="deskripsi" value="{{ old('deskripsi', $data_artikel->deskripsi) }}"
+            required>
           @error('deskripsi')
-            <div class="invalid-feedback">{{ $message }}</div>
+            <div class="invalid-feedback d-block">{{ $message }}</div>
           @enderror
         </div>
         {{-- GAMBAR --}}
@@ -57,12 +70,12 @@
           {{-- PREVIEW GAMBAR LAMA --}}
           @if ($data_artikel->gambar)
             <div class="mt-3">
-              <img src="{{ asset('storage/' . $data_artikel->gambar) }}" alt="Gambar Artikel" class="img-thumbnail rounded"
-                width="250">
+              <img src="{{ asset('storage/' . $data_artikel->gambar) }}" alt="Gambar Artikel"
+                class="img-thumbnail rounded" width="250">
             </div>
           @endif
           @if ($data_artikel->gambar)
-            <div class="mt-2 text-muted bg-slate-800">
+            <div class="mt-2 text-muted">
               <small>{{ basename($data_artikel->gambar) }}</small>
             </div>
           @endif

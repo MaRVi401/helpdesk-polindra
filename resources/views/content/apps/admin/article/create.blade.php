@@ -2,8 +2,16 @@
 
 @section('title', 'Tambah Artikel')
 
+@section('vendor-style')
+  @vite(['resources/assets/vendor/libs/quill/typography.scss', 'resources/assets/vendor/libs/highlight/highlight.scss', 'resources/assets/vendor/libs/quill/katex.scss', 'resources/assets/vendor/libs/quill/editor.scss'])
+@endsection
+
+@section('vendor-script')
+  @vite(['resources/assets/vendor/libs/quill/katex.js', 'resources/assets/vendor/libs/highlight/highlight.js', 'resources/assets/vendor/libs/quill/quill.js'])
+@endsection
+
 @section('page-script')
-  @vite('resources/assets/js/form-basic-inputs.js')
+  @vite(['resources/assets/js/form-basic-inputs.js', 'resources/assets/js/forms-editors.js'])
 @endsection
 
 @section('content')
@@ -40,10 +48,14 @@
         {{-- DESKRIPSI --}}
         <div class="mb-6">
           <label for="deskripsi" class="form-label">Deskripsi</label>
-          <textarea class="form-control @error('deskripsi') is-invalid @enderror" id="deskripsi" name="deskripsi"
-            placeholder="Deskripsi Artikel..." required rows="3">{{ old('deskripsi') }}</textarea>
+          {{-- Editor area --}}
+          <div id="snow-editor" class="@error('deskripsi') is-invalid @enderror">
+            {!! old('deskripsi') !!}
+          </div>
+          {{-- Hidden input untuk menyimpan konten --}}
+          <input type="hidden" name="deskripsi" id="deskripsi" value="{{ old('deskripsi') }}">
           @error('deskripsi')
-            <div class="invalid-feedback">{{ $message }}</div>
+            <div class="invalid-feedback d-block">{{ $message }}</div>
           @enderror
         </div>
         {{-- GAMBAR --}}

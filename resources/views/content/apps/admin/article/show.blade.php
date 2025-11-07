@@ -11,7 +11,6 @@
         <label class="form-label">Judul</label>
         <p class="form-control">{{ $data_artikel->judul }}</p>
       </div>
-
       {{-- KATEGORI --}}
       <div class="mb-3">
         <label class="form-label">Kategori</label>
@@ -30,35 +29,30 @@
       {{-- DESKRIPSI --}}
       <div class="mb-3">
         <label class="form-label">Deskripsi</label>
-        <p class="form-control">{{ $data_artikel->deskripsi }}</p>
+        <div class="border rounded p-3 bg-light">
+          {!! $data_artikel->deskripsi !!}
+        </div>
       </div>
-
       {{-- STATUS --}}
       <div class="mb-3">
         <label class="form-label">Status</label>
         <p class="form-control">{{ $data_artikel->status }}</p>
       </div>
-
       {{-- PENULIS --}}
       <div class="mb-3">
         <label class="form-label">Penulis</label>
         <p class="form-control">{{ $data_artikel->user->name ?? '-' }}</p>
       </div>
-
       {{-- DIBUAT PADA --}}
       <div class="mb-3">
         <label class="form-label">Dibuat pada</label>
         <p class="form-control">{{ $data_artikel->created_at->format('d M Y H:i') }}</p>
       </div>
-
       {{-- DIPERBARUI PADA --}}
       <div class="mb-3">
         <label class="form-label">Diperbarui pada</label>
         <p class="form-control">{{ $data_artikel->updated_at->format('d M Y H:i') }}</p>
       </div>
-
-
-
       {{-- BUTTON KEMBALI --}}
       <a href="{{ route('article.index') }}" class="btn btn-secondary mt-3">Kembali</a>
     </div>

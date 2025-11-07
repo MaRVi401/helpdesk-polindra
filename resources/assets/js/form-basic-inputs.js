@@ -11,13 +11,11 @@ document.addEventListener('DOMContentLoaded', function () {
     checkbox.indeterminate = true;
   }
 
-  // Contoh tambahan: jika kamu punya input file dengan preview
   const fileInput = document.querySelector('input[type="file"]');
   if (fileInput) {
     fileInput.addEventListener('change', function (e) {
       const fileName = e.target.files[0]?.name || 'Pilih file...';
       console.log('File dipilih:', fileName);
-      // Bisa tambahkan logika preview gambar di sini kalau mau
     });
   }
 
