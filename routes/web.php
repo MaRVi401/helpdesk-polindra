@@ -3,6 +3,7 @@
 
 use App\Http\Controllers\Admin\ArticleCategoryController;
 use App\Http\Controllers\Admin\ArticleController;
+use App\Http\Controllers\Admin\ManageUsers\StudentController;
 use App\Http\Controllers\Admin\ManageArticleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -82,12 +83,16 @@ Route::middleware(['auth', 'profile.completed'])->group(function () {
     // DASHBOARD USERS
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
+    // USERS MANAGEMENT (SUPER ADMIN)
+    Route::resource('student', StudentController::class)->middleware('role:super_admin');
+        
     // FAQ MANAGEMENT (SUPER ADMIN)
     Route::resource('faq', FaqController::class)->middleware('role:super_admin');
 
     // ARTICLE MANAGEMENT (SUPER ADMIN)
     Route::resource('article', ArticleController::class)->middleware('role:super_admin');
     Route::resource('article-category', ArticleCategoryController::class)->middleware('role:super_admin');
+
 
     Route::get('/lengkapi-profil', [ProfileController::class, 'showCompletionForm'])->name('profile.completion.form');
     // Route untuk menyimpan data dari form

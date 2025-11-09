@@ -1,7 +1,7 @@
 /**
  * FAQ (Client-side version with SweetAlert2)
  */
-
+// REFERENSI NYA 
 'use strict';
 
 document.addEventListener('DOMContentLoaded', function (e) {

@@ -55,21 +55,21 @@ class User extends Authenticatable
   public function mahasiswa()
   {
     // KOREKSI: Menentukan foreign key 'id_user' dan local key 'id'
-    return $this->hasOne(Mahasiswa::class, 'id_user', 'id');
+    return $this->hasOne(Mahasiswa::class, 'user_id', 'id');
   }
 
   // RELASI: Satu User memiliki satu profil Staff (jika dia staff)
   public function staff()
   {
     // Asumsi foreign key di tabel staff juga 'id_user'
-    return $this->hasOne(Staff::class, 'id_user', 'id');
+    return $this->hasOne(Staff::class, 'user_id', 'id');
   }
 
   // RELASI: User bisa membuat banyak tiket
   public function tiket()
   {
     // Asumsi foreign key di tabel tiket adalah 'id_user'
-    return $this->hasMany(Tiket::class, 'id_user', 'id');
+    return $this->hasMany(Tiket::class, 'user_id', 'id');
   }
 
   // RELASI: User bisa mengirim banyak komentar
@@ -82,7 +82,7 @@ class User extends Authenticatable
   public function artikel()
   {
     // Asumsi foreign key di tabel artikel adalah 'id_user'
-    return $this->hasMany(Artikel::class, 'id_user', 'id');
+    return $this->hasMany(Artikel::class, 'user_id', 'id');
   }
 
   public function getProfilePhotoUrlAttribute()

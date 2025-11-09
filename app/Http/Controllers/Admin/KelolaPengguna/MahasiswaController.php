@@ -15,36 +15,9 @@ class MahasiswaController extends Controller
 {
     public function index(Request $request)
     {
-        // Ambil input dari request
-        $searchQuery = $request->input('q');
-        $perPage = $request->input('per_page', 10);
-
-        // Mulai query ke model Mahasiswa
-        $mahasiswaQuery = Mahasiswa::with(['user', 'programStudi']);
-
-        // Terapkan filter pencarian jika ada
-        if ($searchQuery) {
-            $mahasiswaQuery->where(function ($query) use ($searchQuery) {
-                $query->where('nim', 'like', "%{$searchQuery}%")
-                    ->orWhere('tahun_masuk', 'like', "%{$searchQuery}%")
-                    ->orWhereHas('user', function ($userQuery) use ($searchQuery) {
-                        $userQuery->where('name', 'like', "%{$searchQuery}%")
-                            ->orWhere('email', 'like', "%{$searchQuery}%");
-                    })
-                    ->orWhereHas('programStudi', function ($prodiQuery) use ($searchQuery) {
-                        $prodiQuery->where('program_studi', 'like', "%{$searchQuery}%");
-                    });
-            });
-        }
-
-        // Urutkan berdasarkan ID dan lakukan paginasi
-        $mahasiswas = $mahasiswaQuery->orderBy('id', 'asc')->paginate($perPage);
-
-        // Tambahkan parameter query string ke link paginasi
-        $mahasiswas->appends($request->except('page'));
-
-        // Kirim data ke view
-        return view('admin.kelolapengguna.mahasiswa.index', compact('mahasiswas', 'searchQuery', 'perPage'));
+        $data_mahasiswa = Mahasiswa::with(['user', 'programStudi'])
+            ->orderBy('id', 'asc');
+        return view('admin.kelolapengguna.mahasiswa.index', compact('data_mahasiswa'));
     }
 
     public function create()

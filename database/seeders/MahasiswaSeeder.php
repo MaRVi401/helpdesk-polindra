@@ -15,58 +15,67 @@ class MahasiswaSeeder extends Seeder
     public function run(): void
     {
         // Ambil ID dari program studi yang sudah ada di MasterDataSeeder
-        $prodiTI = ProgramStudi::where('program_studi', 'D4 - Teknik Informatika')->first();
-        $prodiTM = ProgramStudi::where('program_studi', 'D4 - Teknik Mesin')->first();
+        $prodiRPL = ProgramStudi::where('program_studi', 'D4 - Rekayasa Perangkat Lunak')->first();
+        $prodiTM = ProgramStudi::where('program_studi', 'D4 - Perancangan Manufaktur')->first();
         $prodiKP = ProgramStudi::where('program_studi', 'D3 - Keperawatan')->first();
 
         // Daftar nama mahasiswa untuk dibuat (disesuaikan dengan prodi yang ada)
-        $mahasiswas = [
-            // Mahasiswa Teknik Informatika
-            ['name' => 'Ahmad Fauzi', 'nim' => '2203001', 'prodi' => $prodiTI, 'tahun' => '2022'],
-            ['name' => 'Dewi Anjani', 'nim' => '2103004', 'prodi' => $prodiTI, 'tahun' => '2021'],
-            ['name' => 'Gunawan', 'nim' => '2003007', 'prodi' => $prodiTI, 'tahun' => '2020'],
-            ['name' => 'Joko Susanto', 'nim' => '2303010', 'prodi' => $prodiTI, 'tahun' => '2023'],
-            ['name' => 'Muhammad Ali', 'nim' => '2203013', 'prodi' => $prodiTI, 'tahun' => '2022'],
-
-            // Mahasiswa Teknik Mesin
-            ['name' => 'Candra Darmawan', 'nim' => '2203003', 'prodi' => $prodiTM, 'tahun' => '2022'],
-            ['name' => 'Fitriani', 'nim' => '2103006', 'prodi' => $prodiTM, 'tahun' => '2021'],
-            ['name' => 'Indra Saputra', 'nim' => '2003009', 'prodi' => $prodiTM, 'tahun' => '2020'],
-            ['name' => 'Lestari', 'nim' => '2303012', 'prodi' => $prodiTM, 'tahun' => '2023'],
-            ['name' => 'Putri Ayu', 'nim' => '2203015', 'prodi' => $prodiTM, 'tahun' => '2022'],
-            
-            // Mahasiswa Keperawatan
-            ['name' => 'Bunga Citra', 'nim' => '2203002', 'prodi' => $prodiKP, 'tahun' => '2022'],
-            ['name' => 'Eko Prasetyo', 'nim' => '2103005', 'prodi' => $prodiKP, 'tahun' => '2021'],
-            ['name' => 'Herlina', 'nim' => '2003008', 'prodi' => $prodiKP, 'tahun' => '2020'],
-            ['name' => 'Kartika', 'nim' => '2303011', 'prodi' => $prodiKP, 'tahun' => '2023'],
-            ['name' => 'Nurhayati', 'nim' => '2203014', 'prodi' => $prodiKP, 'tahun' => '2022'],
+        $data_mahasiswa = [
+            // Mahasiswa Jurusan Teknik Informatika
+            ['name' => 'AHMAD YASSIN HASAN AL BANA', 'nim' => '2305001', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'ALESIA QUIN FORTUNA SALSA NABILA', 'nim' => '2305002', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'ANANDA SALSABILA', 'nim' => '2305003', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'ANANG MARUF', 'nim' => '2305004', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'AULIA RISKI APRINA', 'nim' => '2305005', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'BAHIAGI', 'nim' => '2305006', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'BINTANG RIZOY ANDI AL KHALIFI', 'nim' => '2305007', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'DANIEL SINAGA', 'nim' => '2305008', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'EKA DAYA FADILAH JULIANSAH', 'nim' => '2305009', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'FADILLAH ROHMAN', 'nim' => '2305010', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'HAMZAH FAUZI PRATAMA', 'nim' => '2305011', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'INDRA', 'nim' => '2305012', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'KHOERUL PAROID', 'nim' => '2305013', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'LATIFAH', 'nim' => '2305014', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'MAHRUS RASHIF HIBBAN', 'nim' => '2305015', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'MOCHAMAD DIMAS TRIVIBOWO', 'nim' => '2305016', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'MUHAMAD HADID FALETEHAN', 'nim' => '2305017', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'MUHAMMAD IORO NEGORO', 'nim' => '2305018', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'NABA IMELDA NURUSSAUBA', 'nim' => '2305019', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'NAURA AZZAHRA BUDIYONO', 'nim' => '2305020', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'PAHRIL LESMANA', 'nim' => '2305021', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'PUTRI AYU FADHILAH', 'nim' => '2305022', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'RADEN GUNAWAN', 'nim' => '2305023', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'RAYHAN RAMADHANI', 'nim' => '2305024', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'SALSAH BILLAH', 'nim' => '2305025', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'THUFAIL NAZHIF NAFIS', 'nim' => '2305026', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'TSALTSA SIFA BILQIS SALAAMAH', 'nim' => '2305027', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'WUSTO HAMJAH', 'nim' => '2305028', 'prodi' => $prodiRPL, 'tahun' => '2023']
         ];
 
-        foreach ($mahasiswas as $mhs) {
+        foreach ($data_mahasiswa as $mahasiswa) {
             // Membuat email dari nama (lower case, ganti spasi dengan titik)
-            $emailName = strtolower(str_replace(' ', '.', $mhs['name']));
-            $email = $emailName . '@student.polindra.ac.id';
-
+            $email = $mahasiswa['nim'] . '@student.polindra.ac.id';
+            
             // Cek jika prodi ada, jika tidak lewati
-            if (!$mhs['prodi']) {
-                $this->command->warn("Program studi untuk {$mhs['name']} tidak ditemukan, data dilewati.");
+            if (!$mahasiswa['prodi']) {
+                $this->command->warn("Program studi untuk {$mahasiswa['name']} tidak ditemukan, data dilewati.");
                 continue;
             }
 
             // Buat user baru dengan role 'mahasiswa'
             $user = User::create([
-                'name' => $mhs['name'],
+                'name' => $mahasiswa['name'],
                 'email' => $email,
-                'password' => bcrypt('123'), // Password default
+                'password' => bcrypt($mahasiswa['nim']), // Password default menggunakan NIM
                 'role' => 'mahasiswa',
             ]);
 
-            // Buat data mahasiswa yang terhubung dengan user
-            $user->mahasiswa()->create([
-                'program_studi_id' => $mhs['prodi']->id,
-                'nim' => $mhs['nim'],
-                'tahun_masuk' => $mhs['tahun'],
+            // Buat data 
+            Mahasiswa::create([
+                'user_id' => $user->id, // Ini yang benar
+                'program_studi_id' => $mahasiswa['prodi']->id,
+                'nim' => $mahasiswa['nim'],
+                'tahun_masuk' => $mahasiswa['tahun'],
             ]);
         }
     }

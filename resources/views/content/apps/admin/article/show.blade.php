@@ -29,7 +29,7 @@
       {{-- DESKRIPSI --}}
       <div class="mb-3">
         <label class="form-label">Deskripsi</label>
-        <div class="border rounded p-3 bg-light">
+        <div class="form-control">
           {!! $data_artikel->deskripsi !!}
         </div>
       </div>

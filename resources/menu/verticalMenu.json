@@ -74,31 +74,23 @@
     {
       "name": "Pengguna",
       "icon": "menu-icon icon-base ti tabler-user",
-      "slug": "pengguna",
+      "slug": ["student", "staff"],
       "roles": [
         "super_admin"
       ],
       "submenu": [
         {
-          "url": "app/mahasiswa",
+          "url": "/student",
           "name": "Mahasiswa",
-          "slug": "dashboard-mahasiswa",
+          "slug": "student.index",
           "roles": [
             "super_admin"
           ]
         },
         {
-          "url": "app/staff",
-          "name": "Staff",
-          "slug": "dashboard-staff",
-          "roles": [
-            "super_admin"
-          ]
-        },
-        {
-          "url": "app/orang-umum",
-          "name": "Orang Umum",
-          "slug": "dashboard-orang-umum",
+          "url": "/staff",
+          "name": "Staf",
+          "slug": "staff.index",
           "roles": [
             "super_admin"
           ]

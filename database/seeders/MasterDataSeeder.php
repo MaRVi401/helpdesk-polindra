@@ -33,22 +33,22 @@ class MasterDataSeeder extends Seeder
         Unit::create(['nama_unit' => 'Akademik']);
         Unit::create(['nama_unit' => 'Kemahasiswaan']);
 
-        $jurusanTI = Jurusan::create(['nama_jurusan' => 'Teknik Informatika']);
-        $jurusanTM = Jurusan::create(['nama_jurusan' => 'Teknik Mesin']);
-        $jurusanKP = Jurusan::create(['nama_jurusan' => 'Keperawatan']);
+        $jurusanTeknikInformatika = Jurusan::create(['nama_jurusan' => 'Teknik Informatika']);
+        $jurusanTeknik = Jurusan::create(['nama_jurusan' => 'Teknik']);
+        $jurusanKesehatan = Jurusan::create(['nama_jurusan' => 'Kesehatan']);
 
         // Membuat data Program Studi
         ProgramStudi::create([
-            'program_studi' => 'D4 - Teknik Informatika',
-            'jurusan_id' => $jurusanTI->id,
+            'program_studi' => 'D4 - Rekayasa Perangkat Lunak',
+            'jurusan_id' => $jurusanTeknikInformatika->id,
         ]);
         ProgramStudi::create([
-            'program_studi' => 'D4 - Teknik Mesin',
-            'jurusan_id' => $jurusanTM->id, 
+            'program_studi' => 'D4 - Perancangan Manufaktur',
+            'jurusan_id' => $jurusanTeknik->id, 
         ]);
         ProgramStudi::create([
             'program_studi' => 'D3 - Keperawatan',
-            'jurusan_id' => $jurusanKP->id, 
+            'jurusan_id' => $jurusanKesehatan->id, 
         ]);
 
         // $this->command->info('MasterDataSeeder berhasil dijalankan.');
