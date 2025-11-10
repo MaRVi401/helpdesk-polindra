@@ -21,41 +21,41 @@ class MahasiswaSeeder extends Seeder
 
         // Daftar nama mahasiswa untuk dibuat (disesuaikan dengan prodi yang ada)
         $data_mahasiswa = [
-            // Mahasiswa Jurusan Teknik Informatika
-            ['name' => 'AHMAD YASSIN HASAN AL BANA', 'nim' => '2305001', 'prodi' => $prodiRPL, 'tahun' => '2023'],
-            ['name' => 'ALESIA QUIN FORTUNA SALSA NABILA', 'nim' => '2305002', 'prodi' => $prodiRPL, 'tahun' => '2023'],
-            ['name' => 'ANANDA SALSABILA', 'nim' => '2305003', 'prodi' => $prodiRPL, 'tahun' => '2023'],
-            ['name' => 'ANANG MARUF', 'nim' => '2305004', 'prodi' => $prodiRPL, 'tahun' => '2023'],
-            ['name' => 'AULIA RISKI APRINA', 'nim' => '2305005', 'prodi' => $prodiRPL, 'tahun' => '2023'],
-            ['name' => 'BAIHAQI', 'nim' => '2305006', 'prodi' => $prodiRPL, 'tahun' => '2023'],
-            ['name' => 'BINTANG RIZOY ANDI AL KHALIFI', 'nim' => '2305007', 'prodi' => $prodiRPL, 'tahun' => '2023'],
-            ['name' => 'DANIEL SINAGA', 'nim' => '2305008', 'prodi' => $prodiRPL, 'tahun' => '2023'],
-            ['name' => 'EKA DAYA FADILAH JULIANSAH', 'nim' => '2305009', 'prodi' => $prodiRPL, 'tahun' => '2023'],
-            ['name' => 'FADILLAH ROHMAN', 'nim' => '2305010', 'prodi' => $prodiRPL, 'tahun' => '2023'],
-            ['name' => 'HAMZAH FAUZI PRATAMA', 'nim' => '2305011', 'prodi' => $prodiRPL, 'tahun' => '2023'],
-            ['name' => 'INDRA', 'nim' => '2305012', 'prodi' => $prodiRPL, 'tahun' => '2023'],
-            ['name' => 'KHOERUL PAROID', 'nim' => '2305013', 'prodi' => $prodiRPL, 'tahun' => '2023'],
-            ['name' => 'LATIFAH', 'nim' => '2305014', 'prodi' => $prodiRPL, 'tahun' => '2023'],
-            ['name' => 'MAHRUS RASHIF HIBBAN', 'nim' => '2305015', 'prodi' => $prodiRPL, 'tahun' => '2023'],
-            ['name' => 'MOCHAMAD DIMAS TRIVIBOWO', 'nim' => '2305016', 'prodi' => $prodiRPL, 'tahun' => '2023'],
-            ['name' => 'MUHAMAD HADID FALETEHAN', 'nim' => '2305017', 'prodi' => $prodiRPL, 'tahun' => '2023'],
-            ['name' => 'MUHAMMAD IORO NEGORO', 'nim' => '2305018', 'prodi' => $prodiRPL, 'tahun' => '2023'],
-            ['name' => 'NABA IMELDA NURUSSAUBA', 'nim' => '2305019', 'prodi' => $prodiRPL, 'tahun' => '2023'],
-            ['name' => 'NAURA AZZAHRA BUDIYONO', 'nim' => '2305020', 'prodi' => $prodiRPL, 'tahun' => '2023'],
-            ['name' => 'PAHRIL LESMANA', 'nim' => '2305021', 'prodi' => $prodiRPL, 'tahun' => '2023'],
-            ['name' => 'PUTRI AYU FADHILAH', 'nim' => '2305022', 'prodi' => $prodiRPL, 'tahun' => '2023'],
-            ['name' => 'RADEN GUNAWAN', 'nim' => '2305023', 'prodi' => $prodiRPL, 'tahun' => '2023'],
-            ['name' => 'RAYHAN RAMADHANI', 'nim' => '2305024', 'prodi' => $prodiRPL, 'tahun' => '2023'],
-            ['name' => 'SALSAH BILLAH', 'nim' => '2305025', 'prodi' => $prodiRPL, 'tahun' => '2023'],
-            ['name' => 'THUFAIL NAZHIF NAFIS', 'nim' => '2305026', 'prodi' => $prodiRPL, 'tahun' => '2023'],
-            ['name' => 'TSALTSA SIFA BILQIS SALAAMAH', 'nim' => '2305027', 'prodi' => $prodiRPL, 'tahun' => '2023'],
-            ['name' => 'WUSTO HAMJAH', 'nim' => '2305028', 'prodi' => $prodiRPL, 'tahun' => '2023']
+            ['name' => 'Ahmad Yassin Hasan Al Bana', 'nim' => '2305001', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'Alesia Quin Fortuna Salsa Nabila', 'nim' => '2305002', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'Ananda Salsabila', 'nim' => '2305003', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'Anang Maruf', 'nim' => '2305004', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'Aulia Riski Aprina', 'nim' => '2305005', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'Baihaqi', 'nim' => '2305006', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'Bintang Rizoy Andi Al Khalifi', 'nim' => '2305007', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'Daniel Sinaga', 'nim' => '2305008', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'Eka Daya Fadilah Juliansah', 'nim' => '2305009', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'Fadillah Rohman', 'nim' => '2305010', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'Hamzah Fauzi Pratama', 'nim' => '2305011', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'Indra', 'nim' => '2305012', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'Khoerul Paroid', 'nim' => '2305013', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'Latifah', 'nim' => '2305014', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'Mahrus Rashif Hibban', 'nim' => '2305015', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'Mochamad Dimas Trivibowo', 'nim' => '2305016', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'Muhamad Hadid Faletehan', 'nim' => '2305017', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'Muhammad Iqro Negoro', 'nim' => '2305018', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'Naba Imelda Nurussauba', 'nim' => '2305019', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'Naura Azzahra Budiyono', 'nim' => '2305020', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'Pahril Lesmana', 'nim' => '2305021', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'Putri Ayu Fadhilah', 'nim' => '2305022', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'Raden Gunawan', 'nim' => '2305023', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'Rayhan Ramadhani', 'nim' => '2305024', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'Salsah Billah', 'nim' => '2305025', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'Thufail Nazhif Nafis', 'nim' => '2305026', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'Tsaltsa Sifa Bilqis Salaamah', 'nim' => '2305027', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'Wusto Hamjah', 'nim' => '2305028', 'prodi' => $prodiRPL, 'tahun' => '2023'],
         ];
+
 
         foreach ($data_mahasiswa as $mahasiswa) {
             // Membuat email dari nama (lower case, ganti spasi dengan titik)
             $email = $mahasiswa['nim'] . '@student.polindra.ac.id';
-            
+
             // Cek jika prodi ada, jika tidak lewati
             if (!$mahasiswa['prodi']) {
                 $this->command->warn("Program studi untuk {$mahasiswa['name']} tidak ditemukan, data dilewati.");

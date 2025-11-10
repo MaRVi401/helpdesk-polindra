@@ -61,7 +61,8 @@
         {{-- BUTTON --}}
         <div class="mb-6">
           <button class="btn btn-primary" type="submit">Simpan</button>
-          <a href="{{ route('faq.index') }}"><button class="btn btn-outline-secondary w-full" type="button">Batal</button></a>
+          <a href="{{ route('faq.index') }}"><button class="btn btn-outline-secondary w-full"
+              type="button">Batal</button></a>
         </div>
       </form>
     </div>

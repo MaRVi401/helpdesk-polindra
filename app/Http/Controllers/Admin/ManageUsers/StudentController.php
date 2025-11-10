@@ -31,9 +31,18 @@ class StudentController extends Controller
     $request->validate([
       'name' => 'required|string|max:255',
       'nim' => 'required|string|max:20|unique:mahasiswa,nim',
-      'email' => 'required|email|unique:users,email',
+      'email' => [
+        'required',
+        'email',
+        'regex:/^[a-zA-Z0-9._%+-]+@student\.polindra\.ac\.id$/',
+        'unique:users,email',
+      ],
       'program_studi' => 'required|exists:program_studi,id',
-      'tahun_masuk' => 'required|integer|min:2000|max:2100'
+      'tahun_masuk' => 'required|integer|min:2000|max:2100',
+    ], [
+      'nim.unique' => 'NIM ini sudah terdaftar.',
+      'email.regex' => 'Email harus menggunakan domain @student.polindra.ac.id.',
+      'email.unique' => 'Email ini sudah digunakan.',
     ]);
 
     // Buat user baru (mahasiswa)

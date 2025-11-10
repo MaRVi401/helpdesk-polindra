@@ -59,30 +59,43 @@
     <div class="offcanvas-body flex-grow-1">
       <form class="add-new-record pt-0 row g-2" action="{{ route('student.store') }}" method="POST">
         @csrf
+        {{-- NAMA LENGKAP --}}
         <div class="col-sm-12 form-control-validation">
           <label class="form-label" for="name">Nama Lengkap</label>
           <div class="input-group input-group-merge">
             <span id="basicFullname2" class="input-group-text"><i class="icon-base ti tabler-user"></i></span>
             <input type="text" id="name" class="form-control dt-full-name" name="name"
               placeholder="Nama Lengkap" aria-label="Nama Lengkap" />
+            @error('name')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
           </div>
         </div>
+        {{-- NIM --}}
         <div class="col-sm-12 form-control-validation">
           <label class="form-label" for="nim">NIM</label>
           <div class="input-group input-group-merge">
             <span class="input-group-text"><i class="icon-base ti tabler-id"></i></span>
             <input type="text" id="nim" name="nim" class="form-control dt-nim" placeholder="NIM"
               aria-label="NIM" />
+            @error('nim')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
           </div>
         </div>
+        {{-- EMAIL --}}
         <div class="col-sm-12 form-control-validation">
           <label class="form-label" for="email">Email</label>
           <div class="input-group input-group-merge">
             <span class="input-group-text"><i class="icon-base ti tabler-mail"></i></span>
             <input type="text" id="email" name="email" class="form-control dt-email"
               placeholder="nim@student.polindra.ac.id" aria-label="nim@student.polindra.ac.id" />
+            @error('email')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
           </div>
         </div>
+        {{-- PROGRAM STUDI --}}
         <div class="col-sm-12 form-control-validation">
           <label class="form-label" for="program_studi">Program Studi</label>
           <div class="input-group input-group-merge">
@@ -97,8 +110,12 @@
                 </optgroup>
               @endforeach
             </select>
+            @error('program_studi')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
           </div>
         </div>
+        {{-- TAHUN MASUK --}}
         <div class="col-sm-12 form-control-validation">
           <label class="form-label" for="tahun_masuk">Tahun Masuk</label>
           <div class="input-group input-group-merge">
@@ -112,6 +129,9 @@
               <option value="2024">2024</option>
               <option value="2025">2025</option>
             </select>
+            @error('tahun_masuk')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
           </div>
         </div>
         <button type="submit" class="btn btn-primary data-submit me-sm-4 me-1">Simpan</button>
