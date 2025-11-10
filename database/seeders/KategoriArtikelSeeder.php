@@ -15,6 +15,7 @@ class KategoriArtikelSeeder extends Seeder
             ['kategori' => 'Informasi', 'created_at' => now(), 'updated_at' => now()],
             ['kategori' => 'Pengumuman', 'created_at' => now(), 'updated_at' => now()],
             ['kategori' => 'Kegiatan Mahasiswa', 'created_at' => now(), 'updated_at' => now()],
+            ['kategori' => 'Artikel Panduan User', 'created_at' => now(), 'updated_at' => now()],
         ]);
     }
 }
