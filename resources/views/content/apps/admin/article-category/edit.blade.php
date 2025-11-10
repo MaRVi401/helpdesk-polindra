@@ -25,7 +25,7 @@
         {{-- BUTTON --}}
         <div class="mb-6">
           <button class="btn btn-primary" type="submit">Perbarui</button>
-          <a href="{{ route('faq.index') }}" class="btn btn-secondary">Batal</a>
+          <a href="{{ route('article-category.index') }}" class="btn btn-outline-secondary">Batal</a>
         </div>
       </form>
     </div>

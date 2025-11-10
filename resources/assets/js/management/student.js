@@ -109,6 +109,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
   })();
 
   // Student datatable
+  // Student datatable
   if (dt_student_table) {
     var dt_student = new DataTable(dt_student_table, {
       columns: [
@@ -116,10 +117,10 @@ document.addEventListener('DOMContentLoaded', function (e) {
         { data: 'id', orderable: false, render: DataTable.render.select() },
         { data: null, name: 'no' },
         { data: 'full_name' },
-        { data: 'nim' },
+        { data: 'nim', visible: false }, // Kolom NIM disembunyikan
         { data: 'email' },
         { data: 'prodi' },
-        { data: 'tahun_masuk' },
+        { data: 'tahun_masuk', visible: false }, // Kolom Tahun Masuk disembunyikan
         { data: 'id' }
       ],
       columnDefs: [
@@ -182,19 +183,19 @@ document.addEventListener('DOMContentLoaded', function (e) {
                 </div>
                 <div class="d-flex flex-column">
                   <span class="emp_name text-truncate text-heading fw-medium">${name}</span>
+                  <span class="emp_nim text-truncate text-pretty fw-medium fs-10">${nim}</span>
                 </div>
               </div>
             `;
-
             return rowOutput;
           }
         },
         {
-          // NIM
+          // NIM (hidden column - no render needed since it's invisible)
           targets: 4,
-          responsivePriority: 1,
+          visible: false,
           render: function (data, type, full, meta) {
-            return `<span class="fw-medium">${data}</span>`;
+            return data; // Tetap return data untuk export data
           }
         },
         {
@@ -213,10 +214,11 @@ document.addEventListener('DOMContentLoaded', function (e) {
           }
         },
         {
-          // Tahun Masuk
+          // Tahun Masuk (hidden column)
           targets: 7,
+          visible: false,
           render: function (data, type, full, meta) {
-            return `<span>${data}</span>`;
+            return data; // Tetap return data untuk export data
           }
         },
         {
@@ -238,7 +240,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
                   <i class="icon-base ti tabler-dots-vertical icon-22px"></i>
                 </button>
                 <div class="dropdown-menu dropdown-menu-end m-0">
-                  <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center view-student" data-id="${id}"><i class="icon-base ti tabler-eye me-2"></i> Detail</a>
+                  <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center view-student" data-id="${id}"><i class="icon-base ti tabler-details me-2"></i> Detail</a>
                   <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center edit-student" data-id="${id}"><i class="icon-base ti tabler-pencil me-2"></i> Edit</a>
                   <div class="dropdown-divider"></div>
                   <a href="javascript:void(0);" class="dropdown-item text-danger d-flex align-items-center delete-student" data-id="${id}"><i class="icon-base ti tabler-trash me-2"></i> Hapus</a>

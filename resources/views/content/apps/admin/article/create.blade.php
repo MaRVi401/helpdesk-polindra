@@ -83,7 +83,7 @@
         {{-- BUTTON --}}
         <div class="mb-6">
           <button class="btn btn-primary" type="submit">Simpan</button>
-          <a href="{{ route('article.index') }}" class="btn btn-secondary">Batal</a>
+          <a href="{{ route('article.index') }}" class="btn btn-outline-secondary">Batal</a>
         </div>
       </form>
     </div>

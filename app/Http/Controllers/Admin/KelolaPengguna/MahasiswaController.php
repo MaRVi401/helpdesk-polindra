@@ -101,10 +101,10 @@ class MahasiswaController extends Controller
         return redirect()->route('admin.mahasiswa.index')->with('success', 'Data mahasiswa berhasil dihapus.');
     }
 
-    public function exportExcel(Request $request)
-    {
-        $mahasiswaIds = $request->input('selected_mahasiswa', []);
-        $fileName = 'mahasiswa_data_' . date('Y-m-d_H-i-s') . '.xlsx';
-        return Excel::download(new MahasiswaExport($mahasiswaIds), $fileName);
-    }
+    // public function exportExcel(Request $request)
+    // {
+    //     $mahasiswaIds = $request->input('selected_mahasiswa', []);
+    //     $fileName = 'mahasiswa_data_' . date('Y-m-d_H-i-s') . '.xlsx';
+    //     return Excel::download(new MahasiswaExport($mahasiswaIds), $fileName);
+    // }
 }

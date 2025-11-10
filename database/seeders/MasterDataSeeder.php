@@ -43,12 +43,44 @@ class MasterDataSeeder extends Seeder
             'jurusan_id' => $jurusanTeknikInformatika->id,
         ]);
         ProgramStudi::create([
+            'program_studi' => 'D4 - Sistem Informasi Kota Cerdas',
+            'jurusan_id' => $jurusanTeknikInformatika->id,
+        ]);
+        ProgramStudi::create([
+            'program_studi' => 'D4 - Teknologi Rekayasa Komputer',
+            'jurusan_id' => $jurusanTeknikInformatika->id,
+        ]);
+        ProgramStudi::create([
+            'program_studi' => 'D3 - Teknik Informatika',
+            'jurusan_id' => $jurusanTeknikInformatika->id,
+        ]);
+        ProgramStudi::create([
             'program_studi' => 'D4 - Perancangan Manufaktur',
-            'jurusan_id' => $jurusanTeknik->id, 
+            'jurusan_id' => $jurusanTeknik->id,
+        ]);
+        ProgramStudi::create([
+            'program_studi' => 'D4 - Teknologi Rekayasa Instrumen & Kontrol',
+            'jurusan_id' => $jurusanTeknik->id,
+        ]);
+        ProgramStudi::create([
+            'program_studi' => 'D3 - Teknik Mesin',
+            'jurusan_id' => $jurusanTeknik->id,
+        ]);
+        ProgramStudi::create([
+            'program_studi' => 'D3 - Pendingin & Tata Udara',
+            'jurusan_id' => $jurusanTeknik->id,
+        ]);
+        ProgramStudi::create([
+            'program_studi' => 'D4 - Teknologi Laboratorium Medis',
+            'jurusan_id' => $jurusanKesehatan->id,
+        ]);
+        ProgramStudi::create([
+            'program_studi' => 'D4 - Teknologi Rekayasa Elektro Medis',
+            'jurusan_id' => $jurusanKesehatan->id,
         ]);
         ProgramStudi::create([
             'program_studi' => 'D3 - Keperawatan',
-            'jurusan_id' => $jurusanKesehatan->id, 
+            'jurusan_id' => $jurusanKesehatan->id,
         ]);
 
         // $this->command->info('MasterDataSeeder berhasil dijalankan.');

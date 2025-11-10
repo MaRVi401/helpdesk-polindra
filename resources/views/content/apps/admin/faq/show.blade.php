@@ -41,7 +41,7 @@
         <p class="form-control">{{ $data_faq->updated_at->format('d M Y H:i') }}</p>
       </div>
 
-      <a href="{{ route('faq.index') }}" class="btn btn-secondary mt-3">Kembali</a>
+      <a href="{{ route('faq.index') }}" class="btn btn-outline-secondary mt-3">Kembali</a>
     </div>
   </div>
 @endsection

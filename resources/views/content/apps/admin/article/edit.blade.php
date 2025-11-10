@@ -98,7 +98,7 @@
         {{-- BUTTON --}}
         <div class="mt-4">
           <button class="btn btn-primary" type="submit">Perbarui</button>
-          <a href="{{ route('article.index') }}" class="btn btn-secondary">Batal</a>
+          <a href="{{ route('article.index') }}" class="btn btn-outline-secondary">Batal</a>
         </div>
       </form>
     </div>

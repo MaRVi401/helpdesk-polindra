@@ -54,7 +54,7 @@
         <p class="form-control">{{ $data_artikel->updated_at->format('d M Y H:i') }}</p>
       </div>
       {{-- BUTTON KEMBALI --}}
-      <a href="{{ route('article.index') }}" class="btn btn-secondary mt-3">Kembali</a>
+      <a href="{{ route('article.index') }}" class="btn btn-outline-secondary mt-3">Kembali</a>
     </div>
   </div>
 @endsection
