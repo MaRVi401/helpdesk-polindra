@@ -3,6 +3,7 @@
 
 use App\Http\Controllers\Admin\ArticleCategoryController;
 use App\Http\Controllers\Admin\ArticleController;
+use App\Http\Controllers\Admin\ManageUsers\StaffController;
 use App\Http\Controllers\Admin\ManageUsers\StudentController;
 use App\Http\Controllers\Admin\ManageArticleController;
 use Illuminate\Http\Request;
@@ -27,7 +28,7 @@ use App\Http\Controllers\Mahasiswa\TiketController;
 use App\Http\Controllers\Admin\AdminTiketController;
 use App\Http\Controllers\Admin\ProgramStudiController;
 use App\Http\Controllers\Admin\KategoriArtikelController;
-use App\Http\Controllers\Admin\KelolaPengguna\StaffController;
+// use App\Http\Controllers\Admin\KelolaPengguna\StaffController;
 use App\Http\Controllers\Admin\KelolaPengguna\MahasiswaController;
 use App\Http\Controllers\KepalaUnit\TiketController as KepalaUnitTiketController;
 use App\Http\Controllers\AdminUnit\TiketController as AdminUnitTiketController;
@@ -85,6 +86,7 @@ Route::middleware(['auth', 'profile.completed'])->group(function () {
     
     // USERS MANAGEMENT (SUPER ADMIN)
     Route::resource('student', StudentController::class)->middleware('role:super_admin');
+    Route::resource('staff', StaffController::class)->middleware('role:super_admin');
         
     // FAQ MANAGEMENT (SUPER ADMIN)
     Route::resource('faq', FaqController::class)->middleware('role:super_admin');

@@ -1,5 +1,5 @@
 /**
- * Student (Canvas)
+ * Staff Management
  */
 
 'use strict';
@@ -12,8 +12,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
   bodyBg = config.colors.bodyBg;
   headingColor = config.colors.headingColor;
 
-  const dt_student_table = document.querySelector('.datatables-basic'),
-    studentAdd = baseUrl + 'student/create';
+  const dt_staff_table = document.querySelector('.datatables-basic');
 
   (function () {
     const formAddNewRecord = document.getElementById('form-add-new-record');
@@ -28,10 +27,11 @@ document.addEventListener('DOMContentLoaded', function (e) {
           offCanvasEl = new bootstrap.Offcanvas(offCanvasElement);
           // Empty fields on offCanvas open
           (offCanvasElement.querySelector('.dt-full-name').value = ''),
-            (offCanvasElement.querySelector('.dt-nim').value = ''),
+            (offCanvasElement.querySelector('.dt-nik').value = ''),
             (offCanvasElement.querySelector('.dt-email').value = ''),
-            (offCanvasElement.querySelector('.dt-prodi').value = ''),
-            (offCanvasElement.querySelector('.dt-tahun-masuk').value = '');
+            (offCanvasElement.querySelector('.dt-unit').value = ''),
+            (offCanvasElement.querySelector('.dt-jabatan').value = ''),
+            (offCanvasElement.querySelector('.dt-role').value = '');
           // Open offCanvas with form
           offCanvasEl.show();
         });
@@ -47,9 +47,9 @@ document.addEventListener('DOMContentLoaded', function (e) {
               notEmpty: { message: 'Nama lengkap wajib diisi' }
             }
           },
-          nim: {
+          nik: {
             validators: {
-              notEmpty: { message: 'NIM wajib diisi' }
+              notEmpty: { message: 'NIK wajib diisi' }
             }
           },
           email: {
@@ -58,14 +58,19 @@ document.addEventListener('DOMContentLoaded', function (e) {
               emailAddress: { message: 'Format email tidak valid' }
             }
           },
-          program_studi: {
+          unit_id: {
             validators: {
-              notEmpty: { message: 'Program Studi wajib dipilih' }
+              notEmpty: { message: 'Unit wajib dipilih' }
             }
           },
-          tahun_masuk: {
+          jabatan_id: {
             validators: {
-              notEmpty: { message: 'Tahun masuk wajib diisi' }
+              notEmpty: { message: 'Jabatan wajib dipilih' }
+            }
+          },
+          role: {
+            validators: {
+              notEmpty: { message: 'Role wajib dipilih' }
             }
           }
         },
@@ -108,19 +113,18 @@ document.addEventListener('DOMContentLoaded', function (e) {
     }
   })();
 
-  // Student datatable
-  // Student datatable
-  if (dt_student_table) {
-    var dt_student = new DataTable(dt_student_table, {
+  // Staff datatable
+  if (dt_staff_table) {
+    var dt_staff = new DataTable(dt_staff_table, {
       columns: [
         { data: 'id' },
         { data: 'id', orderable: false, render: DataTable.render.select() },
         { data: null, name: 'no' },
         { data: 'full_name' },
-        { data: 'nim', visible: false }, // Kolom NIM disembunyikan
+        { data: 'nik' },
         { data: 'email' },
-        { data: 'prodi' },
-        { data: 'tahun_masuk', visible: false }, // Kolom Tahun Masuk disembunyikan
+        { data: 'unit' },
+        { data: 'jabatan' },
         { data: 'id' }
       ],
       columnDefs: [
@@ -164,7 +168,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
           responsivePriority: 1,
           render: function (data, type, full, meta) {
             const name = data;
-            const nim = full['nim'];
+            const nik = full['nik'];
 
             // Generate initials for avatar
             let initials = name.match(/\b\w/g) || [];
@@ -183,7 +187,6 @@ document.addEventListener('DOMContentLoaded', function (e) {
                 </div>
                 <div class="d-flex flex-column">
                   <span class="emp_name text-truncate text-heading fw-medium">${name}</span>
-                  <span class="emp_nim text-truncate text-pretty fw-medium fs-10">${nim}</span>
                 </div>
               </div>
             `;
@@ -191,11 +194,10 @@ document.addEventListener('DOMContentLoaded', function (e) {
           }
         },
         {
-          // NIM (hidden column - no render needed since it's invisible)
+          // NIK (hidden column)
           targets: 4,
-          visible: false,
           render: function (data, type, full, meta) {
-            return data; // Tetap return data untuk export data
+            return data;
           }
         },
         {
@@ -207,18 +209,17 @@ document.addEventListener('DOMContentLoaded', function (e) {
           }
         },
         {
-          // Prodi
+          // Unit
           targets: 6,
           render: function (data, type, full, meta) {
             return `<span>${data}</span>`;
           }
         },
         {
-          // Tahun Masuk (hidden column)
+          // Jabatan
           targets: 7,
-          visible: false,
           render: function (data, type, full, meta) {
-            return data; // Tetap return data untuk export data
+            return `<span>${data}</span>`;
           }
         },
         {
@@ -229,9 +230,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
           orderable: false,
           className: 'text-center',
           render: function (data, type, full, meta) {
-            // Get all rows
-            const rows = dt_student_table?.querySelectorAll('tbody tr');
-            // If rows exist and the current row exists, get its ID
+            const rows = dt_staff_table?.querySelectorAll('tbody tr');
             const id = rows && rows[meta.row] ? rows[meta.row].querySelector('td:last-child')?.dataset?.id : '';
 
             return `
@@ -240,10 +239,10 @@ document.addEventListener('DOMContentLoaded', function (e) {
                   <i class="icon-base ti tabler-dots-vertical icon-22px"></i>
                 </button>
                 <div class="dropdown-menu dropdown-menu-end m-0">
-                  <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center view-student" data-id="${id}"><i class="icon-base ti tabler-details me-2"></i> Detail</a>
-                  <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center edit-student" data-id="${id}"><i class="icon-base ti tabler-pencil me-2"></i> Edit</a>
+                  <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center view-staff" data-id="${id}"><i class="icon-base ti tabler-details me-2"></i> Detail</a>
+                  <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center edit-staff" data-id="${id}"><i class="icon-base ti tabler-pencil me-2"></i> Edit</a>
                   <div class="dropdown-divider"></div>
-                  <a href="javascript:void(0);" class="dropdown-item text-danger d-flex align-items-center delete-student" data-id="${id}"><i class="icon-base ti tabler-trash me-2"></i> Hapus</a>
+                  <a href="javascript:void(0);" class="dropdown-item text-danger d-flex align-items-center delete-staff" data-id="${id}"><i class="icon-base ti tabler-trash me-2"></i> Hapus</a>
                 </div>
               </div>
             `;
@@ -444,7 +443,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
                   ]
                 },
                 {
-                  text: '<i class="icon-base ti tabler-plus me-0 me-sm-1 icon-20px"></i><span class="d-none d-sm-inline-block">Tambah Mahasiswa</span>',
+                  text: '<i class="icon-base ti tabler-plus me-0 me-sm-1 icon-20px"></i><span class="d-none d-sm-inline-block">Tambah Staff</span>',
                   className: 'add-new btn btn-primary create-new'
                 }
               ]
@@ -483,7 +482,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
           display: DataTable.Responsive.display.modal({
             header: function (row) {
               const data = row.data();
-              return 'Detail Mahasiswa';
+              return 'Detail Staff';
             }
           }),
           type: 'column',
@@ -518,26 +517,26 @@ document.addEventListener('DOMContentLoaded', function (e) {
 
     // Event handlers untuk tombol aksi
     document.body.addEventListener('click', function (e) {
-      // View Student
-      if (e.target.closest('.view-student')) {
-        const id = e.target.closest('.view-student').dataset.id;
-        window.location.href = baseUrl + 'student/' + id;
+      // View Staff
+      if (e.target.closest('.view-staff')) {
+        const id = e.target.closest('.view-staff').dataset.id;
+        window.location.href = baseUrl + 'staff/' + id;
       }
 
-      // Edit Student
-      if (e.target.closest('.edit-student')) {
-        const id = e.target.closest('.edit-student').dataset.id;
-        window.location.href = baseUrl + 'student/' + id + '/edit';
+      // Edit Staff
+      if (e.target.closest('.edit-staff')) {
+        const id = e.target.closest('.edit-staff').dataset.id;
+        window.location.href = baseUrl + 'staff/' + id + '/edit';
       }
 
-      // Delete Student
-      if (e.target.closest('.delete-student')) {
+      // Delete Staff
+      if (e.target.closest('.delete-staff')) {
         e.preventDefault();
-        const id = e.target.closest('.delete-student').dataset.id;
+        const id = e.target.closest('.delete-staff').dataset.id;
 
         Swal.fire({
           title: 'Apakah Anda yakin?',
-          text: 'Data mahasiswa yang dihapus tidak dapat dikembalikan!',
+          text: 'Data staff yang dihapus tidak dapat dikembalikan!',
           icon: 'warning',
           showCancelButton: true,
           confirmButtonText: 'Ya, hapus!',
@@ -552,7 +551,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
             // Buat form dan submit
             const form = document.createElement('form');
             form.method = 'POST';
-            form.action = baseUrl + 'student/' + id;
+            form.action = baseUrl + 'staff/' + id;
 
             // CSRF Token
             const csrfInput = document.createElement('input');
@@ -577,11 +576,11 @@ document.addEventListener('DOMContentLoaded', function (e) {
   }
 
   // Tampilkan success message dari session
-  if (window.studentSuccessMessage) {
+  if (window.staffSuccessMessage) {
     Swal.fire({
       icon: 'success',
       title: 'Berhasil!',
-      text: window.studentSuccessMessage,
+      text: window.staffSuccessMessage,
       customClass: {
         confirmButton: 'btn btn-primary waves-effect waves-light'
       },
@@ -590,11 +589,11 @@ document.addEventListener('DOMContentLoaded', function (e) {
   }
 
   // Tampilkan error message dari session
-  if (window.studentErrorMessage) {
+  if (window.staffErrorMessage) {
     Swal.fire({
       icon: 'error',
       title: 'Gagal!',
-      text: window.studentErrorMessage,
+      text: window.staffErrorMessage,
       customClass: {
         confirmButton: 'btn btn-primary waves-effect waves-light'
       },

@@ -82,7 +82,7 @@
         {
           "url": "/student",
           "name": "Mahasiswa",
-          "slug": "student.index",
+          "slug": ["student.index", "student.show", "student.edit"],
           "roles": [
             "super_admin"
           ]
@@ -90,7 +90,7 @@
         {
           "url": "/staff",
           "name": "Staf",
-          "slug": "staff.index",
+          "slug": ["staff.index", "staff.show", "staff.edit"],
           "roles": [
             "super_admin"
           ]
