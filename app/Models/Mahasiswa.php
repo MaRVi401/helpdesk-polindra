@@ -24,6 +24,9 @@ class Mahasiswa extends Model
         'program_studi_id',
         'nim',
         'tahun_masuk',
+        'no_hp',     
+        'alamat',    
+        'foto_profil', 
     ];
 
     public function user()

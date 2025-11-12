@@ -44,9 +44,9 @@ class ProfileController extends Controller
 
         $user = Auth::user();
         Mahasiswa::create([
-            'id_user' => $user->id,
+            'user_id' => $user->id,
             'nim' => $request->nim,
-            'id_program_studi' => $request->program_studi_id,
+            'program_studi_id' => $request->program_studi_id,
             'tahun_masuk' => $request->tahun_masuk,
         ]);
 
