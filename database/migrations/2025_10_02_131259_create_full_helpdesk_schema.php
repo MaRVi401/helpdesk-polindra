@@ -128,7 +128,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('tiket_id')->constrained('tiket')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users');
-            $table->enum('status', ['Draft', 'Post'])->default('Draft');
+            $table->enum('status', ['Draft', 'Pending', 'In Progress', 'Done', 'Rejected'])->default('Draft');
             $table->timestamps();
         });
 

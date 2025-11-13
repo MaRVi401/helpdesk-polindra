@@ -112,4 +112,5 @@ class User extends Authenticatable
 
     return strtoupper(substr($this->name, 0, 2));
   }
+  
 }

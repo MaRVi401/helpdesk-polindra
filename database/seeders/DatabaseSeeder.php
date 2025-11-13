@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             LayananSeeder::class,
             UnitSeeder::class,
             KategoriArtikelSeeder::class,
+            ApiTestSeeder::class,
         ]);
     }
 }
