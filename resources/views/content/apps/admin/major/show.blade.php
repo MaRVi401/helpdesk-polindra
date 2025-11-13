@@ -29,20 +29,21 @@
             <label class="form-label fw-semibold">Diperbarui pada</label>
             <p class="text-muted mb-0">{{ $data_jurusan->updated_at->format('d M Y H:i') }}</p>
           </div>
-          <a href="{{ route('major.index') }}" class="btn btn-outline-secondary mt-3">
+          <a href="{{ route('major.index') }}" class="btn btn-outline-secondary mt-3 me-2">
             <i class="icon-base ti tabler-arrow-left me-1"></i>
             Kembali
           </a>
         </div>
       </div>
     </div>
+
     {{-- DAFTAR PROGRAM STUDI --}}
     <div class="col-md-7">
       <div class="card">
         <h5 class="card-header">Daftar Program Studi</h5>
         <div class="card-body">
           @if ($data_jurusan->programStudi->count() > 0)
-            <div class="table-responsive">
+            <div class="table-responsive mb-3">
               <table class="table table-hover">
                 <thead>
                   <tr>
@@ -62,10 +63,14 @@
             </div>
           @else
             <div class="text-center py-5">
-              <i class="icon-base ti tabler-folder-open icon-lg text-muted mb-3" style="font-size: 3rem;"></i>
+              <i class="icon-base ti tabler-folder-open icon-lg text-muted mb-3 icon-20px"></i>
               <p class="text-muted">Belum ada program studi untuk jurusan ini</p>
             </div>
           @endif
+          <a href="{{ route('study-program.index') }}" class="btn btn-primary mt-2">
+            <i class="icon-base ti tabler-list-details me-1"></i>
+            Lihat Semua Program Studi
+          </a>
         </div>
       </div>
     </div>

@@ -63,7 +63,10 @@
     {
       "name": "Pengguna",
       "icon": "menu-icon icon-base ti tabler-user",
-      "slug": ["student", "staff"],
+      "slug": [
+        "student",
+        "staff"
+      ],
       "roles": [
         "super_admin"
       ],
@@ -71,7 +74,11 @@
         {
           "url": "/student",
           "name": "Mahasiswa",
-          "slug": ["student.index", "student.show", "student.edit"],
+          "slug": [
+            "student.index",
+            "student.show",
+            "student.edit"
+          ],
           "roles": [
             "super_admin"
           ]
@@ -79,7 +86,11 @@
         {
           "url": "/staff",
           "name": "Staf",
-          "slug": ["staff.index", "staff.show", "staff.edit"],
+          "slug": [
+            "staff.index",
+            "staff.show",
+            "staff.edit"
+          ],
           "roles": [
             "super_admin"
           ]
@@ -159,7 +170,10 @@
     {
       "name": "Bidang Akademik",
       "icon": "menu-icon icon-base ti tabler-building",
-      "slug": ["major", "study-program"],
+      "slug": [
+        "major",
+        "study-program"
+      ],
       "roles": [
         "super_admin"
       ],
@@ -167,7 +181,12 @@
         {
           "url": "/major",
           "name": "Jurusan",
-          "slug": ["major.index", "major.create", "major.show", "major.edit"],
+          "slug": [
+            "major.index",
+            "major.create",
+            "major.show",
+            "major.edit"
+          ],
           "roles": [
             "super_admin"
           ]
@@ -175,7 +194,12 @@
         {
           "url": "/study-program",
           "name": "Program Studi",
-          "slug": ["study-program.index", "study-program.create", "study-program.show", "study-program.edit"],
+          "slug": [
+            "study-program.index",
+            "study-program.create",
+            "study-program.show",
+            "study-program.edit"
+          ],
           "roles": [
             "super_admin"
           ]
@@ -183,12 +207,33 @@
       ]
     },
     {
-      "url": "/unit",
-      "name": "Unit",
+      "name": "Bidang Unit",
       "icon": "menu-icon icon-base ti tabler-building-warehouse",
       "slug": "unit",
       "roles": [
         "super_admin"
+      ],
+      "submenu": [
+        {
+          "url": "/unit",
+          "name": "Daftar Unit",
+          "slug": [
+            "unit.index",
+            "unit.show",
+            "unit.edit"
+          ],
+          "roles": [
+            "super_admin"
+          ]
+        },
+        {
+          "url": "/unit/create",
+          "name": "Tambah Unit",
+          "slug": "unit.create",
+          "roles": [
+            "super_admin"
+          ]
+        }
       ]
     },
     {
