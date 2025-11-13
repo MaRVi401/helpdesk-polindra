@@ -1,7 +1,6 @@
 /**
- * Article Categories (Client-side version with SweetAlert2)
+ * Major Management (Client-side version with SweetAlert2)
  */
-
 'use strict';
 
 document.addEventListener('DOMContentLoaded', function (e) {
@@ -11,19 +10,21 @@ document.addEventListener('DOMContentLoaded', function (e) {
   bodyBg = config.colors.bodyBg;
   headingColor = config.colors.headingColor;
 
-  const dt_category_table = document.querySelector('.datatables-article-category'),
-    categoryAdd = baseUrl + 'article-category/create';
+  const dt_major_table = document.querySelector('.datatables-major'),
+    majorAdd = baseUrl + 'major/create',
+    statusObj = {
+      Post: { title: 'Post', class: 'bg-label-success' },
+      Draft: { title: 'Draft', class: 'bg-label-warning' }
+    };
 
-  // Article Category datatable
-  if (dt_category_table) {
-    var dt_category = new DataTable(dt_category_table, {
+  // Major datatable
+  if (dt_major_table) {
+    var dt_major = new DataTable(dt_major_table, {
       columns: [
         { data: 'id' },
         { data: 'id', orderable: false, render: DataTable.render.select() },
-        { data: null, name: 'no' },
-        { data: 'kategori' },
-        { data: 'created_at' },
-        { data: 'updated_at' },
+        { data: 'nama_jurusan' },
+        { data: 'program_studi_count' },
         { data: 'id' }
       ],
       columnDefs: [
@@ -52,86 +53,36 @@ document.addEventListener('DOMContentLoaded', function (e) {
         },
         {
           targets: 2,
-          orderable: false,
-          searchable: false,
           render: function (data, type, full, meta) {
-            return meta.row + 1;
+            return `<span>${data}</span>`;
           }
         },
         {
           targets: 3,
-          responsivePriority: 1,
+          className: 'text-center',
           render: function (data, type, full, meta) {
-            return `<span class="fw-medium">${data}</span>`;
+            return data;
           }
         },
         {
           targets: 4,
-          render: function (data, type, full, meta) {
-            if (!data || data === '-') return '<span class="text-muted">-</span>';
-
-            const date = new Date(data);
-            const formattedDate = date.toLocaleDateString('id-ID', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric'
-            });
-            const formattedTime = date.toLocaleTimeString('id-ID', {
-              hour: '2-digit',
-              minute: '2-digit'
-            });
-
-            return `
-              <div class="d-flex flex-column">
-                <span class="fw-medium">${formattedDate}</span>
-                <small class="text-muted">${formattedTime}</small>
-              </div>
-            `;
-          }
-        },
-        {
-          targets: 5,
-          render: function (data, type, full, meta) {
-            if (!data || data === '-') return '<span class="text-muted">-</span>';
-
-            const date = new Date(data);
-            const formattedDate = date.toLocaleDateString('id-ID', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric'
-            });
-            const formattedTime = date.toLocaleTimeString('id-ID', {
-              hour: '2-digit',
-              minute: '2-digit'
-            });
-
-            return `
-              <div class="d-flex flex-column">
-                <span class="fw-medium">${formattedDate}</span>
-                <small class="text-muted">${formattedTime}</small>
-              </div>
-            `;
-          }
-        },
-        {
-          targets: 6,
           title: 'Aksi',
           searchable: false,
           orderable: false,
           className: 'text-center',
           render: function (data, type, full, meta) {
-            const row = dt_category_table.querySelectorAll('tbody tr')[meta.row];
-            const id = row.querySelector('td:last-child').dataset.id;
-
+            const rows = dt_major_table?.querySelectorAll('tbody tr');
+            const id = rows && rows[meta.row] ? rows[meta.row].querySelector('td:last-child')?.dataset?.id : '';
             return `
               <div class="d-inline-block text-nowrap">
                 <button class="btn btn-text-secondary rounded-pill waves-effect btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
                   <i class="icon-base ti tabler-dots-vertical icon-22px"></i>
                 </button>
                 <div class="dropdown-menu dropdown-menu-end m-0">
-                  <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center edit-category" data-id="${id}"><i class="icon-base ti tabler-pencil me-2"></i> Edit</a>
+                  <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center view-major" data-id="${id}"><i class="icon-base ti tabler-details me-2"></i> Detail</a>
+                  <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center edit-major" data-id="${id}"><i class="icon-base ti tabler-pencil me-2"></i> Edit</a>
                   <div class="dropdown-divider"></div>
-                  <a href="javascript:void(0);" class="dropdown-item text-danger d-flex align-items-center delete-category" data-id="${id}"><i class="icon-base ti tabler-trash me-2"></i> Hapus</a>
+                  <a href="javascript:void(0);" class="dropdown-item text-danger d-flex align-items-center delete-major" data-id="${id}"><i class="icon-base ti tabler-trash me-2"></i> Hapus</a>
                 </div>
               </div>
             `;
@@ -142,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
         style: 'multi',
         selector: 'td:nth-child(2)'
       },
-      order: [[5, 'asc']],
+      order: [[1, 'asc']],
       displayLength: 5,
       layout: {
         topStart: {
@@ -176,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
                       text: `<span class="d-flex align-items-center"><i class="icon-base ti tabler-printer me-1"></i>Print</span>`,
                       className: 'dropdown-item',
                       exportOptions: {
-                        columns: [2, 3, 4, 5]
+                        columns: [2, 3]
                       }
                     },
                     {
@@ -184,7 +135,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
                       text: `<span class="d-flex align-items-center"><i class="icon-base ti tabler-file me-1"></i>Csv</span>`,
                       className: 'dropdown-item',
                       exportOptions: {
-                        columns: [2, 3, 4, 5]
+                        columns: [2, 3]
                       }
                     },
                     {
@@ -192,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
                       text: `<span class="d-flex align-items-center"><i class="icon-base ti tabler-upload me-1"></i>Excel</span>`,
                       className: 'dropdown-item',
                       exportOptions: {
-                        columns: [2, 3, 4, 5]
+                        columns: [2, 3]
                       }
                     },
                     {
@@ -200,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
                       text: `<span class="d-flex align-items-center"><i class="icon-base ti tabler-file-text me-1"></i>Pdf</span>`,
                       className: 'dropdown-item',
                       exportOptions: {
-                        columns: [2, 3, 4, 5]
+                        columns: [2, 3]
                       }
                     },
                     {
@@ -208,16 +159,16 @@ document.addEventListener('DOMContentLoaded', function (e) {
                       text: `<i class="icon-base ti tabler-copy me-1"></i>Copy`,
                       className: 'dropdown-item',
                       exportOptions: {
-                        columns: [2, 3, 4, 5]
+                        columns: [2, 3]
                       }
                     }
                   ]
                 },
                 {
-                  text: '<i class="icon-base ti tabler-plus me-0 me-sm-1 icon-20px"></i><span class="d-none d-sm-inline-block">Tambah Kategori</span>',
+                  text: '<i class="icon-base ti tabler-plus me-0 me-sm-1 icon-20px"></i><span class="d-none d-sm-inline-block">Tambah Jurusan</span>',
                   className: 'add-new btn btn-primary',
                   action: function () {
-                    window.location.href = categoryAdd;
+                    window.location.href = majorAdd;
                   }
                 }
               ]
@@ -246,17 +197,17 @@ document.addEventListener('DOMContentLoaded', function (e) {
         },
         select: {
           rows: {
-            _: '%d baris dipilih'
+            _: '%d baris dipilih',
+            1: '1 baris dipilih'
           }
         }
       },
-
       responsive: {
         details: {
           display: DataTable.Responsive.display.modal({
             header: function (row) {
               const data = row.data();
-              return 'Kategori Artikel';
+              return 'Detail Jurusan';
             }
           }),
           type: 'column',
@@ -289,21 +240,28 @@ document.addEventListener('DOMContentLoaded', function (e) {
       }
     });
 
+    // Event handlers untuk tombol aksi
     document.body.addEventListener('click', function (e) {
-      // Edit Category
-      if (e.target.closest('.edit-category')) {
-        const id = e.target.closest('.edit-category').dataset.id;
-        window.location.href = baseUrl + 'article-category/' + id + '/edit';
+      // View Major
+      if (e.target.closest('.view-major')) {
+        const id = e.target.closest('.view-major').dataset.id;
+        window.location.href = baseUrl + 'major/' + id;
       }
 
-      // Delete Category
-      if (e.target.closest('.delete-category')) {
+      // Edit Major
+      if (e.target.closest('.edit-major')) {
+        const id = e.target.closest('.edit-major').dataset.id;
+        window.location.href = baseUrl + 'major/' + id + '/edit';
+      }
+
+      // Delete Major
+      if (e.target.closest('.delete-major')) {
         e.preventDefault();
-        const id = e.target.closest('.delete-category').dataset.id;
+        const id = e.target.closest('.delete-major').dataset.id;
 
         Swal.fire({
           title: 'Apakah Kamu yakin?',
-          text: 'Data kategori yang dihapus tidak dapat dikembalikan!',
+          text: 'Data jurusan yang dihapus tidak dapat dikembalikan!',
           icon: 'warning',
           showCancelButton: true,
           confirmButtonText: 'Ya, hapus!',
@@ -318,7 +276,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
             // Buat form dan submit
             const form = document.createElement('form');
             form.method = 'POST';
-            form.action = baseUrl + 'article-category/' + id;
+            form.action = baseUrl + 'major/' + id;
 
             // CSRF Token
             const csrfInput = document.createElement('input');
@@ -342,12 +300,12 @@ document.addEventListener('DOMContentLoaded', function (e) {
     });
   }
 
-  // Tampilkan success message dari session
-  if (window.articleCategorySuccessMessage) {
+  // Tampilkan success message dari session (toast notification)
+  if (window.majorSuccessMessage) {
     Swal.fire({
       icon: 'success',
       title: 'Berhasil!',
-      text: window.articleCategorySuccessMessage,
+      text: window.majorSuccessMessage,
       customClass: {
         confirmButton: 'btn btn-primary waves-effect waves-light'
       },
@@ -356,11 +314,11 @@ document.addEventListener('DOMContentLoaded', function (e) {
   }
 
   // Tampilkan error message dari session
-  if (window.articleCategoryErrorMessage) {
+  if (window.majorErrorMessage) {
     Swal.fire({
       icon: 'error',
       title: 'Gagal!',
-      text: window.articleCategoryErrorMessage,
+      text: window.majorErrorMessage,
       customClass: {
         confirmButton: 'btn btn-primary waves-effect waves-light'
       },

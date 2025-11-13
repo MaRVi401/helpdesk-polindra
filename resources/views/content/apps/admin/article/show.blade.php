@@ -6,55 +6,61 @@
   <div class="card">
     <h5 class="card-header">Detail Artikel</h5>
     <div class="card-body">
-      {{-- JUDUL --}}
       <div class="mb-3">
-        <label class="form-label">Judul</label>
-        <p class="form-control">{{ $data_artikel->judul }}</p>
+        <label class="form-label fw-semibold">Judul</label>
+        <p class="text-muted mb-0">{{ $data_artikel->judul }}</p>
       </div>
-      {{-- KATEGORI --}}
+      <hr>
       <div class="mb-3">
-        <label class="form-label">Kategori</label>
-        <p class="form-control">{{ $data_artikel->kategori->kategori ?? '-' }}</p>
+        <label class="form-label fw-semibold">Kategori</label>
+        <p class="text-muted mb-0">{{ $data_artikel->kategori->kategori ?? '-' }}</p>
       </div>
-      {{-- GAMBAR (PREVIEW) --}}
+      <hr>
       <div class="mb-3">
-        <label class="form-label">Gambar (Thumbnail)</label><br>
+        <label class="form-label fw-semibold">Gambar (Thumbnail)</label>
         @if ($data_artikel->gambar)
           <img src="{{ asset('storage/' . $data_artikel->gambar) }}" alt="Gambar Artikel" class="img-fluid rounded"
             style="max-width: 300px; display: block; margin-left: 0;">
         @else
-          <p class="form-control">Tidak ada gambar</p>
+          <p class="text-muted mb-0">Tidak ada gambar</p>
         @endif
       </div>
-      {{-- DESKRIPSI --}}
+      <hr>
       <div class="mb-3">
-        <label class="form-label">Deskripsi</label>
-        <div class="form-control">
-          {!! $data_artikel->deskripsi !!}
-        </div>
+        <label class="form-label fw-semibold">Deskripsi</label>
+        <p class="text-muted mb-0">{!! $data_artikel->deskripsi !!}</p>
       </div>
-      {{-- STATUS --}}
+      <hr>
       <div class="mb-3">
-        <label class="form-label">Status</label>
-        <p class="form-control">{{ $data_artikel->status }}</p>
+        <label class="form-label fw-semibold">Status</label>
+        <p class="text-muted mb-0">
+          <span class="badge 
+          {{ $data_artikel->status === 'Post' ? 'bg-label-success' : 'bg-label-warning' }}">
+            {{ ucfirst($data_artikel->status) }}
+          </span>
+        </p>
       </div>
-      {{-- PENULIS --}}
+      <hr>
       <div class="mb-3">
-        <label class="form-label">Penulis</label>
-        <p class="form-control">{{ $data_artikel->user->name ?? '-' }}</p>
+        <label class="form-label fw-semibold">Penulis</label>
+        <p class="text-muted mb-0">
+          <span class="badge bg-label-primary">{{ $data_artikel->user->name ?? '-' }}</span>
+        </p>
       </div>
-      {{-- DIBUAT PADA --}}
+      <hr>
       <div class="mb-3">
-        <label class="form-label">Dibuat pada</label>
-        <p class="form-control">{{ $data_artikel->created_at->format('d M Y H:i') }}</p>
+        <label class="form-label fw-semibold">Dibuat pada</label>
+        <p class="text-muted mb-0">{{ $data_artikel->created_at->format('d M Y H:i') }}</p>
       </div>
-      {{-- DIPERBARUI PADA --}}
+      <hr>
       <div class="mb-3">
-        <label class="form-label">Diperbarui pada</label>
-        <p class="form-control">{{ $data_artikel->updated_at->format('d M Y H:i') }}</p>
+        <label class="form-label fw-semibold">Diperbarui pada</label>
+        <p class="text-muted mb-0">{{ $data_artikel->updated_at->format('d M Y H:i') }}</p>
       </div>
-      {{-- BUTTON KEMBALI --}}
-      <a href="{{ route('article.index') }}" class="btn btn-outline-secondary mt-3">Kembali</a>
+      <a href="{{ route('article.index') }}" class="btn btn-outline-secondary mt-3">
+        <i class="icon-base ti tabler-arrow-left me-1"></i>
+        Kembali
+      </a>
     </div>
   </div>
 @endsection

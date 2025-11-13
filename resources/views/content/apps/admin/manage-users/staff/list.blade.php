@@ -17,6 +17,9 @@
 @section('content')
   {{-- TABEL DAFTAR STAF --}}
   <div class="card">
+    <div class="card-header border-bottom">
+      <h5 class="card-title">Daftar Staf</h5>
+    </div>
     <div class="card-datatable table-responsive pt-0">
       <table class="datatables-basic table">
         <thead>

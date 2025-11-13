@@ -544,7 +544,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
           cancelButtonText: 'Batal',
           customClass: {
             confirmButton: 'btn btn-primary me-3 waves-effect waves-light',
-            cancelButton: 'btn btn-label-secondary waves-effect'
+            cancelButton: 'btn btn-outline-secondary waves-effect'
           },
           buttonsStyling: false
         }).then(function (result) {

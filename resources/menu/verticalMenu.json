@@ -1,7 +1,7 @@
 {
   "menu": [
     {
-      "menuHeader": "Apps & Pages",
+      "menuHeader": "KONTEN & FITUR UTAMA",
       "roles": [
         "super_admin",
         "admin_unit",
@@ -10,7 +10,8 @@
       ]
     },
     {
-      "name": "Dashboards",
+      "name": "Dashboard",
+      "url": "/dashboard",
       "icon": "menu-icon icon-base ti tabler-smart-home",
       "slug": "dashboard",
       "roles": [
@@ -18,18 +19,6 @@
         "admin_unit",
         "kepala_unit",
         "mahasiswa"
-      ],
-      "submenu": [
-        {
-          "url": "/",
-          "name": "Analisis",
-          "slug": "dashboard-analisis",
-          "roles": [
-            "super_admin",
-            "admin_unit",
-            "kepala_unit"
-          ]
-        }
       ]
     },
     {
@@ -43,7 +32,7 @@
       ],
       "submenu": [
         {
-          "url": "app/upatik",
+          "url": "/upatik",
           "name": "UPA TIK",
           "slug": "dashboard-upatik",
           "roles": [
@@ -52,7 +41,7 @@
           ]
         },
         {
-          "url": "app/akademik",
+          "url": "/akademik",
           "name": "Akademik",
           "slug": "dashboard-akademik",
           "roles": [
@@ -61,7 +50,7 @@
           ]
         },
         {
-          "url": "app/pku",
+          "url": "/pku",
           "name": "PKU",
           "slug": "dashboard-pku",
           "roles": [
@@ -162,18 +151,35 @@
       ]
     },
     {
-      "menuHeader": "Master Data",
+      "menuHeader": "DATA MASTER",
       "roles": [
         "super_admin"
       ]
     },
     {
-      "url": "/jurusan",
-      "name": "Jurusan",
+      "name": "Bidang Akademik",
       "icon": "menu-icon icon-base ti tabler-building",
-      "slug": "jurusan",
+      "slug": ["major", "study-program"],
       "roles": [
         "super_admin"
+      ],
+      "submenu": [
+        {
+          "url": "/major",
+          "name": "Jurusan",
+          "slug": ["major.index", "major.create", "major.show", "major.edit"],
+          "roles": [
+            "super_admin"
+          ]
+        },
+        {
+          "url": "/study-program",
+          "name": "Program Studi",
+          "slug": ["study-program.index", "study-program.create", "study-program.show", "study-program.edit"],
+          "roles": [
+            "super_admin"
+          ]
+        }
       ]
     },
     {

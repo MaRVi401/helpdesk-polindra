@@ -12,11 +12,11 @@
 
 // scss-docs-start gray-color-variables
 $white-dark: #fff !default;
-$black-dark: #2f3349 !default;
+$black-dark: #1f2130 !default;
 $base-dark: #e1def5 !default;
 
 // Instead of using a card bg, use a paper bg.
-$paper-bg-dark: #2f3349 !default; // (C)
+$paper-bg-dark: #1f2130 !default; // (C)
 $paper-bg-rgb-dark: #{to-rgb($paper-bg-dark)} !default; // (C)
 $base-rgb-dark: #{to-rgb($base-dark)} !default; // (C)
 
@@ -68,7 +68,7 @@ $cyan-dark: #00bad1 !default;
 // scss-docs-end color-variables
 
 // scss-docs-start theme-color-variables
-$primary-dark: $purple-dark !default;
+$primary-dark: #005AD3 !default;
 $secondary-dark: #808390 !default;
 $success-dark: $green-dark !default;
 $info-dark: $cyan-dark !default;
@@ -102,7 +102,7 @@ $theme-colors-rgb-dark: map-loop($theme-colors-dark, to-rgb, "$value") !default;
 $blockquote-footer-color-dark: $gray-600-dark !default;
 
 // TODO: Remove this variable not used in dark theme
-$body-bg-dark: #25293c !default;
+$body-bg-dark: #222537 !default;
 
 // scss-docs-start theme-text-dark-variables
 $light-text-emphasis-dark: $gray-700-dark !default;
@@ -154,7 +154,7 @@ $body-tertiary-bg-dark: mix($gray-100-dark, $body-bg-dark, 90%) !default;
 $alert-border-scale-dark: -84% !default;
 $alert-color-scale-dark: 0% !default;
 
-$border-color-dark: $gray-200-dark !default;
+$border-color-dark: $gray-50-dark !default;
 
 // scss-docs-start box-shadow-variables
 $shadow-bg-dark: #131120 !default; // (C)

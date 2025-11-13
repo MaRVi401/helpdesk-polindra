@@ -50,7 +50,6 @@
             <div class="mb-6">
               <a class="btn bg-white border d-flex align-items-center justify-content-center gap-2 w-100"
                 href="{{ route('google.login') }}">
-
                 <img class="wpx-25" src="{{ asset('assets/img/icons/brands/google.png') }}" alt="Google">
                 <span>Login dengan Google</span>
                 </button>

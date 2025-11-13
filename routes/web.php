@@ -3,9 +3,11 @@
 
 use App\Http\Controllers\Admin\ArticleCategoryController;
 use App\Http\Controllers\Admin\ArticleController;
+use App\Http\Controllers\Admin\MajorController;
 use App\Http\Controllers\Admin\ManageUsers\StaffController;
 use App\Http\Controllers\Admin\ManageUsers\StudentController;
 use App\Http\Controllers\Admin\ManageArticleController;
+use App\Http\Controllers\Admin\StudyProgramController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -87,6 +89,10 @@ Route::middleware(['auth', 'profile.completed'])->group(function () {
     // USERS MANAGEMENT (SUPER ADMIN)
     Route::resource('student', StudentController::class)->middleware('role:super_admin');
     Route::resource('staff', StaffController::class)->middleware('role:super_admin');
+
+    // MAJOR MANAGEMENT (SUPER ADMIN)
+    Route::resource('major', MajorController::class)->middleware('role:super_admin');
+    Route::resource('study-program', StudyProgramController::class)->middleware('role:super_admin');
         
     // FAQ MANAGEMENT (SUPER ADMIN)
     Route::resource('faq', FaqController::class)->middleware('role:super_admin');
