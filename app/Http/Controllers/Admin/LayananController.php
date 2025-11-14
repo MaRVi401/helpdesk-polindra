@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Layanan;
 use App\Models\Unit;
-use App\Models\Staff;
+use App\Models\Staff; // Wajib diimport
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log; // Optional: untuk debugging
 
 class LayananController extends Controller
 {
@@ -20,7 +22,7 @@ class LayananController extends Controller
 
         // Gunakan relasi 'penanggungJawab' (dari Layanan.php)
         $query = Layanan::with(['unit', 'penanggungJawab.user'])
-                        ->latest();
+                         ->latest();
 
         if ($searchQuery) {
             $query->where(function ($q) use ($searchQuery) {
@@ -46,7 +48,7 @@ class LayananController extends Controller
     public function create()
     {
         $units = Unit::orderBy('nama_unit')->get();
-        // Ambil semua staff dengan data user dan unit mereka
+        // Mengambil semua Staff untuk form create
         $allStaff = Staff::with(['user', 'unit'])->get();
         
         return view('admin.layanan.create', compact('units', 'allStaff'));
@@ -65,59 +67,105 @@ class LayananController extends Controller
             'penanggung_jawab_ids.*' => 'exists:staff,id', // Validasi setiap ID staff
         ]);
 
-        $layanan = Layanan::create([
-            'nama' => $request->nama,
-            'unit_id' => $request->unit_id,
-            'prioritas' => $request->prioritas ?? 0,
-            'status_arsip' => $request->has('status_arsip'),
-        ]);
+        try {
+            $layanan = Layanan::create([
+                'nama' => $request->nama,
+                'unit_id' => $request->unit_id,
+                'prioritas' => $request->prioritas ?? 0,
+                'status_arsip' => $request->has('status_arsip'),
+            ]);
 
-        // Gunakan sync() pada relasi 'penanggungJawab'
-        $layanan->penanggungJawab()->sync($request->input('penanggung_jawab_ids', []));
+            // Sinkronkan PIC di tabel pivot
+            $layanan->penanggungJawab()->sync($request->input('penanggung_jawab_ids', []));
 
-        return redirect()->route('admin.layanan.index')->with('success', 'Layanan baru berhasil dibuat.');
+            return redirect()->route('admin.layanan.index')->with('success', 'Layanan baru berhasil dibuat.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal membuat layanan. Error: ' . $e->getMessage())->withInput();
+        }
     }
 
     /**
-     * Menampilkan form untuk mengedit layanan (edit).
+     * Menampilkan form untuk mengedit layanan tertentu, termasuk PIC.
      */
     public function edit(Layanan $layanan)
     {
         $units = Unit::orderBy('nama_unit')->get();
-        $allStaff = Staff::with(['user', 'unit'])->get();
+        // Ambil SEMUA staff dengan relasi user untuk display
+        $allStaff = Staff::with('user')->get(); 
         
-        // Ambil ID dari PIC yang saat ini ditugaskan ke layanan ini
-        // Menggunakan relasi 'penanggungJawab' dari model Layanan Anda
-        $assignedPicIds = $layanan->penanggungJawab->pluck('id');
+        // Ambil staff yang sudah ditugaskan sebagai PIC untuk layanan ini
+        $currentPICS = $layanan->penanggungJawab()->with('user')->get(); 
+        
+        // Pisahkan staff yang sudah menjadi PIC dari calon PIC yang tersedia
+        $assignedPICIds = $currentPICS->pluck('id')->toArray();
+        $availableStaff = $allStaff->reject(function ($staff) use ($assignedPICIds) {
+            return in_array($staff->id, $assignedPICIds);
+        });
 
-        return view('admin.layanan.edit', compact('layanan', 'units', 'allStaff', 'assignedPicIds'));
+        return view('admin.layanan.edit', compact('layanan', 'units', 'currentPICS', 'availableStaff'));
     }
 
     /**
-     * Memperbarui layanan di database (update).
+     * Memperbarui layanan di database, termasuk mengelola PIC (Data Dasar, Tambah PIC, Hapus PIC).
      */
     public function update(Request $request, Layanan $layanan)
     {
-        $request->validate([
-            'nama' => 'required|string|max:255',
-            'unit_id' => 'required|exists:units,id',
-            'prioritas' => 'nullable|integer',
-            'penanggung_jawab_ids' => 'nullable|array',
-            'penanggung_jawab_ids.*' => 'exists:staff,id',
-        ]);
+        try {
+            // Kita bungkus semua dalam transaksi
+            return DB::transaction(function () use ($request, $layanan) {
+                
+                // --- 1. Logika Hapus PIC (Dipicu dari tombol Hapus) ---
+                if ($request->filled('pic_id_to_remove')) {
+                    $request->validate(['pic_id_to_remove' => 'required|exists:staff,id']);
+                    
+                    $layanan->penanggungJawab()->detach($request->pic_id_to_remove);
+                    return redirect()->route('admin.layanan.edit', $layanan)
+                                     ->with('success', 'Penanggung Jawab berhasil dihapus.');
+                }
 
-        $layanan->update([
-            'nama' => $request->nama,
-            'unit_id' => $request->unit_id,
-            'prioritas' => $request->prioritas ?? 0,
-            'status_arsip' => $request->has('status_arsip'),
-        ]);
+                // --- 2. Logika Tambah PIC (Dipicu dari form Tambah PIC) ---
+                if ($request->filled('pic_id_to_add')) {
+                    $request->validate(['pic_id_to_add' => 'required|exists:staff,id']);
+                    
+                    // Attach PIC baru ke relasi many-to-many
+                    $layanan->penanggungJawab()->attach($request->pic_id_to_add);
+                    return redirect()->route('admin.layanan.edit', $layanan)
+                                     ->with('success', 'Penanggung Jawab berhasil ditambahkan.');
+                }
+                
+                // --- 3. Logika Update Data Dasar Layanan (Dipicu dari form Update Data Dasar) ---
+                
+                // Jalankan validasi penuh untuk data dasar layanan
+                $request->validate([
+                    'nama' => 'required|string|max:255',
+                    'unit_id' => 'required|exists:units,id',
+                    'prioritas' => 'nullable|integer',
+                    'status_arsip' => 'nullable', // Boleh kosong jika checkbox tidak dicentang
+                    // Jika ada form PIC lama (multiselect), validasi ini akan gagal karena field PIC tidak ada,
+                    // oleh karena itu kita sudah pisahkan logikanya di atas.
+                ]);
+                
+                // Perbarui data dasar Layanan
+                $layanan->update([
+                    'nama' => $request->nama,
+                    'unit_id' => $request->unit_id,
+                    'prioritas' => $request->prioritas ?? 0,
+                    'status_arsip' => $request->has('status_arsip'), // Menggunakan has() untuk checkbox
+                ]);
+                
+                return redirect()->route('admin.layanan.edit', $layanan)
+                                 ->with('success', 'Data Dasar Layanan berhasil diperbarui.');
 
-        // Gunakan sync() untuk memperbarui PIC di tabel pivot
-        $layanan->penanggungJawab()->sync($request->input('penanggung_jawab_ids', []));
+            }); // End DB::transaction
 
-        return redirect()->route('admin.layanan.index')->with('success', 'Layanan berhasil diperbarui.');
+        } catch (\Exception $e) {
+            // Tangkap error validasi atau database
+            return redirect()->back()
+                             ->with('error', 'Gagal memperbarui layanan. Error: ' . $e->getMessage())
+                             ->withInput();
+        }
     }
+
 
     /**
      * Menghapus layanan dari database (destroy).
@@ -142,4 +190,3 @@ class LayananController extends Controller
         }
     }
 }
-

@@ -19,14 +19,23 @@ class ApiTestSeeder extends Seeder
      */
     public function run(): void
     {
-        
         $prodi = ProgramStudi::where('program_studi', 'D3 - Teknik Informatika')->first();
-        $unit = Unit::where('nama_unit', 'UPA TIK')->first();
+        $unit  = Unit::where('nama_unit', 'UPA TIK')->first();
 
         if (!$prodi || !$unit) {
-            $this->command->error("Master data (Program Studi 'D3 - Teknik Informatika' atau Unit 'UPA TIK') tidak ditemukan. Harap pastikan MasterDataSeeder sudah dijalankan sebelum ApiTestSeeder.");
+            $this->command->error("Program Studi 'D3 - Teknik Informatika' atau Unit 'UPA TIK' tidak ditemukan. Pastikan MasterDataSeeder sudah dijalankan.");
             return;
         }
+
+        // Ambil layanan pertama dari unit UPA TIK
+        $layanan = Layanan::where('unit_id', $unit->id)->first();
+
+        if (!$layanan) {
+            $this->command->error("Tidak ada layanan untuk unit UPA TIK. Pastikan LayananSeeder sudah dijalankan.");
+            return;
+        }
+
+        // Membuat user mahasiswa
         $userMhs = User::create([
             'name' => 'Budi Babiniksati',
             'email' => 'budibabi@student.polindra.ac.id',
@@ -41,13 +50,9 @@ class ApiTestSeeder extends Seeder
             'tahun_masuk' => 2020,
         ]);
 
-        $layanan = Layanan::firstOrCreate(
-            ['nama' => 'Permintaan Reset Akun E-Mail'],
-            ['unit_id' => $unit->id, 'prioritas' => 1]
-        );
-
+        // Membuat tiket
         $tiket1 = Tiket::create([
-            'no_tiket' => 'RMA-20251114-0001', 
+            'no_tiket' => 'RMA-20251114-0001',
             'pemohon_id' => $userMhs->id,
             'layanan_id' => $layanan->id,
             'deskripsi' => 'Lupa password email sejak minggu lalu.',
@@ -60,17 +65,17 @@ class ApiTestSeeder extends Seeder
             'deskripsi' => 'Akun Office 365 terblokir.',
         ]);
 
-        
+        // Riwayat status tiket
         RiwayatStatusTiket::create([
             'tiket_id' => $tiket1->id,
-            'user_id' => $userMhs->id, 
-            'status' => 'Pending', 
+            'user_id' => $userMhs->id,
+            'status' => 'Pending',
         ]);
-        
+
         RiwayatStatusTiket::create([
             'tiket_id' => $tiket1->id,
-            'user_id' => $userMhs->id, 
-            'status' => 'Pending', 
+            'user_id' => $userMhs->id,
+            'status' => 'Pending',
         ]);
 
         RiwayatStatusTiket::create([
@@ -78,20 +83,13 @@ class ApiTestSeeder extends Seeder
             'user_id' => $userMhs->id,
             'status' => 'Diproses',
         ]);
-        
+
         RiwayatStatusTiket::create([
             'tiket_id' => $tiket1->id,
             'user_id' => $userMhs->id,
-            'status' => 'Selesai', 
+            'status' => 'Selesai',
         ]);
-        
-        
-        RiwayatStatusTiket::create([
-            'tiket_id' => $tiket2->id,
-            'user_id' => $userMhs->id, 
-            'status' => 'Pending', 
-        ]);
-        
+
         RiwayatStatusTiket::create([
             'tiket_id' => $tiket2->id,
             'user_id' => $userMhs->id,
@@ -101,8 +99,13 @@ class ApiTestSeeder extends Seeder
         RiwayatStatusTiket::create([
             'tiket_id' => $tiket2->id,
             'user_id' => $userMhs->id,
-            'status' => 'Diproses', 
+            'status' => 'Pending',
         ]);
 
+        RiwayatStatusTiket::create([
+            'tiket_id' => $tiket2->id,
+            'user_id' => $userMhs->id,
+            'status' => 'Diproses',
+        ]);
     }
 }

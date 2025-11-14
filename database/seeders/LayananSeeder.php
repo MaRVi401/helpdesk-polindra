@@ -33,7 +33,7 @@ class LayananSeeder extends Seeder
             ],
             [
                 'unit_id' => $upaTik->id,
-                'nama' => 'Reset Akun E-Learning & Siakad',
+                'nama' => 'Reset Akun',
                 'status_arsip' => false,
                 'prioritas' => 3,
             ],
@@ -45,7 +45,7 @@ class LayananSeeder extends Seeder
             ],
             [
                 'unit_id' => $kemahasiswaan->id,
-                'nama' => 'Request Publikasi Event',
+                'nama' => 'Request Publikasi',
                 'status_arsip' => false,
                 'prioritas' => 1,
             ]
