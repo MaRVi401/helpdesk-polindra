@@ -104,7 +104,7 @@ return new class extends Migration
 
         Schema::create('tiket', function (Blueprint $table) {
             $table->id();
-            $table->integer('no_tiket')->unique();
+            $table->string('no_tiket')->unique();
             $table->foreignId('pemohon_id')->constrained('users');
             $table->foreignId('layanan_id')->constrained('layanan');
             $table->text('deskripsi');
@@ -128,7 +128,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('tiket_id')->constrained('tiket')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users');
-            $table->enum('status', ['Draft', 'Pending', 'In Progress', 'Done', 'Rejected'])->default('Draft');
+            $table->enum('status', ['Pending', 'Diproses', 'Selesai', 'Ditolak'])->default('Pending');
             $table->timestamps();
         });
 

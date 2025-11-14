@@ -65,7 +65,7 @@ class AdminTiketController extends Controller
         // Ambil hanya mahasiswa untuk pilihan pemohon
         $mahasiswas = User::where('role', 'mahasiswa')->get();
         $layanans = Layanan::where('status_arsip', false)->get();
-        
+
         return view('admin.tiket.create', compact('mahasiswas', 'layanans'));
     }
 
@@ -84,7 +84,7 @@ class AdminTiketController extends Controller
             DB::transaction(function () use ($request) {
                 // 1. Buat Tiket
                 $tiket = Tiket::create([
-                    'no_tiket' => $this->generateTicketNumber(),
+                    'no_tiket' => $this->generateTicketNumber($request->layanan_id),
                     'pemohon_id' => $request->pemohon_id,
                     'layanan_id' => $request->layanan_id,
                     'deskripsi' => $request->deskripsi,
@@ -118,9 +118,9 @@ class AdminTiketController extends Controller
     {
         // Load semua relasi yang diperlukan
         $tiket->load([
-            'pemohon.mahasiswa.programStudi.jurusan', 
-            'layanan.unit', 
-            'riwayatStatus.user', 
+            'pemohon.mahasiswa.programStudi.jurusan',
+            'layanan.unit',
+            'riwayatStatus.user',
             'komentar.pengirim'
         ]);
 
@@ -191,30 +191,60 @@ class AdminTiketController extends Controller
     public function exportExcel(Request $request)
     {
         $selectedIds = $request->input('selected_ids');
-        
+
         if (empty($selectedIds)) {
-             return redirect()->back()->with('error', 'Tidak ada data yang dipilih untuk diekspor.');
+            return redirect()->back()->with('error', 'Tidak ada data yang dipilih untuk diekspor.');
         }
 
         return Excel::download(new TiketExport($selectedIds), 'daftar_tiket_terpilih.xlsx');
     }
 
-    /**
-     * Helper untuk generate nomor tiket unik.
-     */
-    private function generateTicketNumber()
+
+
+    private function getServiceCode($layananId)
     {
-        // Format: YYYYMMDD-XXXX (misal: 20251104-0001)
+        $layanan = Layanan::find($layananId);
+        $namaLayanan = $layanan->nama ?? 'Unknown';
+
+        // Logika kustom untuk membuat kode 3 huruf dari nama layanan
+        if (str_contains($namaLayanan, 'Surat Keterangan Aktif')) {
+            return 'SKA';
+        } elseif (str_contains($namaLayanan, 'Reset Akun')) {
+            return 'RMA';
+        } elseif (str_contains($namaLayanan, 'Ubah Data Mahasiswa')) {
+            return 'UDM';
+        } elseif (str_contains($namaLayanan, 'Request Publikasi')) {
+            return 'RPK';
+        } else {
+            // Fallback code jika tidak cocok dengan kriteria di atas
+            return 'TKT';
+        }
+    }
+    private function generateTicketNumber($layananId)
+    {
+        // Ambil Kode Layanan
+        $code = $this->getServiceCode($layananId);
+
+        // Format tanggal: YYYYMMDD (misal: 20251114)
         $date = now()->format('Ymd');
-        $lastTicket = Tiket::where('no_tiket', 'like', $date . '%')->orderBy('no_tiket', 'desc')->first();
+
+        // Prefix untuk pencarian di hari ini
+        $prefix = $code . '-' . $date . '%';
+
+        // Cari tiket terakhir dengan kode dan tanggal hari ini
+        $lastTicket = Tiket::where('no_tiket', 'like', $code . '-' . $date . '-%')
+            ->orderBy('no_tiket', 'desc')
+            ->first();
 
         if ($lastTicket) {
+            // Ambil nomor urut terakhir (4 digit setelah strip terakhir)
             $lastNumber = (int) substr($lastTicket->no_tiket, -4);
             $newNumber = $lastNumber + 1;
         } else {
             $newNumber = 1;
         }
 
-        return $date . '-' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
+        // Format akhir: SKA-YYYYMMDD-XXXX (misal: SKA-20251114-0001)
+        return $code . '-' . $date . '-' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
     }
 }

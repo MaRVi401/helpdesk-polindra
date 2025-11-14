@@ -208,7 +208,7 @@
                                 <dt>Deskripsi</dt>
                                 <dd>{{ $detailLayanan->deskripsi }}</dd>
                             @endif
-                            <!-- Tambahkan logic @elseif untuk detail layanan lainnya -->
+                            
                         </dl>
                     </div>
                 </div>

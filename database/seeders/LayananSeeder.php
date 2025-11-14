@@ -28,25 +28,25 @@ class LayananSeeder extends Seeder
             [
                 'unit_id' => $akademik->id,
                 'nama' => 'Surat Keterangan Aktif Kuliah',
-                'status_arsip' => true,
+                'status_arsip' => false,
                 'prioritas' => 2,
             ],
             [
                 'unit_id' => $upaTik->id,
                 'nama' => 'Reset Akun E-Learning & Siakad',
-                'status_arsip' => true,
+                'status_arsip' => false,
                 'prioritas' => 3,
             ],
             [
                 'unit_id' => $akademik->id,
                 'nama' => 'Ubah Data Mahasiswa',
-                'status_arsip' => true,
+                'status_arsip' => false,
                 'prioritas' => 2,
             ],
             [
                 'unit_id' => $kemahasiswaan->id,
                 'nama' => 'Request Publikasi Event',
-                'status_arsip' => true,
+                'status_arsip' => false,
                 'prioritas' => 1,
             ]
         ];
