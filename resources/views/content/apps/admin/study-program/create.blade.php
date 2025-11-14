@@ -14,7 +14,7 @@
         @csrf
         {{-- NAMA PROGRAM STUDI --}}
         <div class="mb-6">
-          <label for="judul" class="form-label">Nama Program Studi</label>
+          <label for="program_studi" class="form-label">Nama Program Studi</label>
           <input type="text" class="form-control @error('program_studi') is-invalid @enderror" id="program_studi"
             name="program_studi" placeholder="contoh: D4 - Rekayasa Perangkat Lunak" required value="{{ old('program_studi') }}" />
           @error('program_studi')

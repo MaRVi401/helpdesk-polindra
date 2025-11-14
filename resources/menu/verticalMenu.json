@@ -235,15 +235,6 @@
           ]
         }
       ]
-    },
-    {
-      "url": "/jabatan",
-      "name": "Jabatan",
-      "icon": "menu-icon icon-base ti tabler-badge",
-      "slug": "jabatan",
-      "roles": [
-        "super_admin"
-      ]
     }
   ]
 }

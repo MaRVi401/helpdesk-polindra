@@ -8,6 +8,8 @@ use App\Http\Controllers\Admin\ManageUsers\StaffController;
 use App\Http\Controllers\Admin\ManageUsers\StudentController;
 use App\Http\Controllers\Admin\ManageArticleController;
 use App\Http\Controllers\Admin\StudyProgramController;
+use App\Http\Controllers\Admin\UnitController;
+use App\Http\Controllers\Admin\UnitControllerOld;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -19,7 +21,6 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\Admin\UnitController;
 use App\Http\Controllers\GoogleLoginController;
 use App\Http\Controllers\Admin\ArtikelController;
 use App\Http\Controllers\Admin\JurusanController;
@@ -93,6 +94,9 @@ Route::middleware(['auth', 'profile.completed'])->group(function () {
     // MAJOR MANAGEMENT (SUPER ADMIN)
     Route::resource('major', MajorController::class)->middleware('role:super_admin');
     Route::resource('study-program', StudyProgramController::class)->middleware('role:super_admin');
+
+    
+    Route::resource('unit', UnitController::class)->middleware('role:super_admin');
         
     // FAQ MANAGEMENT (SUPER ADMIN)
     Route::resource('faq', FaqController::class)->middleware('role:super_admin');
@@ -140,8 +144,8 @@ Route::middleware(['auth', 'profile.completed'])->group(function () {
 
         
         // Kelola Unit
-        Route::get('unit/export/excel', [UnitController::class, 'exportExcel'])->name('unit.export.excel');
-        Route::resource('unit', UnitController::class)->names('unit');
+        Route::get('unit/export/excel', [UnitControllerOld::class, 'exportExcel'])->name('unit.export.excel');
+        Route::resource('unit', UnitControllerOld::class)->names('unit');
 
         // Kelola Artikel dan Kategori Artikel
         Route::get('artikel/export/excel', [ArtikelController::class, 'exportExcel'])->name('artikel.export.excel');
