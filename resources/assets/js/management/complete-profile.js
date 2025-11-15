@@ -1,5 +1,5 @@
 /**
- *  Page auth register multi-steps
+ *  Auth: Complete Profile
  */
 
 'use strict';
@@ -17,11 +17,11 @@ $(function () {
         placeholder: 'Pilih opsi',
         dropdownParent: $this.parent(),
         language: {
-          noResults: function() {
-            return "Tidak ada data yang ditemukan";
+          noResults: function () {
+            return 'Tidak ada data yang ditemukan';
           },
-          searching: function() {
-            return "Mencari...";
+          searching: function () {
+            return 'Mencari...';
           }
         }
       });
@@ -29,16 +29,16 @@ $(function () {
   }
 });
 
-// Multi Steps Validation
+// Complete Profile Validation
 // --------------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', function (e) {
   (function () {
-    const stepsValidation = document.querySelector('#multiStepsValidation');
+    const stepsValidation = document.querySelector('#StepsValidation');
     if (typeof stepsValidation !== undefined && stepsValidation !== null) {
-      // Multi Steps form
-      const stepsValidationForm = stepsValidation.querySelector('#multiStepsForm');
+      // Complete Profile form
+      const stepsValidationForm = stepsValidation.querySelector('#StepsForm');
       // Form steps
-      const stepsValidationFormStep2 = stepsValidationForm.querySelector('#personalInfoValidation');
+      const stepsValidationFormStep2 = stepsValidationForm.querySelector('#InfoValidation');
 
       let validationStepper = new Stepper(stepsValidation, {
         linear: true
@@ -51,8 +51,8 @@ document.addEventListener('DOMContentLoaded', function (e) {
         console.log('Step navigation error:', e);
       }
 
-      // Personal info validation
-      const multiSteps2 = FormValidation.formValidation(stepsValidationFormStep2, {
+      // Info validation
+      const Steps = FormValidation.formValidation(stepsValidationFormStep2, {
         fields: {
           nim: {
             validators: {
@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
           submitButton: new FormValidation.plugins.SubmitButton()
         }
       }).on('core.form.valid', function () {
-        // Submit the form when Personal step is valid
+        // Kirim form ketika langkah valid
         stepsValidationForm.submit();
       });
 
@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
       if (submitButton) {
         submitButton.addEventListener('click', function (e) {
           e.preventDefault();
-          multiSteps2.validate();
+          Steps.validate();
         });
       }
     }

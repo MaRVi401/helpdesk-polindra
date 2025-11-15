@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\ManageArticleController;
 use App\Http\Controllers\Admin\StudyProgramController;
 use App\Http\Controllers\Admin\UnitController;
 use App\Http\Controllers\Admin\UnitControllerOld;
+use App\Http\Controllers\CompleteProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -80,9 +81,11 @@ Route::middleware('guest')->group(function () {
 // --- ROUTE FOR ALREADY LOGGED IN USERS (AUTH) ---
 Route::middleware(['auth', 'profile.completed'])->group(function () {
 
-    Route::get('/lengkapi-profil', [ProfileController::class, 'showCompletionForm'])->name('profile.complete');
+
     
-    Route::post('/simpan-profil', [ProfileController::class, 'saveCompletionForm'])->name('profile.save');
+    Route::get('/complete-profile', [CompleteProfileController::class, 'completeProfile'])->name('complete.profile');
+    Route::post('/save-profile', [CompleteProfileController::class, 'saveCompleteProfile'])->name('save.complete.profile');
+    
     
     // DASHBOARD USERS
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -106,9 +109,9 @@ Route::middleware(['auth', 'profile.completed'])->group(function () {
     Route::resource('article-category', ArticleCategoryController::class)->middleware('role:super_admin');
 
 
-    Route::get('/lengkapi-profil', [ProfileController::class, 'showCompletionForm'])->name('profile.completion.form');
-    // Route untuk menyimpan data dari form
-    Route::post('/lengkapi-profil', [ProfileController::class, 'saveCompletionForm'])->name('profile.completion.save');
+    // Route::get('/lengkapi-profil', [ProfileController::class, 'showCompletionForm'])->name('profile.completion.form');
+    // // Route untuk menyimpan data dari form
+    // Route::post('/lengkapi-profil', [ProfileController::class, 'saveCompletionForm'])->name('profile.completion.save');
 
 
     // LOGOUT USERS

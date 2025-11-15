@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
           email: {
             validators: {
               notEmpty: {
-                message: 'Silakan masukkan email Anda'
+                message: 'Silakan masukkan email Kamu'
               },
               emailAddress: {
                 message: 'Silakan masukkan alamat email yang valid'
@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
           password: {
             validators: {
               notEmpty: {
-                message: 'Silakan masukkan password Anda'
+                message: 'Silakan masukkan password Kamu'
               },
               stringLength: {
                 min: 6,

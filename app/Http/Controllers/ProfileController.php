@@ -28,7 +28,7 @@ class ProfileController extends Controller
         }
 
         // Kirim kedua data (programStudi dan years) ke view
-        return view('content.auth.complete-profile', compact('programStudi', 'years'));
+        return view('content.auth.complete-profile-2', compact('programStudi', 'years'));
     }
 
     /**

@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             UnitSeeder::class,
             KategoriArtikelSeeder::class,
             ApiTestSeeder::class,
+            StudentWithoutNimSeeder::class
         ]);
     }
 }

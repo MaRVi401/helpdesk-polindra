@@ -9,7 +9,7 @@ class TestPage extends Controller
 {
   public function home()
   { 
-    // $pageConfigs = ['myLayout' => 'blank'];
-    return view('content.pages.dashboard');
+    $pageConfigs = ['myLayout' => 'blank'];
+    return view('content.auth.complete-profile', ['pageConfigs' => $pageConfigs]);
   }
 }

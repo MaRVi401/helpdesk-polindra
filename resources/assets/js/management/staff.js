@@ -535,7 +535,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
         const id = e.target.closest('.delete-staff').dataset.id;
 
         Swal.fire({
-          title: 'Apakah Anda yakin?',
+          title: 'Apakah Kamu yakin?',
           text: 'Data staff yang dihapus tidak dapat dikembalikan!',
           icon: 'warning',
           showCancelButton: true,

@@ -26,11 +26,11 @@ class EnsureProfileCompleted
                 $mahasiswaExists = Mahasiswa::where('user_id', $user->id)->exists();
 
                 // Jika belum punya profil dan bukan sedang di halaman lengkapi-profil
-                if (!$mahasiswaExists && !$request->is('lengkapi-profil') && !$request->is('simpan-profil')) {
+                if (!$mahasiswaExists && !$request->is('complete-profile') && !$request->is('save-profile')) {
                     // Set session marker
                     session(['needs_profile_completion' => true]);
 
-                    return redirect('/lengkapi-profil')
+                    return redirect('/complete-profile')
                         ->with('warning', 'Silakan lengkapi profil Anda terlebih dahulu untuk melanjutkan.');
                 }
             }

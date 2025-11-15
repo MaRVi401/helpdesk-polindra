@@ -11,7 +11,6 @@
         $active = $configData['layout'] === 'vertical' ? 'active open' : 'active';
         $currentRouteName = Route::currentRouteName();
 
-        // Cek jika slug adalah array
         if (gettype($submenu->slug) === 'array') {
             foreach ($submenu->slug as $slug) {
                 if ($currentRouteName === $slug) {
@@ -20,11 +19,9 @@
                 }
             }
         }
-        // Cek jika slug adalah string
         elseif ($currentRouteName === $submenu->slug) {
             $activeClass = 'active';
         }
-        // Cek untuk nested submenu
         elseif (isset($submenu->submenu)) {
             if (gettype($submenu->slug) === 'array') {
                 foreach ($submenu->slug as $slug) {
