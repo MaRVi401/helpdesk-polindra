@@ -31,8 +31,8 @@
     </a>
     <div class="authentication-inner border row">
       <div class="d-flex col-12 align-items-center justify-content-center authentication-bg p-5">
-        <div class="w-px-700">
-          <div id="StepsValidation" class="bs-stepper border-none shadow-none">
+        <div class="wpx-700">
+          <div id="StepsValidation" class="bs-stepper border-none shadow-none mt-5 mb-10">
             <div class="bs-stepper-header border-none pt-12 px-0">
               {{-- STEP OTENTIKASI (penanda otentikasi pengguna) --}}
               <div class="step active" data-target="#accountDetailsValidation">
