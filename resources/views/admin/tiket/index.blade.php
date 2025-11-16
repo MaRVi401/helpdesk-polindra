@@ -3,6 +3,7 @@
 <head>
     <title>Manajemen Tiket</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/tabler-icons.css') }}" />
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f8fafc; color: #2d3748; line-height: 1.5; padding: 20px; }
         .main-container { background-color: white; padding: 32px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); width: 100%; max-width: 1200px; margin: 0 auto; }
@@ -15,15 +16,34 @@
         th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #e2e8f0; }
         thead th { background-color: #f7fafc; font-weight: 600; text-transform: uppercase; font-size: 0.85rem; color: #4a5568; }
         tbody tr:hover { background-color: #f7fafc; }
-        .button { display: inline-block; padding: 8px 12px; border: 1px solid transparent; border-radius: 5px; font-weight: 600; text-decoration: none; cursor: pointer; }
+        
+        /* Modifikasi untuk tombol ikon */
+        .button { 
+            display: inline-block; 
+            padding: 8px 12px; 
+            border: 1px solid transparent; 
+            border-radius: 5px; 
+            font-weight: 600; 
+            text-decoration: none; 
+            cursor: pointer; 
+        }
+        .button-icon {
+            padding: 6px 8px !important; /* Padding lebih kecil untuk ikon */
+            width: 32px; 
+            height: 32px;
+            text-align: center;
+            line-height: 1; /* Pastikan ikon terpusat */
+        }
         .button-primary { background-color: #4299e1; color: white; border-color: #4299e1; }
+        .button-danger { background-color: #f56565; color: white; border-color: #f56565; }
         .button-green { background-color: #107c41; color: white; border-color: #107c41; }
         .button:disabled { background-color: #cccccc; cursor: not-allowed; border-color: #cccccc; }
         .alert { padding: 1rem; margin-bottom: 1.5rem; border-radius: 4px; }
         .alert-success { color: #2f855a; background-color: #c6f6d5; }
         .alert-error { color: #9b2c2c; background-color: #fed7d7; }
         .pagination-container { margin-top: 20px; }
-        .action-buttons a, .action-buttons form { display: inline-block; margin-right: 10px; }
+        /* Pastikan elemen aksi sejajar */
+        .action-buttons a, .action-buttons form { display: inline-block; margin-right: 5px; vertical-align: middle; }
         .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; color: white; text-transform: capitalize; }
         .status-pending { background-color: #f6ad55; }
         .status-diproses { background-color: #4299e1; }
@@ -38,7 +58,7 @@
 
         <div class="toolbar">
             <div class="actions-group">
-                <a href="{{ route('admin.tiket.create') }}" class="button button-primary">Tambah Tiket</a>
+                <a href="{{ route('admin.tiket.create') }}" class="button button-primary">Tambah Tiket</a> 
                 <button type="button" id="export-btn" class="button button-green" disabled>Ekspor Terpilih</button>
             </div>
             <form id="search-form" action="{{ route('admin.tiket.index') }}" method="GET" class="search-form">
@@ -94,7 +114,22 @@
                         <span class="status-badge {{ $statusClass }}">{{ $status }}</span>
                     </td>
                     <td class="action-buttons">
-                        <a href="{{ route('admin.tiket.edit', $tiket) }}">Detail / Balas</a>
+                        
+                        {{-- 1. Detail / Balas (Icon: Edit) --}}
+                        <a href="{{ route('admin.tiket.edit', $tiket) }}" class="button button-icon button-primary" title="Detail / Balas">
+                            <i class="ti ti-edit"></i>
+                        </a>
+
+                        {{-- 2. Hapus (Icon: Trash) --}}
+                        <form action="{{ route('admin.tiket.destroy', $tiket->id) }}" method="POST" 
+                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus Tiket #{{ $tiket->no_tiket }} secara permanen? Aksi ini tidak dapat dibatalkan.');" 
+                            style="display:inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="button button-icon button-danger" title="Hapus">
+                                <i class="ti ti-trash"></i>
+                            </button>
+                        </form>
                     </td>
                 </tr>
                 @empty

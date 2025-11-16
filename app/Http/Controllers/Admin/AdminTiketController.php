@@ -210,7 +210,7 @@ class AdminTiketController extends Controller
         if (str_contains($namaLayanan, 'Surat Keterangan Aktif')) {
             return 'SKA';
         } elseif (str_contains($namaLayanan, 'Reset Akun')) {
-            return 'RMA';
+            return 'RAM';
         } elseif (str_contains($namaLayanan, 'Ubah Data Mahasiswa')) {
             return 'UDM';
         } elseif (str_contains($namaLayanan, 'Request Publikasi')) {
@@ -246,5 +246,38 @@ class AdminTiketController extends Controller
 
         // Format akhir: SKA-YYYYMMDD-XXXX (misal: SKA-20251114-0001)
         return $code . '-' . $date . '-' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
+    }
+    
+    /**
+     * Menghapus tiket beserta semua relasinya secara permanen (destroy).
+     */
+    
+    public function destroy(Tiket $tiket)
+    {
+        try {
+            DB::transaction(function () use ($tiket) {
+                // 1. Hapus Komentar Tiket terkait
+                $tiket->komentar()->delete();
+
+                // 2. Hapus Riwayat Status Tiket terkait
+                $tiket->riwayatStatus()->delete();
+
+                // 3. Hapus Detail Layanan Spesifik (jika ada)
+                // Diasumsikan model Tiket memiliki relasi kondisional ke detail
+                if ($tiket->detailSuratKetAktif) {
+                    $tiket->detailSuratKetAktif->delete();
+                }
+                // Tambahkan pengecekan untuk model detail lainnya jika diperlukan
+                // if ($tiket->detailResetAkun) { $tiket->detailResetAkun->delete(); }
+
+                // 4. Hapus Tiket utama
+                $tiket->delete();
+            });
+
+            return redirect()->route('admin.tiket.index')->with('success', 'Tiket berhasil dihapus secara permanen.');
+        } catch (\Exception $e) {
+            // Log::error("Gagal menghapus tiket: " . $e->getMessage()); // Opsional untuk debugging
+            return redirect()->route('admin.tiket.index')->with('error', 'Gagal menghapus tiket. Pastikan semua relasi sudah dihapus atau coba lagi.');
+        }
     }
 }
