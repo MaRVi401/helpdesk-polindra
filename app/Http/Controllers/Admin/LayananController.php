@@ -5,10 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Layanan;
 use App\Models\Unit;
-use App\Models\Staff; // Wajib diimport
+use App\Models\Staff;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log; // Optional: untuk debugging
+use Illuminate\Validation\Rule;
 
 class LayananController extends Controller
 {
@@ -22,7 +22,7 @@ class LayananController extends Controller
 
         // Gunakan relasi 'penanggungJawab' (dari Layanan.php)
         $query = Layanan::with(['unit', 'penanggungJawab.user'])
-                         ->latest();
+            ->latest();
 
         if ($searchQuery) {
             $query->where(function ($q) use ($searchQuery) {
@@ -49,8 +49,9 @@ class LayananController extends Controller
     {
         $units = Unit::orderBy('nama_unit')->get();
         // Mengambil semua Staff untuk form create
-        $allStaff = Staff::with(['user', 'unit'])->get();
-        
+        // Staff harus di-load dengan relasi user dan nik untuk tampilan PIC interaktif
+        $allStaff = Staff::with('user')->get();
+
         return view('admin.layanan.create', compact('units', 'allStaff'));
     }
 
@@ -60,11 +61,23 @@ class LayananController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama' => 'required|string|max:255',
+            'nama' => [
+                'required',
+                'string',
+                'max:255',
+                // FIX: Mengubah 'layanans' menjadi 'layanan' (atau nama tabel yang benar)
+                Rule::unique('layanan', 'nama')->where(
+                    fn($query) =>
+                    $query->where('unit_id', $request->unit_id)
+                ),
+            ],
             'unit_id' => 'required|exists:units,id',
             'prioritas' => 'nullable|integer',
             'penanggung_jawab_ids' => 'nullable|array',
-            'penanggung_jawab_ids.*' => 'exists:staff,id', // Validasi setiap ID staff
+            'penanggung_jawab_ids.*' => 'exists:staff,id',
+            'status_arsip' => 'required|in:0,1',
+        ], [
+            'nama.unique' => 'Nama layanan sudah digunakan pada unit ini.',
         ]);
 
         try {
@@ -72,7 +85,8 @@ class LayananController extends Controller
                 'nama' => $request->nama,
                 'unit_id' => $request->unit_id,
                 'prioritas' => $request->prioritas ?? 0,
-                'status_arsip' => $request->has('status_arsip'),
+                // Gunakan nilai integer langsung dari select
+                'status_arsip' => (int) $request->status_arsip,
             ]);
 
             // Sinkronkan PIC di tabel pivot
@@ -91,11 +105,11 @@ class LayananController extends Controller
     {
         $units = Unit::orderBy('nama_unit')->get();
         // Ambil SEMUA staff dengan relasi user untuk display
-        $allStaff = Staff::with('user')->get(); 
-        
+        $allStaff = Staff::with('user')->get();
+
         // Ambil staff yang sudah ditugaskan sebagai PIC untuk layanan ini
-        $currentPICS = $layanan->penanggungJawab()->with('user')->get(); 
-        
+        $currentPICS = $layanan->penanggungJawab()->with('user')->get();
+
         // Pisahkan staff yang sudah menjadi PIC dari calon PIC yang tersedia
         $assignedPICIds = $currentPICS->pluck('id')->toArray();
         $availableStaff = $allStaff->reject(function ($staff) use ($assignedPICIds) {
@@ -113,56 +127,65 @@ class LayananController extends Controller
         try {
             // Kita bungkus semua dalam transaksi
             return DB::transaction(function () use ($request, $layanan) {
-                
+
                 // --- 1. Logika Hapus PIC (Dipicu dari tombol Hapus) ---
                 if ($request->filled('pic_id_to_remove')) {
                     $request->validate(['pic_id_to_remove' => 'required|exists:staff,id']);
-                    
+
                     $layanan->penanggungJawab()->detach($request->pic_id_to_remove);
                     return redirect()->route('admin.layanan.edit', $layanan)
-                                     ->with('success', 'Penanggung Jawab berhasil dihapus.');
+                        ->with('success', 'Penanggung Jawab berhasil dihapus.');
                 }
 
                 // --- 2. Logika Tambah PIC (Dipicu dari form Tambah PIC) ---
                 if ($request->filled('pic_id_to_add')) {
                     $request->validate(['pic_id_to_add' => 'required|exists:staff,id']);
-                    
+
                     // Attach PIC baru ke relasi many-to-many
                     $layanan->penanggungJawab()->attach($request->pic_id_to_add);
                     return redirect()->route('admin.layanan.edit', $layanan)
-                                     ->with('success', 'Penanggung Jawab berhasil ditambahkan.');
+                        ->with('success', 'Penanggung Jawab berhasil ditambahkan.');
                 }
-                
+
                 // --- 3. Logika Update Data Dasar Layanan (Dipicu dari form Update Data Dasar) ---
-                
+
                 // Jalankan validasi penuh untuk data dasar layanan
                 $request->validate([
-                    'nama' => 'required|string|max:255',
+                    'nama' => [
+                        'required',
+                        'string',
+                        'max:255',
+                        // FIX: Mengubah 'layanans' menjadi 'layanan' (atau nama tabel yang benar)
+                        Rule::unique('layanan', 'nama')->ignore($layanan->id)->where(
+                            fn($query) =>
+                            $query->where('unit_id', $request->unit_id)
+                        ),
+                    ],
                     'unit_id' => 'required|exists:units,id',
                     'prioritas' => 'nullable|integer',
-                    'status_arsip' => 'nullable', // Boleh kosong jika checkbox tidak dicentang
-                    // Jika ada form PIC lama (multiselect), validasi ini akan gagal karena field PIC tidak ada,
-                    // oleh karena itu kita sudah pisahkan logikanya di atas.
+                    'status_arsip' => 'required|in:0,1',
+                ], [
+                    'nama.unique' => 'Nama layanan sudah digunakan pada unit ini.',
                 ]);
-                
+
                 // Perbarui data dasar Layanan
                 $layanan->update([
                     'nama' => $request->nama,
                     'unit_id' => $request->unit_id,
                     'prioritas' => $request->prioritas ?? 0,
-                    'status_arsip' => $request->has('status_arsip'), // Menggunakan has() untuk checkbox
+                    // Ambil nilai integer langsung dari select
+                    'status_arsip' => (int) $request->status_arsip,
                 ]);
-                
-                return redirect()->route('admin.layanan.edit', $layanan)
-                                 ->with('success', 'Data Dasar Layanan berhasil diperbarui.');
 
+                return redirect()->route('admin.layanan.edit', $layanan)
+                    ->with('success', 'Data Dasar Layanan berhasil diperbarui.');
             }); // End DB::transaction
 
         } catch (\Exception $e) {
             // Tangkap error validasi atau database
             return redirect()->back()
-                             ->with('error', 'Gagal memperbarui layanan. Error: ' . $e->getMessage())
-                             ->withInput();
+                ->with('error', 'Gagal memperbarui layanan. Error: ' . $e->getMessage())
+                ->withInput();
         }
     }
 
@@ -177,13 +200,13 @@ class LayananController extends Controller
             if ($layanan->tikets()->count() > 0) {
                 return redirect()->route('admin.layanan.index')->with('error', 'Gagal menghapus! Layanan ini masih memiliki tiket terkait.');
             }
-            
+
             // Hapus relasi di pivot table dulu
             $layanan->penanggungJawab()->sync([]);
-            
+
             // Hapus layanan
             $layanan->delete();
-            
+
             return redirect()->route('admin.layanan.index')->with('success', 'Layanan berhasil dihapus.');
         } catch (\Exception $e) {
             return redirect()->route('admin.layanan.index')->with('error', 'Gagal menghapus layanan. Error: ' . $e->getMessage());
