@@ -39,6 +39,7 @@
         .timeline { border-left: 3px solid #e2e8f0; margin-left: 10px; padding-left: 20px; }
         .timeline-item { position: relative; margin-bottom: 1.5rem; }
         .timeline-item:last-child { margin-bottom: 0; }
+        /* Warna default dot untuk riwayat status */
         .timeline-dot { position: absolute; left: -31px; top: 5px; width: 15px; height: 15px; border-radius: 50%; background-color: #4299e1; }
         .timeline-time { font-size: 0.85rem; color: #718096; margin-bottom: 0.25rem; }
         .timeline-title { font-weight: 600; margin-bottom: 0.5rem; }
@@ -52,6 +53,24 @@
         .status-selesai { background-color: #48bb78; }
         .status-ditolak { background-color: #f56565; }
         .status-draft { background-color: #a0aec0; }
+        
+        /* --- CSS Khusus Role Komentar --- */
+        /* Warna untuk super_admin (misalnya: Merah) */
+        .dot-super_admin { background-color: #e53e3e !important; }
+        .body-super_admin { background-color: #fef2f2 !important; border-color: #fbd7d7 !important; }
+        
+        /* Warna untuk mahasiswa (misalnya: Biru Muda) */
+        .dot-mahasiswa { background-color: #4299e1 !important; }
+        .body-mahasiswa { background-color: #ebf8ff !important; border-color: #bee3f8 !important; }
+
+        /* Warna untuk kepala_unit (misalnya: Ungu) */
+        .dot-kepala_unit { background-color: #805ad5 !important; }
+        .body-kepala_unit { background-color: #faf5ff !important; border-color: #e9d8fd !important; }
+
+        /* Warna untuk admin_unit (misalnya: Hijau) */
+        .dot-admin_unit { background-color: #38a169 !important; }
+        .body-admin_unit { background-color: #f0fff4 !important; border-color: #c6f6d5 !important; }
+        
     </style>
 </head>
 <body>
@@ -91,7 +110,6 @@
         <div class="ticket-layout">
             <div class="ticket-main">
                 
-                <!-- Form Aksi -->
                 <div class="card">
                     <div class="card-header">Balas Tiket / Ubah Status</div>
                     <div class="card-body">
@@ -121,17 +139,29 @@
                     </div>
                 </div>
 
-                <!-- Riwayat Komentar -->
                 <div class="card">
                     <div class="card-header">Riwayat Komentar ({{ $tiket->komentar->count() }})</div>
                     <div class="card-body">
                         <div class="timeline">
                             @forelse($tiket->komentar as $komen)
+                                @php
+                                    // 1. Ambil role pengirim
+                                    $role = $komen->pengirim->role ?? 'unknown';
+                                    
+                                    // 2. Tentukan kelas CSS berdasarkan role
+                                    $dotClass = 'dot-' . $role;
+                                    $bodyClass = 'body-' . $role;
+                                @endphp
                                 <div class="timeline-item">
-                                    <span class="timeline-dot"></span>
+                                    {{-- Gunakan kelas dotClass pada span timeline-dot --}}
+                                    <span class="timeline-dot {{ $dotClass }}"></span> 
                                     <div class="timeline-time">{{ $komen->created_at->format('d M Y, H:i') }}</div>
-                                    <div class="timeline-title">{{ $komen->pengirim->name }} ({{ $komen->pengirim->role }})</div>
-                                    <div class="timeline-body timeline-body-comment">
+                                    <div class="timeline-title">
+                                        {{-- Tampilkan nama dan role --}}
+                                        {{ $komen->pengirim->name }} (<strong style="text-transform: capitalize;">{{ $role }}</strong>)
+                                    </div>
+                                    {{-- Gunakan kelas bodyClass pada div timeline-body-comment --}}
+                                    <div class="timeline-body timeline-body-comment {{ $bodyClass }}">
                                         <p>{!! nl2br(e($komen->komentar)) !!}</p>
                                     </div>
                                 </div>
@@ -145,7 +175,6 @@
             </div>
 
             <div class="ticket-sidebar">
-                <!-- Info Pemohon -->
                 <div class="card">
                     <div class="card-header">Informasi Pemohon</div>
                     <div class="card-body">
@@ -168,7 +197,6 @@
                     </div>
                 </div>
 
-                <!-- Info Tiket -->
                 <div class="card">
                     <div class="card-header">Informasi Tiket</div>
                     <div class="card-body">
@@ -185,7 +213,6 @@
                     </div>
                 </div>
                 
-                <!-- Detail Spesifik Layanan -->
                 @if($detailLayanan)
                 <div class="card">
                     <div class="card-header">Detail Layanan: {{ $tiket->layanan->nama }}</div>
@@ -214,7 +241,6 @@
                 </div>
                 @endif
 
-                <!-- Riwayat Status -->
                 <div class="card">
                     <div class="card-header">Riwayat Status</div>
                     <div class="card-body">
