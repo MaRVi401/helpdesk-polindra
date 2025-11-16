@@ -94,7 +94,7 @@
                           $nimValue = !empty($autoNIM) ? $autoNIM : old('nim');
                           $nimReadonly = !empty($autoNIM) ? 'readonly' : '';
                         @endphp
-                        <input type="text" name="nim" id="nim" class="form-control"
+                      <input type="text" name="nim" id="nim" class="form-control"
                           value="{{ $nimValue }}" placeholder="Masukkan NIM" {{ $nimReadonly }} required />
                         @if (!empty($autoNIM))
                           <span class="input-group-text text-success">
