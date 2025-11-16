@@ -391,7 +391,11 @@ class TemplateCustomizer {
 
   setLang(lang, updateStorage = true, force = false) {
     if (lang === this.settings.lang && !force) return
-    if (!TemplateCustomizer.LANGUAGES[lang]) throw new Error(`Language "${lang}" not found!`)
+    if (!TemplateCustomizer.LANGUAGES[lang]) {
+      // Don't throw — fallback gracefully to 'en' and warn in console
+      console.warn(`Language "${lang}" not found! Falling back to 'en'.`)
+      lang = 'en'
+    }
 
     const t = TemplateCustomizer.LANGUAGES[lang]
 
@@ -1609,7 +1613,12 @@ TemplateCustomizer.LANGUAGES = {
     content_label: 'Content',
     layout_navbar_label: 'Navbar Type',
     direction_label: 'Direction'
-  },
+  }
+}
+
+// Provide 'id' (Bahasa Indonesia) fallback — if no translations are provided, use English
+if (!TemplateCustomizer.LANGUAGES.id) {
+  TemplateCustomizer.LANGUAGES.id = TemplateCustomizer.LANGUAGES.en
 }
 
 window.TemplateCustomizer = TemplateCustomizer
@@ -1699,6 +1708,12 @@ const initializeColorPicker = () => {
 }
 
 window.onload = () => {
+  // If the Template Customizer didn't initialize, skip color picker setup
+  if (!window.templateCustomizer) {
+    // Nothing to initialize; bail out gracefully
+    return
+  }
+
   initializeColorPicker()
 
   // Get the saved color from the cookie or use default

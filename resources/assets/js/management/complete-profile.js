@@ -1,7 +1,6 @@
 /**
  *  Auth: Complete Profile
  */
-
 'use strict';
 
 // Select2 (jquery)
@@ -51,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
         console.log('Step navigation error:', e);
       }
 
-      // Info validation
+      // Info validation - SESUAI DENGAN REFERENSI
       const Steps = FormValidation.formValidation(stepsValidationFormStep2, {
         fields: {
           nim: {
@@ -63,9 +62,9 @@ document.addEventListener('DOMContentLoaded', function (e) {
                 message: 'NIM harus berupa angka'
               },
               stringLength: {
-                min: 8,
+                min: 7,
                 max: 15,
-                message: 'NIM harus antara 8 dan 15 karakter'
+                message: 'NIM harus antara 7 dan 15 karakter'
               }
             }
           },
@@ -80,14 +79,6 @@ document.addEventListener('DOMContentLoaded', function (e) {
             validators: {
               notEmpty: {
                 message: 'Harap pilih tahun masuk'
-              },
-              numeric: {
-                message: 'Tahun masuk harus berupa angka'
-              },
-              stringLength: {
-                min: 4,
-                max: 4,
-                message: 'Tahun masuk harus 4 digit'
               }
             }
           }
@@ -102,6 +93,13 @@ document.addEventListener('DOMContentLoaded', function (e) {
           }),
           autoFocus: new FormValidation.plugins.AutoFocus(),
           submitButton: new FormValidation.plugins.SubmitButton()
+        },
+        init: instance => {
+          instance.on('plugins.message.placed', function (e) {
+            if (e.element.parentElement.classList.contains('input-group')) {
+              e.element.parentElement.insertAdjacentElement('afterend', e.messageElement);
+            }
+          });
         }
       }).on('core.form.valid', function () {
         // Kirim form ketika langkah valid

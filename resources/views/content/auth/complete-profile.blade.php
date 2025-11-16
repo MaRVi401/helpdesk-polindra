@@ -25,17 +25,18 @@
 
 @section('content')
   <div class="authentication-wrapper authentication-cover authentication-bg">
-    {{-- LOGO --}}
-    <a href="{{ url('/') }}" class="app-brand auth-cover-brand">
-      <img class="wpx-170" src="{{ asset('assets/img/logo/service_desk.svg') }}" alt="Logo ServiceDesk">
-    </a>
     <div class="authentication-inner border row">
       <div class="d-flex col-12 align-items-center justify-content-center authentication-bg p-5">
-        <div class="wpx-700">
+        <div class="w-px-700">
+          {{-- LOGO - Dipindahkan ke dalam container form --}}
+          <div class="text-center mt-4 mb-4">
+            <img class="img-fluid w-px-200" src="{{ asset('assets/img/logo/service_desk.svg') }}" alt="Logo Service Desk">
+          </div>
+
           <div id="StepsValidation" class="bs-stepper border-none shadow-none mt-5 mb-5">
             <div class="bs-stepper-header border-none pt-12 px-0">
               {{-- STEP OTENTIKASI (penanda otentikasi pengguna) --}}
-              <div class="step active" data-target="#accountDetailsValidation">
+              <div class="step active" data-target="#authenticationSuccessful">
                 <button type="button" class="step-trigger">
                   <span class="bs-stepper-circle"><i class="icon-base ti tabler-lock-check icon-md"></i></span>
                   <span class="bs-stepper-label">
@@ -63,7 +64,7 @@
               <form id="StepsForm" action="{{ route('save.complete.profile') }}" method="POST">
                 @csrf
                 {{-- STEP OTENTIKASI (kosong, hanya penanda) --}}
-                <div id="accountDetailsValidation" class="content">
+                <div id="authenticationSuccessful" class="content">
                   {{-- Konten kosong karena step ini hanya penanda --}}
                 </div>
                 {{-- STEP INFORMASI PROFIL --}}
@@ -84,31 +85,25 @@
                   @endif
                   <div class="row g-6">
                     {{-- NIM  --}}
-                    <div class="col-sm-6">
+                    <div class="col-sm-6 form-control-validation">
                       <label class="form-label" for="nim">Nomor Induk Mahasiswa</label>
                       <div class="input-group">
                         <span class="input-group-text">NIM</span>
                         @php
                           $isStudentEmail = str_contains(auth()->user()->email, '@student.polindra.ac.id');
+                          $nimValue = !empty($autoNIM) ? $autoNIM : old('nim');
+                          $nimReadonly = !empty($autoNIM) ? 'readonly' : '';
                         @endphp
+                        <input type="text" name="nim" id="nim" class="form-control"
+                          value="{{ $nimValue }}" placeholder="Masukkan NIM" {{ $nimReadonly }} required />
                         @if (!empty($autoNIM))
-                          {{-- CASE 1: Email student dengan NIM valid --}}
-                          <input type="text" name="nim" id="nim" class="form-control rounded-r"
-                            value="{{ $autoNIM }}" readonly required />
                           <span class="input-group-text text-success">
-                            <i class="icon-base ti tabler-rosette-discount-check"></i>
+                            <i class="icon-base ti tabler-shield-check-filled"></i>
                           </span>
                         @elseif($isStudentEmail && empty($autoNIM))
-                          {{-- CASE 2: Email student TANPA NIM valid --}}
-                          <input type="text" name="nim" id="nim" class="form-control rounded-r"
-                            value="{{ old('nim') }}" placeholder="Masukkan NIM" required />
                           <span class="input-group-text">
                             <i class="icon-base ti tabler-pencil-search"></i>
                           </span>
-                        @else
-                          {{-- CASE 3: Email non-student --}}
-                          <input type="text" name="nim" id="nim" class="form-control rounded-r"
-                            value="{{ old('nim') }}" placeholder="Masukkan NIM" required />
                         @endif
                       </div>
                       {{-- INFO TEXT --}}
@@ -130,7 +125,7 @@
                       @endif
                     </div>
                     {{-- PROGRAM STUDI --}}
-                    <div class="col-sm-6">
+                    <div class="col-sm-6 form-control-validation">
                       <label class="form-label" for="program_studi_id">Program Studi</label>
                       <select name="program_studi_id" id="program_studi_id" class="select2 form-select"
                         data-allow-clear="true" required>
@@ -144,7 +139,7 @@
                       </select>
                     </div>
                     {{-- TAHUN MASUK --}}
-                    <div class="col-sm-6">
+                    <div class="col-sm-6 form-control-validation">
                       <label class="form-label" for="tahun_masuk">Tahun Masuk</label>
                       <select name="tahun_masuk" id="tahun_masuk" class="select2 form-select" data-allow-clear="true"
                         required>
