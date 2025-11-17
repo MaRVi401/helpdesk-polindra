@@ -24,7 +24,7 @@
       <div class="nav-align-top">
         <ul class="nav nav-pills flex-column flex-md-row mb-6 gap-md-0 gap-2">
           <li class="nav-item">
-            <a class="nav-link active" href="javascript:void(0);"><i class="icon-base ti tabler-users icon-sm me-1_5"></i>
+            <a class="nav-link active" href="javascript:void(0);"><i class="icon-base ti tabler-user-search icon-sm me-1_5"></i>
               Profil Akun</a>
           </li>
           <li class="nav-item">
@@ -46,16 +46,14 @@
               id="uploadedAvatar" />
             <div class="button-wrapper">
               <label for="upload" class="btn btn-primary me-3 mb-4" tabindex="0">
-                <span class="d-none d-sm-block">Unggah Avatar Baru</span>
-                <i class="icon-base ti tabler-upload d-block d-sm-none"></i>
+                <i class="icon-base ti tabler-upload me-1_5"></i> Unggah Avatar
                 <input type="file" id="upload" class="account-file-input" hidden
                   accept="image/png, image/jpeg, image/jpg" />
               </label>
               <button type="button" class="btn btn-label-secondary account-image-reset mb-4">
-                <i class="icon-base ti tabler-refresh d-block d-sm-none"></i>
-                <span class="d-none d-sm-block">Atur Ulang</span>
+                <i class="icon-base ti tabler-refresh"></i>
               </button>
-              <div>JPG dan PNG diperbolehkan. Ukuran maksimal 800kb.</div>
+              <div>Format JPEG, PNG dan JPG. Ukuran maksimal 800kb.</div>
             </div>
           </div>
         </div>
