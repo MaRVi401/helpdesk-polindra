@@ -21,7 +21,11 @@ class DatabaseSeeder extends Seeder
             UnitSeeder::class,
             KategoriArtikelSeeder::class,
             ApiTestSeeder::class,
-            StudentWithoutNimSeeder::class
+            StudentWithoutNimSeeder::class,
+            tiketResetAkunSeeder::class,
+            TiketUbahDataMhsSeeder::class,
+            tiketSuratKeteranganAktifKuliahSeeder::class,
+            tiketRequestPublikasiSeeder::class,
         ]);
     }
 }

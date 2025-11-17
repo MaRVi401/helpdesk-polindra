@@ -1,123 +1,227 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Buat Tiket Baru</title>
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f8fafc; color: #2d3748; line-height: 1.5; padding: 20px; }
-        .container { background-color: white; padding: 32px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); width: 100%; max-width: 800px; margin: 0 auto; }
-        h3 { margin-top: 0; font-size: 1.5rem; }
-        .form-group { margin-bottom: 1.5rem; }
-        label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #4a5568; }
-        input, select, textarea { width: 100%; padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 1rem; box-sizing: border-box; }
-        textarea { resize: vertical; min-height: 100px; }
-        .button-group { display: flex; gap: 10px; margin-top: 2rem; }
-        .button { padding: 10px 16px; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; }
-        .button-primary { background-color: #4299e1; color: white; }
-        .button-secondary { background-color: #e2e8f0; color: #4a5568; }
-        .button:hover { opacity: 0.9; }
-        .is-invalid { border-color: #e53e3e; }
-        .invalid-feedback { color: #e53e3e; font-size: 0.875rem; margin-top: 0.25rem; }
-        .alert { padding: 1rem; margin-bottom: 1.5rem; border-radius: 4px; }
-        .alert-danger { color: #9b2c2c; background-color: #fed7d7; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h3>Formulir Pengajuan Tiket Layanan</h3>
+@extends('layouts/layoutMaster')
+
+@section('title', 'Buat Tiket Baru')
+
+@section('vendor-style')
+<link rel="stylesheet" href="{{asset('assets/vendor/libs/select2/select2.css')}}" />
+<link rel="stylesheet" href="{{asset('assets/vendor/libs/flatpickr/flatpickr.css')}}" />
+
+<style>
+  .select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: var(--bs-body-color) !important;
+  }
+  .select2-dropdown {
+    background-color: var(--bs-body-bg) !important;
+    border-color: var(--bs-border-color) !important;
+  }
+  .select2-container--default .select2-results__option {
+    color: var(--bs-body-color) !important;
+  }
+  .select2-container--default .select2-results__option[aria-selected=true] {
+    background-color: var(--bs-primary-bg-subtle) !important;
+  }
+  .select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: var(--bs-primary) !important;
+    color: var(--bs-white) !important;
+  }
+  .select2-search--dropdown .select2-search__field {
+    color: var(--bs-body-color) !important;
+    background-color: var(--bs-card-bg) !important;
+    border-color: var(--bs-border-color) !important;
+  }
+</style>
+@endsection
+
+@section('vendor-script')
+<script src="{{asset('assets/vendor/libs/select2/select2.js')}}"></script>
+<script src="{{asset('assets/vendor/libs/flatpickr/flatpickr.js')}}"></script>
+@endsection
+
+@section('page-script')
+<script src="{{asset('assets/js/forms-selects.js')}}"></script>
+<script>
+  $(document).ready(function() {
+    $('.datepicker').flatpickr({
+      dateFormat: 'Y-m-d'
+    });
+  });
+</script>
+@endsection
+
+@section('content')
+<h4 class="py-3 mb-4">
+  <span class="text-muted fw-light">Tiket /</span> Buat Tiket Baru
+</h4>
+
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Formulir Pengajuan Tiket Bantuan</h5>
+      </div>
+      <div class="card-body">
         
-        @if(session('error'))
-            <p class="alert alert-danger">{{ session('error') }}</p>
+        @if ($errors->any())
+          <div class="alert alert-danger">
+            <p class="mb-1"><strong>Oops! Terjadi kesalahan:</strong></p>
+            <ul class="mb-0">
+              @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+              @endforeach
+            </ul>
+          </div>
         @endif
 
-        <form action="{{ route('mahasiswa.tiket.store') }}" method="POST">
-            @csrf
-            
-            <div class="form-group">
-                <label for="layanan_id">Jenis Layanan</label>
-                <select id="layanan_id" name="layanan_id" class="@error('layanan_id') is-invalid @enderror" required>
-                    <option value="" disabled selected>-- Pilih Jenis Layanan --</option>
-                    @foreach($layanans as $layanan)
-                        <option value="{{ $layanan->id }}" data-nama="{{ $layanan->nama }}" {{ old('layanan_id') == $layanan->id ? 'selected' : '' }}>
-                            {{ $layanan->nama }}
-                        </option>
-                    @endforeach
+        @if(!$layananTerpilih)
+          
+          <p>Silakan pilih jenis layanan yang Anda butuhkan untuk melanjutkan.</p>
+          <form id="form-pilih-layanan" action="{{ route('mahasiswa.tiket.show-create-form') }}" method="GET">
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label" for="layanan_id">Jenis Layanan</label>
+                <select id="layanan_id" name="layanan_id" class="select2 form-select" data-placeholder="Pilih Layanan" required>
+                  <option value="" selected disabled>Pilih Layanan</option>
+                  @foreach($layanans as $layanan)
+                    <option value="{{ $layanan->id }}">
+                      {{ $layanan->nama }} ({{ $layanan->unit->nama_unit ?? 'Tanpa Unit' }})
+                    </option>
+                  @endforeach
                 </select>
-                @error('layanan_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+              </div>
+              <div class="col-12 text-end">
+                <a href="{{ route('mahasiswa.tiket.index') }}" class="btn btn-label-secondary me-2">Batal</a>
+                <button type="submit" class="btn btn-primary">Lanjut</button>
+              </div>
+            </div>
+          </form>
+
+        @else
+          
+          <form id="form-buat-tiket" action="{{ route('mahasiswa.tiket.store') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <input type="hidden" name="layanan_id" value="{{ $layananTerpilih->id }}">
+
+            <div class="row g-3 mb-3">
+              <div class="col-12">
+                <label class="form-label">Layanan Dipilih:</label>
+                <input type="text" class="form-control" 
+                       value="{{ $layananTerpilih->nama }} ({{ $layananTerpilih->unit->nama_unit ?? 'Tanpa Unit' }})" 
+                       disabled readonly />
+              </div>
             </div>
 
-            <div class="form-group">
-                <label for="deskripsi">Deskripsi Awal</label>
-                <textarea class="form-control @error('deskripsi') is-invalid @enderror" id="deskripsi" name="deskripsi" rows="5" placeholder="Jelaskan kebutuhan atau masalah Anda secara detail..." required>{{ old('deskripsi') }}</textarea>
-                @error('deskripsi')<div class="invalid-feedback">{{ $message }}</div>@enderror
-            </div>
+            <hr class="my-4">
             
-            <div id="specific-fields-container"></div>
-
-            <div class="button-group">
-                <button type="submit" class="button button-primary">Ajukan Tiket</button>
-                <a href="{{ route('mahasiswa.dashboard') }}" class="button button-secondary">Batal</a>
+            @if($layananTerpilih->nama == 'Surat Keterangan Aktif Kuliah')
+            <div id="form-surat-aktif">
+              <h5 class="mb-3">Detail Surat Keterangan Aktif</h5>
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <label class="form-label" for="keperluan">Keperluan</label>
+                  <input type="text" id="keperluan" name="keperluan" class="form-control" placeholder="Contoh: Tunjangan Gaji" value="{{ old('keperluan') }}" required />
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label" for="tahun_ajaran">Tahun Ajaran</label>
+                  <input type="text" id="tahun_ajaran" name="tahun_ajaran" class="form-control" placeholder="Contoh: 2024" value="{{ old('tahun_ajaran') }}" required />
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label" for="semester">Semester</label>
+                  <input type="number" id="semester" name="semester" class="form-control" placeholder="Contoh: 5" value="{{ old('semester') }}" required />
+                </div>
+              </div>
             </div>
-        </form>
-    </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const layananSelect = document.getElementById('layanan_id');
-            const container = document.getElementById('specific-fields-container');
-            function renderFields(selectedIndex) {
-                let html = '';
-                if(selectedIndex > 0) {
-                    const selectedOption = layananSelect.options[selectedIndex];
-                    const layananNama = selectedOption.getAttribute('data-nama');
-                    
-                    switch (layananNama) {
-                        case 'Surat Keterangan Aktif Kuliah':
-                            html = `
-                                <div class="form-group">
-                                    <label for="keperluan">Keperluan</label>
-                                    <input type="text" id="keperluan" name="keperluan" value="{{ old('keperluan') }}" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="tahun_ajaran">Tahun Ajaran</label>
-                                    <input type="number" id="tahun_ajaran" name="tahun_ajaran" value="{{ old('tahun_ajaran', date('Y')) }}" required placeholder="Contoh: 2024">
-                                </div>
-                                <div class="form-group">
-                                    <label for="semester">Semester</label>
-                                    <input type="number" id="semester" name="semester" value="{{ old('semester') }}" required min="1" max="14">
-                                </div>
-                                 <div class="form-group">
-                                    <label for="keperluan_lainnya">Keperluan Lainnya (Opsional)</label>
-                                    <input type="text" id="keperluan_lainnya" name="keperluan_lainnya" value="{{ old('keperluan_lainnya') }}">
-                                </div>
-                            `;
-                            break;
-                        case 'Reset Akun E-Learning & Siakad':
-                            html = `
-                                <div class="form-group">
-                                    <label for="aplikasi">Aplikasi</label>
-                                    <select id="aplikasi" name="aplikasi" required>
-                                        <option value="gmail" {{ old('aplikasi') == 'gmail' ? 'selected' : '' }}>Gmail</option>
-                                        <option value="office" {{ old('aplikasi') == 'office' ? 'selected' : '' }}>Office</option>
-                                        <option value="sevima" {{ old('aplikasi') == 'sevima' ? 'selected' : '' }}>Sevima</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="deskripsi_reset">Deskripsi Masalah Reset</label>
-                                    <textarea id="deskripsi_reset" name="deskripsi_reset" required>{{ old('deskripsi_reset') }}</textarea>
-                                </div>
-                            `;
-                            break;
-                    }
-                }
-                container.innerHTML = html;
-            }
-            layananSelect.addEventListener('change', function() {
-                renderFields(this.selectedIndex);
-            });
-            if (layananSelect.selectedIndex > 0) {
-                renderFields(layananSelect.selectedIndex);
-            }
-        });
-    </script>
-</body>
-</html>
+            @elseif($layananTerpilih->nama == 'Reset Akun E-Learning & Siakad' || $layananTerpilih->nama == 'Permintaan Reset Akun E-Mail')
+            <div id="form-reset-akun">
+              <h5 class="mb-3">Detail Reset Akun</h5>
+              <div class="row g-3">
+                <div class="col-12">
+                  <label class="form-label" for="aplikasi">Aplikasi</label>
+                  <select id="aplikasi" name="aplikasi" class="form-select" required>
+                    <option value="" selected disabled>Pilih Aplikasi</option>
+                    <option value="gmail" {{ old('aplikasi') == 'gmail' ? 'selected' : '' }}>Email (Gmail)</option>
+                    <option value="office" {{ old('aplikasi') == 'office' ? 'selected' : '' }}>Office 365</option>
+                    <option value="sevima" {{ old('aplikasi') == 'sevima' ? 'selected' : '' }}>SIAKAD (Sevima)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            @elseif($layananTerpilih->nama == 'Ubah Data Mahasiswa')
+            <div id="form-ubah-data">
+              <h5 class="mb-3">Detail Perubahan Data Mahasiswa</h5>
+              <p>Masukkan data yang BENAR. (Lampirkan KTP/KK/Ijazah di field Lampiran di bawah)</p>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label" for="data_nama_lengkap">Nama Lengkap (Sesuai Ijazah)</label>
+                  <input type="text" id="data_nama_lengkap" name="data_nama_lengkap" class="form-control" value="{{ old('data_nama_lengkap') }}" required />
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label" for="data_tmp_lahir">Tempat Lahir</label>
+                  <input type="text" id="data_tmp_lahir" name="data_tmp_lahir" class="form-control" value="{{ old('data_tmp_lahir') }}" required />
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label" for="data_tgl_lhr">Tanggal Lahir</label>
+                  <input type="text" id="data_tgl_lhr" name="data_tgl_lhr" class="form-control datepicker" placeholder="YYYY-MM-DD" value="{{ old('data_tgl_lhr') }}" required />
+                </div>
+              </div>
+            </div>
+
+            @elseif($layananTerpilih->nama == 'Request Publikasi Event')
+            <div id="form-req-publikasi">
+              <h5 class="mb-3">Detail Request Publikasi</h5>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label" for="judul_publikasi">Judul Publikasi</label>
+                  <input type="text" id="judul_publikasi" name="judul_publikasi" class="form-control" value="{{ old('judul_publikasi') }}" required />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="kategori_publikasi">Kategori</label>
+                  <input type="text" id="kategori_publikasi" name="kategori_publikasi" class="form-control" placeholder="Contoh: Berita, Event, Prestasi" value="{{ old('kategori_publikasi') }}" required />
+                </div>
+                <div class="col-12">
+                  <label class="form-label" for="konten">Konten/Naskah Berita</label>
+                  <textarea id="konten" name="konten" class="form-control" rows="4" required>{{ old('konten') }}</textarea>
+                </div>
+                <div class="col-12">
+                  <label class="form-label" for="gambar_publikasi">Gambar (Opsional)</label>
+                  <input type="file" id="gambar_publikasi" name="gambar_publikasi" class="form-control" />
+                </div>
+              </div>
+            </div>
+            @endif
+            
+            <hr class="my-4">
+
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label" for="deskripsi">Deskripsi Tambahan</label>
+                <p class="form-text">Jelaskan detail masalah atau permintaan Anda. (Wajib diisi)</p>
+                <textarea 
+                  class="form-control" 
+                  id="deskripsi" 
+                  name="deskripsi" 
+                  rows="6" 
+                  placeholder="Jelaskan detail masalah atau permintaan Anda..." 
+                  required>{{ old('deskripsi') }}</textarea>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label" for="lampiran">Lampiran (Opsional)</label>
+                <input type="file" id="lampiran" name="lampiran" class="form-control" />
+                <div class="form-text">Maksimal 5MB. Format: jpg, png, pdf, docx, xlsx.</div>
+              </div>
+
+              <div class="col-12 text-end">
+                <a href="{{ route('mahasiswa.tiket.show-create-form') }}" class="btn btn-label-secondary me-2">Ganti Layanan</a>
+                <button type="submit" class="btn btn-primary">Kirim Tiket</button>
+              </div>
+            </div>
+          </form>
+        @endif
+        
+      </div>
+    </div>
+  </div>
+</div>
+@endsection

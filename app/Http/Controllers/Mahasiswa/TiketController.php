@@ -2,229 +2,266 @@
 
 namespace App\Http\Controllers\Mahasiswa;
 
-use App\Models\Tiket;
-use App\Models\Layanan;
-use Illuminate\Http\Request;
-use App\Models\KomentarTiket;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Models\DetailTiketResetAkun;
-use App\Models\RiwayatStatusTiket;
+use App\Models\KomentarTiket;
+use App\Models\Layanan;
+use App\Models\Tiket;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\DetailTiketReqPublikasi;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use App\Models\DetailTiketSuratKetAktif;
+use App\Models\DetailTiketResetAkun;
 use App\Models\DetailTiketUbahDataMhs;
+use App\Models\DetailTiketReqPublikasi;
+use Illuminate\Support\Facades\DB;
 
 class TiketController extends Controller
 {
-  /**
-   * Display a listing of the resource.
-   */
-  public function index()
-  {
-    // Mengambil data tiket milik mahasiswa yang sedang login
-    $tikets = Tiket::where('pemohon_id', Auth::id())
-      ->with(['layanan', 'riwayatStatus']) // Load relasi yang diperlukan
-      ->orderBy('created_at', 'desc')
-      ->paginate(10); // Menggunakan paginasi
-
-    // Menghitung total tiket
-    $totalTiket = Tiket::where('pemohon_id', Auth::id())->count();
-
-    // Mengirim data ke view
-    return view('mahasiswa.tiket.index', compact('tikets', 'totalTiket'));
-  }
-
-
-  /**
-   * Show the form for creating a new resource.
-   */
-  public function create()
-  {
-    $layanans = Layanan::where('status_arsip', false)->get();
-    return view('mahasiswa.tiket.create', compact('layanans'));
-  }
-
-  /**
-   * Store a new resource in storage.
-   */
-  public function store(Request $request)
-  {
-    // Validasi dasar
-    $request->validate([
-      'layanan_id' => 'required|exists:layanan,id',
-      'deskripsi' => 'required|string',
-    ]);
-
-    // Memulai transaksi database
-    DB::beginTransaction();
-    try {
-      // 1. Buat Tiket baru
-      $tiket = Tiket::create([
-        'no_tiket' => $this->generateNoTiket(),
-        'pemohon_id' => Auth::id(),
-        'layanan_id' => $request->layanan_id,
-        'deskripsi' => $request->deskripsi,
-      ]);
-
-      // 2. Buat Riwayat Status Awal
-      RiwayatStatusTiket::create([
-        'tiket_id' => $tiket->id,
-        'user_id' => Auth::id(),
-        'status' => 'Pending',
-      ]);
-
-      // 3. Simpan detail tiket berdasarkan layanan
-      $layanan = Layanan::find($request->layanan_id);
-
-      switch ($layanan->nama) {
-        case 'Surat Keterangan Aktif Kuliah':
-          $request->validate([
-            'keperluan' => 'required|string',
-            'tahun_ajaran' => 'required|numeric',
-            'semester' => 'required|integer',
-          ]);
-          DetailTiketSuratKetAktif::create([
-            'tiket_id' => $tiket->id,
-            'keperluan' => $request->keperluan,
-            'tahun_ajaran' => $request->tahun_ajaran,
-            'semester' => $request->semester,
-            'keperluan_lainnya' => $request->keperluan_lainnya,
-          ]);
-          break;
-
-        case 'Reset Akun E-Learning & Siakad':
-          $request->validate(['aplikasi' => 'required|string']);
-          DetailTiketResetAkun::create([
-            'tiket_id' => $tiket->id,
-            'aplikasi' => $request->aplikasi,
-            'deskripsi' => $request->deskripsi_reset ?? 'Tidak ada deskripsi tambahan',
-          ]);
-          break;
-
-        case 'Ubah Data Mahasiswa':
-          $request->validate([
-            'data_nama_lengkap' => 'required|string',
-            'data_tmp_lahir' => 'required|string',
-            'data_tgl_lhr' => 'required|date',
-          ]);
-          DetailTiketUbahDataMhs::create([
-            'tiket_id' => $tiket->id,
-            'data_nama_lengkap' => $request->data_nama_lengkap,
-            'data_tmp_lahir' => $request->data_tmp_lahir,
-            'data_tgl_lhr' => $request->data_tgl_lhr,
-          ]);
-          break;
-
-        case 'Request Publikasi Event':
-          $request->validate([
-            'judul_event' => 'required|string',
-            'kategori_event' => 'required|string',
-            'konten_event' => 'required|string',
-            'gambar_event' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-          ]);
-          $gambarPath = null;
-          if ($request->hasFile('gambar_event')) {
-            $gambarPath = $request->file('gambar_event')->store('public/event_images');
-          }
-          DetailTiketReqPublikasi::create([
-            'tiket_id' => $tiket->id,
-            'judul' => $request->judul_event,
-            'kategori' => $request->kategori_event,
-            'konten' => $request->konten_event,
-            'gambar' => $gambarPath,
-          ]);
-          break;
-      }
-
-      // Jika semua berhasil, commit transaksi
-      DB::commit();
-
-      return redirect()->route('mahasiswa.tiket.index')->with('success', 'Tiket berhasil dibuat.');
-    } catch (\Exception $e) {
-      // Jika terjadi error, rollback transaksi
-      DB::rollBack();
-      return back()->withInput()->withErrors(['error' => 'Gagal membuat tiket: ' . $e->getMessage()]);
-    }
-  }
-
-
-  /**
-   * Display the specified resource.
-   */
-  public function show(Tiket $tiket)
-  {
-    // Pastikan mahasiswa hanya bisa melihat tiket miliknya
-    if ($tiket->pemohon_id !== Auth::id()) {
-      abort(403);
+    public function index()
+    {
+        $userId = Auth::id();
+        $tikets = Tiket::where('pemohon_id', $userId)
+            ->with('layanan.unit')
+            ->orderBy('created_at', 'desc')
+            ->get();
+        return view('mahasiswa.tiket.index', compact('tikets'));
     }
 
-    // Eager load relasi
-    $tiket->load([
-      'layanan.unit',
-      'pemohon', // <-- INI YANG DIPERBAIKI (dari 'user')
-      'komentar.pengirim',
-      'riwayatStatus.user'
-    ]);
-
-    // Mengirim data ke view
-    return view('mahasiswa.tiket.show', compact('tiket'));
-  }
-
-
-  /**
-   * Show the form for editing the specified resource.
-   */
-  public function edit(Tiket $tiket)
-  {
-    //
-  }
-
-  /**
-   * Update the specified resource in storage.
-   */
-  public function update(Request $request, Tiket $tiket)
-  {
-    //
-  }
-
-  /**
-   * Remove the specified resource from storage.
-   */
-  public function destroy(Tiket $tiket)
-  {
-    //
-  }
-
-  /**
-   * Generate a unique ticket number.
-   */
-  private function generateNoTiket()
-  {
-    // Format: YmdHis (e.g., 20251030173000)
-    return date('YmdHis');
-  }
-
-  /**
-   * Store a new comment.
-   */
-  public function storeKomentar(Request $request, Tiket $tiket)
-  {
-    $request->validate([
-      'komentar' => 'required|string',
-    ]);
-
-    // Pastikan mahasiswa hanya bisa komentar di tiket miliknya
-    if ($tiket->pemohon_id !== Auth::id()) {
-      abort(403);
+    public function create()
+    {
+        return redirect()->route('mahasiswa.tiket.show-create-form');
     }
 
-    KomentarTiket::create([
-      'tiket_id' => $tiket->id,
-      'pengirim_id' => Auth::id(),
-      'komentar' => $request->komentar,
-    ]);
+    public function showCreateForm(Request $request)
+    {
+        $layanans = Layanan::with('unit')->get();
+        $layananTerpilih = null;
 
-    return back()->with('success', 'Komentar berhasil dikirim.');
-  }
+        if ($request->has('layanan_id')) {
+            $layananTerpilih = Layanan::find($request->layanan_id);
+        }
+
+        return view('mahasiswa.tiket.create', compact('layanans', 'layananTerpilih'));
+    }
+
+    public function store(Request $request)
+    {
+        $baseRules = [
+            'layanan_id' => 'required|exists:layanan,id',
+            'deskripsi' => 'required|string|min:10',
+            'lampiran' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx,xls,xlsx|max:5120',
+        ];
+
+        $layanan = Layanan::find($request->layanan_id);
+        if (!$layanan) {
+            return redirect()->route('mahasiswa.tiket.show-create-form')
+                ->withErrors(['layanan_id' => 'Layanan yang dipilih tidak valid.']);
+        }
+
+        $detailRules = [];
+        switch ($layanan->nama) {
+            case 'Surat Keterangan Aktif Kuliah':
+                $detailRules = [
+                    'keperluan' => 'required|string|max:255',
+                    'tahun_ajaran' => 'required|numeric|digits:4',
+                    'semester' => 'required|integer|min:1|max:14',
+                ];
+                break;
+            case 'Reset Akun E-Learning & Siakad':
+            case 'Permintaan Reset Akun E-Mail':
+                $detailRules = ['aplikasi' => 'required|in:gmail,office,sevima'];
+                break;
+            case 'Ubah Data Mahasiswa':
+                $detailRules = [
+                    'data_nama_lengkap' => 'required|string|max:255',
+                    'data_tmp_lahir' => 'required|string|max:100',
+                    'data_tgl_lhr' => 'required|date_format:Y-m-d',
+                ];
+                break;
+            case 'Request Publikasi Event':
+                $detailRules = [
+                    'judul_publikasi' => 'required|string|max:255',
+                    'kategori_publikasi' => 'required|string|max:100',
+                    'konten' => 'required|string',
+                    'gambar_publikasi' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+                ];
+                break;
+        }
+
+        $allRules = array_merge($baseRules, $detailRules);
+        $request->validate($allRules);
+
+        try {
+            DB::beginTransaction();
+
+            $tiket = new Tiket();
+            $tiket->pemohon_id = Auth::id();
+            $tiket->layanan_id = $request->layanan_id;
+            $tiket->deskripsi = $request->deskripsi;
+            $tiket->no_tiket = time();
+
+            if ($request->hasFile('lampiran')) {
+                $path = $request->file('lampiran')->store('lampiran_tiket', 'public');
+                $tiket->lampiran = $path;
+            }
+            
+            $tiket->save(); 
+
+            $detailData = $request->all();
+            $detailData['tiket_id'] = $tiket->id; 
+
+            switch ($layanan->nama) {
+                case 'Surat Keterangan Aktif Kuliah':
+                    DetailTiketSuratKetAktif::create($detailData);
+                    break;
+                case 'Reset Akun E-Learning & Siakad':
+                case 'Permintaan Reset Akun E-Mail':
+                    DetailTiketResetAkun::create($detailData);
+                    break;
+                case 'Ubah Data Mahasiswa':
+                    DetailTiketUbahDataMhs::create($detailData);
+                    break;
+                case 'Request Publikasi Event':
+                    $detailData['judul'] = $detailData['judul_publikasi'];
+                    $detailData['kategori'] = $detailData['kategori_publikasi'];
+                    if ($request->hasFile('gambar_publikasi')) {
+                        $path = $request->file('gambar_publikasi')->store('lampiran_publikasi', 'public');
+                        $detailData['gambar'] = $path;
+                    }
+                    DetailTiketReqPublikasi::create($detailData);
+                    break;
+            }
+
+            DB::commit();
+            return redirect()->route('mahasiswa.tiket.show', $tiket->id)->with('success', 'Tiket berhasil dibuat.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withInput()->withErrors(['error' => 'Gagal menyimpan tiket: ' . $e->getMessage()]);
+        }
+    }
+
+    public function show(string $id)
+    {
+        $userId = Auth::id();
+        $tiket = Tiket::where('id', $id)
+            ->where('pemohon_id', $userId)
+            ->with('layanan.unit', 'komentar.pengirim.mahasiswa', 'komentar.pengirim.staff')
+            ->firstOrFail();
+            
+        $detail = null;
+        switch ($tiket->layanan->nama) {
+            case 'Surat Keterangan Aktif Kuliah':
+                $detail = DetailTiketSuratKetAktif::where('tiket_id', $tiket->id)->first();
+                break;
+            case 'Reset Akun E-Learning & Siakad':
+            case 'Permintaan Reset Akun E-Mail':
+                $detail = DetailTiketResetAkun::where('tiket_id', $tiket->id)->first();
+                break;
+            case 'Ubah Data Mahasiswa':
+                $detail = DetailTiketUbahDataMhs::where('tiket_id', $tiket->id)->first();
+                break;
+            case 'Request Publikasi Event':
+                $detail = DetailTiketReqPublikasi::where('tiket_id', $tiket->id)->first();
+                break;
+        }
+
+        return view('mahasiswa.tiket.show', compact('tiket', 'detail'));
+    }
+
+    public function edit(string $id)
+    {
+        return redirect()->route('mahasiswa.tiket.show', $id);
+    }
+
+    public function update(Request $request, string $id)
+    {
+        return redirect()->route('mahasiswa.tiket.show', $id);
+    }
+
+    public function destroy(string $id)
+    {
+        $userId = Auth::id();
+        $tiket = Tiket::where('id', $id)
+            ->where('pemohon_id', $userId)
+            ->firstOrFail();
+
+        // Meskipun DB sudah ON DELETE CASCADE, ini adalah implementasi
+        // 'cascade on delete' di level Controller sesuai permintaan.
+        try {
+            DB::beginTransaction();
+
+            // 1. Hapus semua komentar terkait
+            KomentarTiket::where('tiket_id', $tiket->id)->delete();
+
+            // 2. Hapus data detail terkait
+            switch ($tiket->layanan->nama) {
+                case 'Surat Keterangan Aktif Kuliah':
+                    DetailTiketSuratKetAktif::where('tiket_id', $tiket->id)->delete();
+                    break;
+                case 'Reset Akun E-Learning & Siakad':
+                case 'Permintaan Reset Akun E-Mail':
+                    DetailTiketResetAkun::where('tiket_id', $tiket->id)->delete();
+                    break;
+                case 'Ubah Data Mahasiswa':
+                    DetailTiketUbahDataMhs::where('tiket_id', $tiket->id)->delete();
+                    break;
+                case 'Request Publikasi Event':
+                    // Hapus gambar jika ada
+                    $detailPub = DetailTiketReqPublikasi::where('tiket_id', $tiket->id)->first();
+                    if ($detailPub && $detailPub->gambar) {
+                        Storage::disk('public')->delete($detailPub->gambar);
+                    }
+                    $detailPub->delete();
+                    break;
+            }
+
+            // 3. Hapus lampiran tiket utama jika ada
+            if ($tiket->lampiran) {
+                Storage::disk('public')->delete($tiket->lampiran);
+            }
+
+            // 4. Hapus tiket utama
+            $tiket->delete();
+
+            DB::commit();
+
+            return redirect()->route('mahasiswa.tiket.index')->with('success', 'Tiket berhasil dihapus.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal menghapus tiket: ' . $e->getMessage());
+        }
+    }
+
+    public function storeKomentar(Request $request, $tiketId)
+    {
+        $request->validate([
+            'komentar' => 'required|string', 
+            'lampiran' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx,xls,xlsx|max:5120',
+        ]);
+
+        $userId = Auth::id();
+        $tiket = Tiket::where('id', $tiketId)
+            ->where('pemohon_id', $userId) 
+            ->firstOrFail();
+
+        if ($tiket->jawaban_id) { 
+            return back()->with('error', 'Tiket ini telah ditutup.');
+        }
+
+        $komentar = new KomentarTiket();
+        $komentar->tiket_id = $tiket->id;
+        $komentar->pengirim_id = Auth::id(); 
+        $komentar->komentar = $request->komentar; 
+
+        if ($request->hasFile('lampiran')) {
+            $path = $request->file('lampiran')->store('lampiran_komentar', 'public');
+            $komentar->lampiran = $path;
+        }
+        $komentar->save();
+
+        return redirect()->route('mahasiswa.tiket.show', $tiket->id)->with('success', 'Komentar berhasil ditambahkan.');
+    }
 }

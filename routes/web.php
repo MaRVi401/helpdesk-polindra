@@ -33,7 +33,7 @@ use App\Http\Controllers\Admin\AdminTiketController;
 use App\Http\Controllers\Admin\ProgramStudiController;
 use App\Http\Controllers\Admin\KategoriArtikelController;
 // use App\Http\Controllers\Admin\KelolaPengguna\StaffController;
-use App\Http\Controllers\Admin\KelolaPengguna\MahasiswaController;
+use App\Http\Controllers\Mahasiswa\TiketController as MahasiswaTiketController;
 use App\Http\Controllers\KepalaUnit\TiketController as KepalaUnitTiketController;
 use App\Http\Controllers\AdminUnit\TiketController as AdminUnitTiketController;
 use App\Http\Controllers\AdminUnit\LayananController as AdminUnitLayananController;
@@ -167,21 +167,19 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
 
     // Mahasiswa
     Route::middleware('role:mahasiswa')->prefix('mahasiswa')->name('mahasiswa.')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('content.pages.dashboard');
-        })->name('dashboard');
-
-        // Rute untuk fungsionalitas tiket mahasiswa
-        Route::get('/tiket', [TiketController::class, 'index'])->name('tiket.index');
-        Route::get('/tiket/create', [TiketController::class, 'create'])->name('tiket.create');
-        Route::post('/tiket', [TiketController::class, 'store'])->name('tiket.store');
-        Route::get('/tiket/{tiket}', [TiketController::class, 'show'])->name('tiket.show');
-        Route::post('tiket/{tiket}/komentar', [TiketController::class, 'storeKomentar'])->name('tiket.storeKomentar');
-
-        // Edit Profil Mahasiswa
+        Route::get('/dashboard', [MahasiswaTiketController::class, 'dashboard'])->name('dashboard');
+        Route::get('/tiket', [MahasiswaTiketController::class, 'index'])->name('tiket.index');
+        Route::get('/tiket/create', [MahasiswaTiketController::class, 'create'])->name('tiket.create');
+        Route::post('/tiket', [MahasiswaTiketController::class, 'store'])->name('tiket.store');
+        Route::get('/tiket/{id}', [MahasiswaTiketController::class, 'show'])->name('tiket.show');
+        Route::post('tiket/{tiket}/komentar', [TiketController::class, 'storeKomentar'])->name('tiket.komentar.store');
         Route::get('/profil', [ProfileController::class, 'edit'])->name('profil.edit');
         Route::patch('/profil', [ProfileController::class, 'update'])->name('profil.update');
+        Route::get('buat-tiket', [MahasiswaTiketController::class, 'showCreateForm'])->name('tiket.show-create-form');
+        Route::resource('tiket', MahasiswaTiketController::class);
+        Route::post('tiket/{id}/komentar', [MahasiswaTiketController::class, 'storeKomentar'])->name('tiket.komentar.store');
     });
+        
     // Kepala Unit
     Route::middleware('role:kepala_unit')->prefix('kepala-unit')->name('kepala_unit.')->group(function () {
         Route::get('/dashboard', [KepalaUnitTiketController::class, 'index'])->name('dashboard');
