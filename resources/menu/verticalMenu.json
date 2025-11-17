@@ -22,18 +22,22 @@
       ]
     },
     {
-    "name": "Tiket Saya",
-    "url": "/mahasiswa/tiket",
-    "icon": "menu-icon tf-icons ti ti-ticket",
-    "slug": "mahasiswa.tiket.index",
-    "roles": ["mahasiswa"]
+      "name": "Tiket Saya",
+      "url": "/mahasiswa/tiket",
+      "icon": "menu-icon icon-base ti tabler-ticket",
+      "slug": "mahasiswa.tiket.index",
+      "roles": [
+        "mahasiswa"
+      ]
     },
     {
-    "name": "Buat Tiket Baru",
-    "url": "/mahasiswa/tiket/create",
-    "icon": "menu-icon tf-icons ti ti-plus",
-    "slug": "mahasiswa.tiket.create",
-    "roles": ["mahasiswa"]
+      "name": "Buat Tiket Baru",
+      "url": "/mahasiswa/tiket/create",
+      "icon": "menu-icon icon-base ti tabler-tag-plus",
+      "slug": "mahasiswa.tiket.create",
+      "roles": [
+        "mahasiswa"
+      ]
     },
     {
       "name": "Layanan",

@@ -1,3 +1,8 @@
+@php
+  use Illuminate\Support\Facades\Auth;
+  use Illuminate\Support\Facades\Route;
+@endphp
+
 @extends('layouts/layoutMaster')
 
 @section('title', 'Profil Saya')
@@ -28,8 +33,12 @@
         </div>
         <div class="user-profile-header d-flex flex-column flex-lg-row text-sm-start text-center mb-5">
           <div class="flex-shrink-0 mt-n2 mx-sm-0 mx-auto">
-            <img src="{{ Auth::user()->profile_photo_url }}" alt="user image"
-              class="d-block h-auto ms-0 ms-sm-6 rounded user-profile-img" />
+            @php
+              $avatarUrl = Auth::user()->avatar
+                  ? asset('storage/avatar/' . Auth::user()->avatar)
+                  : Auth::user()->profile_photo_url;
+            @endphp
+            <img src="{{ $avatarUrl }}" alt="user image" class="d-block h-auto ms-0 ms-sm-6 rounded user-profile-img" />
           </div>
           <div class="flex-grow-1 mt-3 mt-lg-5">
             <div
@@ -43,8 +52,9 @@
                       class="fw-medium">{{ ucwords(str_replace('_', ' ', Auth::user()->role)) }}</span></li>
                 </ul>
               </div>
-              <a href="javascript:void(0)" class="btn btn-primary mb-1"> <i
-                  class="icon-base ti tabler-user-hexagon icon-xs me-2"></i>Kelola Profil</a>
+              <a href="{{ Route::has('user-profile.setting') ? route('user-profile.setting') : 'javascript:void(0);' }}"
+                class="btn btn-primary mb-1"> <i class="icon-base ti tabler-settings-share icon-xs me-2"></i>Kelola
+                Profil</a>
             </div>
           </div>
         </div>
@@ -75,26 +85,6 @@
               </span>
               <hr>
             </li>
-            {{-- Program Studi & Jurusan khusus mahasiswa --}}
-            @if (Auth::user()->role === 'mahasiswa')
-              {{-- Program Studi --}}
-              <li class="mb-4">
-                <div class="d-flex align-items-center mb-1 text-dark">
-                  <i class="icon-base ti tabler-school icon-lg"></i>
-                  <span class="fw-medium ms-2">Program Studi</span>
-                </div>
-                <span>{{ Auth::user()->mahasiswa->programStudi->program_studi ?? '-' }}</span>
-                <hr>
-              </li>
-              <li class="mb-4">
-                <div class="d-flex align-items-center mb-1 text-dark">
-                  <i class="icon-base ti tabler-building icon-lg"></i>
-                  <span class="fw-medium ms-2">Jurusan</span>
-                </div>
-                <span>{{ Auth::user()->mahasiswa->programStudi->jurusan->nama_jurusan ?? '-' }}</span>
-                <hr>
-              </li>
-            @endif
             <li class="mb-4">
               <div class="d-flex align-items-center mb-1 text-dark">
                 <i class="icon-base ti tabler-mail icon-lg"></i>
@@ -103,6 +93,35 @@
               <span>{{ Auth::user()->email }}</span>
               <hr>
             </li>
+            {{-- Program Studi & Jurusan khusus mahasiswa --}}
+            @if (Auth::user()->role === 'mahasiswa')
+              <li class="mb-4">
+                <div class="d-flex align-items-center mb-1 text-dark">
+                  <i class="icon-base ti tabler-school icon-lg"></i>
+                  <span class="fw-medium ms-2">Program Studi</span>
+                </div>
+                <span
+                  class="badge bg-label-primary">{{ Auth::user()->mahasiswa->programStudi->program_studi ?? '-' }}</span>
+                <hr>
+              </li>
+              <li class="mb-4">
+                <div class="d-flex align-items-center mb-1 text-dark">
+                  <i class="icon-base ti tabler-building icon-lg"></i>
+                  <span class="fw-medium ms-2">Jurusan</span>
+                </div>
+                <span
+                  class="badge bg-label-primary">{{ Auth::user()->mahasiswa->programStudi->jurusan->nama_jurusan ?? '-' }}</span>
+                <hr>
+              </li>
+              <li class="mb-4">
+                <div class="d-flex align-items-center mb-1 text-dark">
+                  <i class="icon-base ti tabler-calendar-time icon-lg"></i>
+                  <span class="fw-medium ms-2">Tahun Masuk</span>
+                </div>
+                <span>{{ Auth::user()->mahasiswa->tahun_masuk ?? '-' }}</span>
+                <hr>
+              </li>
+            @endif
             <li class="mb-4">
               <div class="d-flex align-items-center mb-1 text-dark">
                 <i class="icon-base ti tabler-calendar-check icon-lg"></i>
@@ -116,26 +135,23 @@
           <ul class="list-unstyled my-3 py-1">
             <li class="mb-4">
               <div class="d-flex align-items-center mb-1 text-dark">
-                <i class="icon-base ti tabler-brand-whatsapp icon-lg"></i>
-                <span class="fw-medium ms-2">No WhatsApp</span>
-              </div>
-              <span>{{ Auth::user()->no_wa ?? 'Belum ditambahkan' }}</span>
-              <hr>
-            </li>
-            <li class="mb-4">
-              <div class="d-flex align-items-center mb-1 text-dark">
-                <i class="icon-base ti tabler-mail-spark icon-lg"></i>
+                <i class="text-danger icon-base ti tabler-mail-forward icon-lg"></i>
                 <span class="fw-medium ms-2">Email Personal</span>
               </div>
               <span>{{ Auth::user()->email_personal ?? 'Belum ditambahkan' }}</span>
               <hr>
             </li>
-
+            <li class="mb-4">
+              <div class="d-flex align-items-center mb-1 text-dark">
+                <i class="text-success icon-base ti tabler-brand-whatsapp icon-lg"></i>
+                <span class="fw-medium ms-2">No WhatsApp</span>
+              </div>
+              <span>{{ Auth::user()->no_wa ?? 'Belum ditambahkan' }}</span>
+              <hr>
+            </li>
           </ul>
-
         </div>
       </div>
     </div>
   </div>
-
 @endsection

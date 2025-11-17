@@ -10,7 +10,6 @@
       <span class="app-brand-logo demo">@include('_partials.macros')</span>
       <span class="app-brand-text demo menu-text fw-bold">{{ config('variables.templateName') }}</span>
     </a>
-
     @if (isset($menuHorizontal))
       <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-xl-none">
         <i class="icon-base ti tabler-x icon-sm d-flex align-items-center justify-content-center"></i>
@@ -18,7 +17,6 @@
     @endif
   </div>
 @endif
-
 @if (!isset($navbarHideToggle))
   <div
     class="layout-menu-toggle navbar-nav align-items-xl-center me-4 me-xl-0{{ isset($menuHorizontal) ? ' d-xl-none ' : '' }} {{ isset($contentNavbar) ? ' d-xl-none ' : '' }}">
@@ -27,7 +25,6 @@
     </a>
   </div>
 @endif
-
 <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
   @if ($configData['hasCustomizer'] == true)
     <!-- Style Switcher -->
@@ -63,23 +60,32 @@
     </div>
     <!-- / Style Switcher-->
   @endif
-
   <ul class="navbar-nav flex-row align-items-center ms-auto">
     <!-- User -->
     <li class="nav-item navbar-dropdown dropdown-user dropdown">
       <a class="nav-link dropdown-toggle hide-arrow p-0" href="javascript:void(0);" data-bs-toggle="dropdown">
         <div class="avatar avatar-online">
-          <img src="{{ Auth::user()->profile_photo_url }}" alt class="rounded-circle" />
+          @php
+            $avatarUrl = Auth::user()->avatar
+                ? asset('storage/avatar/' . Auth::user()->avatar)
+                : Auth::user()->profile_photo_url;
+          @endphp
+          <img src="{{ $avatarUrl }}" alt="user-avatar" class="rounded-circle" />
         </div>
       </a>
       <ul class="dropdown-menu dropdown-menu-end">
         <li>
           <a class="dropdown-item mt-0"
-            href="{{ Route::has('user.profile.show') ? route('user.profile.show') : 'javascript:void(0);' }}">
+            href="{{ Route::has('user-profile.index') ? route('user-profile.index') : 'javascript:void(0);' }}">
             <div class="d-flex align-items-center">
               <div class="flex-shrink-0 me-2">
                 <div class="avatar avatar-online">
-                  <img src="{{ Auth::user()->profile_photo_url }}" alt class="rounded-circle" />
+                  @php
+                    $avatarUrl = Auth::user()->avatar
+                        ? asset('storage/avatar/' . Auth::user()->avatar)
+                        : Auth::user()->profile_photo_url;
+                  @endphp
+                  <img src="{{ $avatarUrl }}" alt="user-avatar" class="rounded-circle" />
                 </div>
               </div>
               <div class="flex-grow-1">
@@ -106,8 +112,14 @@
         </li>
         <li>
           <a class="dropdown-item"
-            href="{{ Route::has('user.profile.show') ? route('user.profile.show') : 'javascript:void(0);' }}">
+            href="{{ Route::has('user-profile.index') ? route('user-profile.index') : 'javascript:void(0);' }}">
             <i class="icon-base ti tabler-user me-3 icon-md"></i><span class="align-middle">Profil saya</span>
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item"
+            href="{{ Route::has('user-profile.setting') ? route('user-profile.setting') : 'javascript:void(0);' }}">
+            <i class="icon-base ti tabler-settings me-3 icon-md"></i><span class="align-middle">Kelola Profil</span>
           </a>
         </li>
         <li>

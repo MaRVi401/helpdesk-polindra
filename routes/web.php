@@ -82,14 +82,18 @@ Route::middleware('guest')->group(function () {
 // --- ROUTE FOR ALREADY LOGGED IN USERS (AUTH) ---
 Route::middleware(['auth', 'complete-profile'])->group(function () {
 
-    
-    Route::get('/user-profile', [UserProfileController::class, 'userProfile'])->name('user.profile.show');
-    Route::get('/complete-profile', [CompleteProfileController::class, 'completeProfile'])->name('complete.profile');
-    Route::post('/save-profile', [CompleteProfileController::class, 'saveCompleteProfile'])->name('save.complete.profile');
-
-
     // DASHBOARD USERS
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // USER PROFILE
+    Route::get('/user-profile', [UserProfileController::class, 'userProfile'])->name('user-profile.index');
+    Route::get('/user-profile/setting', [UserProfileController::class, 'userProfileSetting'])->name('user-profile.setting');
+    Route::put('/user-profile/update', [UserProfileController::class, 'userProfileUpdate'])->name('user-profile.update');
+
+    // COMPLETE PROFILE (STUDENT)
+    Route::get('/complete-profile', [CompleteProfileController::class, 'completeProfile'])->name('complete.profile');
+    Route::delete('/user-profile/delete-avatar', [UserProfileController::class, 'deleteAvatar'])->name('user-profile.delete-avatar');
+    Route::post('/save-profile', [CompleteProfileController::class, 'saveCompleteProfile'])->name('save.complete.profile');
 
     // USERS MANAGEMENT (SUPER ADMIN)
     Route::resource('student', StudentController::class)->middleware('role:super_admin');
@@ -99,7 +103,7 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
     Route::resource('major', MajorController::class)->middleware('role:super_admin');
     Route::resource('study-program', StudyProgramController::class)->middleware('role:super_admin');
 
-
+    // UNIT MANAGEMENT (SUPER ADMIN)
     Route::resource('unit', UnitController::class)->middleware('role:super_admin');
 
     // FAQ MANAGEMENT (SUPER ADMIN)
@@ -108,12 +112,6 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
     // ARTICLE MANAGEMENT (SUPER ADMIN)
     Route::resource('article', ArticleController::class)->middleware('role:super_admin');
     Route::resource('article-category', ArticleCategoryController::class)->middleware('role:super_admin');
-
-
-    // Route::get('/lengkapi-profil', [ProfileController::class, 'showCompletionForm'])->name('profile.completion.form');
-    // // Route untuk menyimpan data dari form
-    // Route::post('/lengkapi-profil', [ProfileController::class, 'saveCompletionForm'])->name('profile.completion.save');
-
 
     // LOGOUT USERS
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -124,8 +122,8 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
 
 
         // Kelola Pengguna - Mahasiswa
-        Route::get('mahasiswa/export/excel', [MahasiswaController::class, 'exportExcel'])->name('mahasiswa.export.excel');
-        Route::resource('mahasiswa', MahasiswaController::class);
+        // Route::get('mahasiswa/export/excel', [MahasiswaController::class, 'exportExcel'])->name('mahasiswa.export.excel');
+        // Route::resource('mahasiswa', MahasiswaController::class);
 
         // Kelola Pengguna - Staff
         Route::get('staff/export/excel', [StaffController::class, 'exportExcel'])->name('staff.export.excel');
@@ -179,7 +177,7 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
         Route::resource('tiket', MahasiswaTiketController::class);
         Route::post('tiket/{id}/komentar', [MahasiswaTiketController::class, 'storeKomentar'])->name('tiket.komentar.store');
     });
-        
+
     // Kepala Unit
     Route::middleware('role:kepala_unit')->prefix('kepala-unit')->name('kepala_unit.')->group(function () {
         Route::get('/dashboard', [KepalaUnitTiketController::class, 'index'])->name('dashboard');

@@ -1,83 +1,64 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use App\Models\Mahasiswa;
-use App\Models\ProgramStudi;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Validator;
 
 class UserProfileController extends Controller
 {
     public function userProfile()
     {
-        // $user = Auth::user();
-        
-
-        return view('content.user-profile.profile');
+        $user = Auth::user();
+        return view('content.user-profile.profile', compact('user'));
     }
 
-    public function updateUserProfile(Request $request)
+    public function userProfileSetting()
     {
         $user = Auth::user();
-        $mahasiswa = $user->mahasiswa;
+        return view('content.user-profile.setting', compact('user'));
+    }
 
-        if (!$mahasiswa) {
-            return redirect()->back()->with('error', 'Profil mahasiswa tidak ditemukan.');
+    public function userProfileUpdate(Request $request)
+    {
+        $user = Auth::user();
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:50',
+            'email_personal' => 'nullable|email|max:50',
+            'no_wa' => 'nullable|string|max:13',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg|max:800',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
         }
 
-        // Validasi data
-        $request->validate([
-            'nama' => 'required|string|max:255',
-            'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'nim' => [
-                'required',
-                'string',
-                'max:20',
-                Rule::unique('mahasiswa', 'nim')->ignore($mahasiswa->id_mahasiswa, 'id_mahasiswa'), // Sesuaikan 'id_mahasiswa' jika nama PK beda
-            ],
-            'id_program_studi' => 'required|exists:program_studi,id',
-            'tahun_masuk' => 'required|numeric|digits:4|min:2010',
-            'no_hp' => 'nullable|string|max:15',
-            'alamat' => 'nullable|string',
-            'foto_profil' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
+        try {
+            // Update data user
+            $user->name = $request->name;
+            $user->email_personal = $request->email_personal;
+            $user->no_wa = $request->no_wa;
 
-        // 1. Update data di tabel 'users'
-        $user->update([
-            'nama' => $request->nama,
-            'email' => $request->email,
-        ]);
+            // Upload Avatar baru
+            if ($request->hasFile('avatar')) {
 
-        // 2. Siapkan data untuk tabel 'mahasiswa'
-        $mahasiswaData = [
-            'nim' => $request->nim,
-            'id_program_studi' => $request->id_program_studi,
-            'tahun_masuk' => $request->tahun_masuk,
-            'no_hp' => $request->no_hp,
-            'alamat' => $request->alamat,
-        ];
+                // Hapus avatar lama jika ada di storage
+                if ($user->avatar && Storage::disk('public')->exists('avatar/' . $user->avatar)) {
+                    Storage::disk('public')->delete('avatar/' . $user->avatar);
+                }
 
-        // 3. Handle upload foto
-        if ($request->hasFile('foto_profil')) {
-            // Hapus foto lama jika ada
-            if ($mahasiswa->foto_profil) {
-                Storage::delete('public/' . $mahasiswa->foto_profil);
+                $avatar = $request->file('avatar');
+                $avatarName = time() . '_' . $user->id . '.' . $avatar->getClientOriginalExtension();
+
+                $avatar->storeAs('avatar', $avatarName, 'public');
+                $user->avatar = $avatarName;
             }
-
-            // Simpan foto baru ke 'storage/app/public/foto_profil'
-            $path = $request->file('foto_profil')->store('public/foto_profil');
-
-            // Simpan path relatif di database
-            $mahasiswaData['foto_profil'] = str_replace('public/', '', $path);
+            $user->save();
+            return back()->with('success', 'Profil berhasil diperbarui');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
-
-        // 4. Update data di tabel 'mahasiswa'
-        $mahasiswa->update($mahasiswaData);
-
-        return redirect()->route('mahasiswa.profil.edit')->with('success', 'Profil berhasil diperbarui!');
     }
 }
