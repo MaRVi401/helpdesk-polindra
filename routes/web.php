@@ -79,17 +79,18 @@ Route::middleware('guest')->group(function () {
 });
 
 // --- ROUTE FOR ALREADY LOGGED IN USERS (AUTH) ---
-Route::middleware(['auth', 'profile.completed'])->group(function () {
+Route::middleware(['auth', 'complete-profile'])->group(function () {
 
 
-    
     Route::get('/complete-profile', [CompleteProfileController::class, 'completeProfile'])->name('complete.profile');
+    Route::get('/complete-profile', [CompleteProfileController::class, 'completeProfile'])->name('complete.profile');
+
     Route::post('/save-profile', [CompleteProfileController::class, 'saveCompleteProfile'])->name('save.complete.profile');
-    
-    
+
+
     // DASHBOARD USERS
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    
+
     // USERS MANAGEMENT (SUPER ADMIN)
     Route::resource('student', StudentController::class)->middleware('role:super_admin');
     Route::resource('staff', StaffController::class)->middleware('role:super_admin');
@@ -98,9 +99,9 @@ Route::middleware(['auth', 'profile.completed'])->group(function () {
     Route::resource('major', MajorController::class)->middleware('role:super_admin');
     Route::resource('study-program', StudyProgramController::class)->middleware('role:super_admin');
 
-    
+
     Route::resource('unit', UnitController::class)->middleware('role:super_admin');
-        
+
     // FAQ MANAGEMENT (SUPER ADMIN)
     Route::resource('faq', FaqController::class)->middleware('role:super_admin');
 
@@ -120,7 +121,7 @@ Route::middleware(['auth', 'profile.completed'])->group(function () {
     // Super Admin
     Route::middleware('role:super_admin')->prefix('admin')->name('admin.')->group(function () {
 
-        
+
 
         // Kelola Pengguna - Mahasiswa
         Route::get('mahasiswa/export/excel', [MahasiswaController::class, 'exportExcel'])->name('mahasiswa.export.excel');
@@ -145,7 +146,7 @@ Route::middleware(['auth', 'profile.completed'])->group(function () {
         // Master Route Jurusan & Prodi
         Route::get('jurusan/{jurusan}/program-studi', [ProgramStudiController::class, 'index'])->name('jurusan.program-studi.index');
 
-        
+
         // Kelola Unit
         Route::get('unit/export/excel', [UnitControllerOld::class, 'exportExcel'])->name('unit.export.excel');
         Route::resource('unit', UnitControllerOld::class)->names('unit');
