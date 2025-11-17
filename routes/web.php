@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\StudyProgramController;
 use App\Http\Controllers\Admin\UnitController;
 use App\Http\Controllers\Admin\UnitControllerOld;
 use App\Http\Controllers\CompleteProfileController;
+use App\Http\Controllers\UserProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -42,8 +43,8 @@ use App\Http\Controllers\AdminUnit\LayananController as AdminUnitLayananControll
 // FOR TESTING BLADE
 Route::get('/test', [TestPage::class, 'home'])->name('home.page');
 
-Route::get('/app/ecommerce/product/list', [EcommerceProductList::class, 'index'])->name('app-ecommerce-product-list');
-Route::get('/app/faq/all/list', [FaqList::class, 'index'])->name('app-faq-list');
+// Route::get('/app/ecommerce/product/list', [EcommerceProductList::class, 'index'])->name('app-ecommerce-product-list');
+// Route::get('/app/faq/all/list', [FaqList::class, 'index'])->name('app-faq-list');
 
 
 // Testing Super Admin - 04/11/2025
@@ -81,10 +82,9 @@ Route::middleware('guest')->group(function () {
 // --- ROUTE FOR ALREADY LOGGED IN USERS (AUTH) ---
 Route::middleware(['auth', 'complete-profile'])->group(function () {
 
-
+    
+    Route::get('/user-profile', [UserProfileController::class, 'userProfile'])->name('user.profile.show');
     Route::get('/complete-profile', [CompleteProfileController::class, 'completeProfile'])->name('complete.profile');
-    Route::get('/complete-profile', [CompleteProfileController::class, 'completeProfile'])->name('complete.profile');
-
     Route::post('/save-profile', [CompleteProfileController::class, 'saveCompleteProfile'])->name('save.complete.profile');
 
 

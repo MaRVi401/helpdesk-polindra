@@ -17,13 +17,12 @@
     <div class="app-brand demo">
       <a href="{{ url('/') }}" class="app-brand-link">
         <span class="app-brand-logo demo">
-          <img class="wpx-32" src="{{ asset('assets/img/logo/polindra.svg') }}" alt="Logo ServiceDesk">
+          <img class="wpx-40" src="{{ asset('assets/img/logo/polindra.svg') }}" alt="Logo ServiceDesk">
         </span>
         <span class="app-brand-text demo menu-text fw-bold ms-3">
-          <img class="wpx-80" src="{{ asset('assets/img/logo/servicedesk.svg') }}" alt="Logo ServiceDesk">
+          <img class="w-px-100" src="{{ asset('assets/img/logo/servicedesk.svg') }}" alt="Logo ServiceDesk">
         </span>
       </a>
-
       <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
         <i class="icon-base ti menu-toggle-icon d-none d-xl-block"></i>
         <i class="icon-base ti tabler-x d-block d-xl-none"></i>

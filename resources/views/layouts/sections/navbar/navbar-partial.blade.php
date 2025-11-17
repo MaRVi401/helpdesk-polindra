@@ -75,7 +75,7 @@
       <ul class="dropdown-menu dropdown-menu-end">
         <li>
           <a class="dropdown-item mt-0"
-            href="{{ Route::has('profile.show') ? route('profile.show') : 'javascript:void(0);' }}">
+            href="{{ Route::has('user.profile.show') ? route('user.profile.show') : 'javascript:void(0);' }}">
             <div class="d-flex align-items-center">
               <div class="flex-shrink-0 me-2">
                 <div class="avatar avatar-online">
@@ -106,7 +106,7 @@
         </li>
         <li>
           <a class="dropdown-item"
-            href="{{ Route::has('profile.show') ? route('profile.show') : 'javascript:void(0);' }}">
+            href="{{ Route::has('user.profile.show') ? route('user.profile.show') : 'javascript:void(0);' }}">
             <i class="icon-base ti tabler-user me-3 icon-md"></i><span class="align-middle">Profil saya</span>
           </a>
         </li>
