@@ -1,10 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
 
 class UserProfileController extends Controller
 {
@@ -14,10 +16,10 @@ class UserProfileController extends Controller
         return view('content.user-profile.profile', compact('user'));
     }
 
-    public function userProfileSetting()
+    public function setProfile()
     {
         $user = Auth::user();
-        return view('content.user-profile.setting', compact('user'));
+        return view('content.user-profile.set-profile', compact('user'));
     }
 
     public function userProfileUpdate(Request $request)
@@ -43,7 +45,6 @@ class UserProfileController extends Controller
 
             // Upload Avatar baru
             if ($request->hasFile('avatar')) {
-
                 // Hapus avatar lama jika ada di storage
                 if ($user->avatar && Storage::disk('public')->exists('avatar/' . $user->avatar)) {
                     Storage::disk('public')->delete('avatar/' . $user->avatar);
@@ -56,7 +57,67 @@ class UserProfileController extends Controller
                 $user->avatar = $avatarName;
             }
             $user->save();
-            return back()->with('success', 'Profil berhasil diperbarui');
+            return back()->with('success', 'Profil berhasil diperbarui.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    public function setSecurity()
+    {
+        $user = Auth::user();
+        return view('content.user-profile.set-security', compact('user'));
+    }
+
+    public function userPasswordUpdate(Request $request)
+    {
+        $user = Auth::user();
+
+        // Cek apakah password user sudah diset atau masih null
+        $hasPassword = !is_null($user->password);
+        if ($hasPassword) {
+            $validator = Validator::make($request->all(), [
+                'currentPassword' => 'required|string|min:8',
+                'newPassword' => 'required|string|min:8',
+                'confirmPassword' => 'required|string|min:8|same:newPassword',
+            ], [
+                'currentPassword.required' => 'Password saat ini wajib diisi',
+                'currentPassword.min' => 'Password minimal 8 karakter',
+                'newPassword.required' => 'Password baru wajib diisi',
+                'newPassword.min' => 'Password minimal 8 karakter',
+                'confirmPassword.required' => 'Konfirmasi password wajib diisi',
+                'confirmPassword.min' => 'Password minimal 8 karakter',
+                'confirmPassword.same' => 'Konfirmasi password tidak cocok',
+            ]);
+        } else {
+            $validator = Validator::make($request->all(), [
+                'newPassword' => 'required|string|min:8',
+                'confirmPassword' => 'required|string|min:8|same:newPassword',
+            ], [
+                'newPassword.required' => 'Password baru wajib diisi',
+                'newPassword.min' => 'Password minimal 8 karakter',
+                'confirmPassword.required' => 'Konfirmasi password wajib diisi',
+                'confirmPassword.min' => 'Password minimal 8 karakter',
+                'confirmPassword.same' => 'Konfirmasi password tidak cocok',
+            ]);
+        }
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        try {
+            // Jika user sudah punya password, verifikasi current password
+            if ($hasPassword) {
+                if (!Hash::check($request->currentPassword, $user->password)) {
+                    return back()->with('error', 'Password saat ini tidak sesuai.');
+                }
+            }
+            // Update password baru
+            $user->password = Hash::make($request->newPassword);
+            $user->save();
+            $message = $hasPassword ? 'Password berhasil diubah.' : 'Password berhasil diatur.';
+            return back()->with('success', $message);
         } catch (\Exception $e) {
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }

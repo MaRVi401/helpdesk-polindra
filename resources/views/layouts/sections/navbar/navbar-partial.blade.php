@@ -118,7 +118,7 @@
         </li>
         <li>
           <a class="dropdown-item"
-            href="{{ Route::has('user-profile.setting') ? route('user-profile.setting') : 'javascript:void(0);' }}">
+            href="{{ Route::has('user-profile.set-profile') ? route('user-profile.set-profile') : 'javascript:void(0);' }}">
             <i class="icon-base ti tabler-settings me-3 icon-md"></i><span class="align-middle">Kelola Profil</span>
           </a>
         </li>

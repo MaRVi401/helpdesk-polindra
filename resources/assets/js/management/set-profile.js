@@ -1,3 +1,7 @@
+/**
+ * Setting - Profile
+ */
+
 document.addEventListener('DOMContentLoaded', function (e) {
   // Form Profile Settings
   let formAccountSettings = document.querySelector('#formAccountSettings');
@@ -225,16 +229,4 @@ document.addEventListener('DOMContentLoaded', function (e) {
   }
 });
 
-// Select2 initialization
-$(function () {
-  var select2Elements = $('.select2');
-  if (select2Elements.length) {
-    select2Elements.each(function () {
-      var element = $(this);
-      element.wrap('<div class="position-relative"></div>');
-      element.select2({
-        dropdownParent: element.parent()
-      });
-    });
-  }
-});
+

@@ -1,6 +1,7 @@
 @php
   use Illuminate\Support\Facades\Auth;
   use Illuminate\Support\Facades\Route;
+  use Illuminate\Support\Facades\Storage;
 @endphp
 
 @extends('layouts/layoutMaster')
@@ -52,7 +53,7 @@
                       class="fw-medium">{{ ucwords(str_replace('_', ' ', Auth::user()->role)) }}</span></li>
                 </ul>
               </div>
-              <a href="{{ Route::has('user-profile.setting') ? route('user-profile.setting') : 'javascript:void(0);' }}"
+              <a href="{{ Route::has('user-profile.set-profile') ? route('user-profile.set-profile') : 'javascript:void(0);' }}"
                 class="btn btn-primary mb-1"> <i class="icon-base ti tabler-settings-share icon-xs me-2"></i>Kelola
                 Profil</a>
             </div>

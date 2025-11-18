@@ -132,7 +132,7 @@ class StudentController extends Controller
       }
       $data_mahasiswa->delete();
 
-      return redirect()->route('student.index')->with('success', 'Data mahasiswa dan akun user berhasil dihapus.');
+      return redirect()->route('student.index')->with('success', 'Data mahasiswa dan akun pengguna berhasil dihapus.');
     } catch (\Exception $e) {
       return redirect()->route('student.index')->with('error', 'Gagal menghapus data mahasiswa: ' . $e->getMessage());
     }

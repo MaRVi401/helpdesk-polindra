@@ -1,5 +1,6 @@
 @php
   use Illuminate\Support\Facades\Auth;
+  use Illuminate\Support\Facades\Route;
 @endphp
 
 @extends('layouts/layoutMaster')
@@ -15,7 +16,7 @@
 @endsection
 
 @section('page-script')
-  @vite(['resources/assets/js/management/user-profile-setting.js'])
+  @vite(['resources/assets/js/management/set-profile.js'])
 @endsection
 
 @section('content')
@@ -24,11 +25,13 @@
       <div class="nav-align-top">
         <ul class="nav nav-pills flex-column flex-md-row mb-6 gap-md-0 gap-2">
           <li class="nav-item">
-            <a class="nav-link active" href="javascript:void(0);"><i class="icon-base ti tabler-user-search icon-sm me-1_5"></i>
+            <a class="nav-link active" href="javascript:void(0);"><i
+                class="icon-base ti tabler-user-search icon-sm me-1_5"></i>
               Profil Akun</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ url('user-profile/setting/security') }}"><i
+            <a class="nav-link"
+              href="{{ Route::has('user-profile.set-security') ? route('user-profile.set-security') : 'javascript:void(0);' }}"><i
                 class="icon-base ti tabler-lock icon-sm me-1_5"></i> Keamanan</a>
           </li>
         </ul>

@@ -154,7 +154,7 @@ class StaffController extends Controller
       $data_staff->delete();
 
       return redirect()->route('staff.index')
-        ->with('success', 'Data staff dan akun user berhasil dihapus.');
+        ->with('success', 'Data staff dan akun pengguna berhasil dihapus.');
     } catch (\Exception $e) {
       return redirect()->route('staff.index')
         ->with('error', 'Gagal menghapus data staff: ' . $e->getMessage());

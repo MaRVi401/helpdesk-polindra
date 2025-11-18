@@ -87,12 +87,13 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
 
     // USER PROFILE
     Route::get('/user-profile', [UserProfileController::class, 'userProfile'])->name('user-profile.index');
-    Route::get('/user-profile/setting', [UserProfileController::class, 'userProfileSetting'])->name('user-profile.setting');
+    Route::get('/user-profile/setting-profile', [UserProfileController::class, 'setProfile'])->name('user-profile.set-profile');
     Route::put('/user-profile/update', [UserProfileController::class, 'userProfileUpdate'])->name('user-profile.update');
-
+    Route::get('/user-profile/setting-security', [UserProfileController::class, 'setSecurity'])->name('user-profile.set-security');
+    Route::post('/user-profile/update-password', [UserProfileController::class, 'userPasswordUpdate'])->name('user-profile.update-password');
+    
     // COMPLETE PROFILE (STUDENT)
     Route::get('/complete-profile', [CompleteProfileController::class, 'completeProfile'])->name('complete.profile');
-    Route::delete('/user-profile/delete-avatar', [UserProfileController::class, 'deleteAvatar'])->name('user-profile.delete-avatar');
     Route::post('/save-profile', [CompleteProfileController::class, 'saveCompleteProfile'])->name('save.complete.profile');
 
     // USERS MANAGEMENT (SUPER ADMIN)
