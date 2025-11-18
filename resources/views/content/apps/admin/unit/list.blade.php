@@ -56,7 +56,7 @@
   {{-- Error message dari session --}}
   @if (session('error'))
     <script>
-      window.unitSuccessMessage = "{{ session('error') }}";
+      window.unitErrorMessage = "{{ session('error') }}";
     </script>
   @endif
 @endsection

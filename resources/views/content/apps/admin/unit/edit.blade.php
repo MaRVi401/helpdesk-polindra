@@ -24,17 +24,17 @@
         </div>
         {{-- KEPALA UNIT --}}
         <div class="mb-6">
-          <label for="kepala_unit" class="form-label">Kepala Unit</label>
-          <select class="form-select @error('kepala_unit') is-invalid @enderror" id="kepala_unit" name="kepala_unit">
+          <label for="kepala_id" class="form-label">Kepala Unit</label>
+          <select class="form-select @error('kepala_id') is-invalid @enderror" id="kepala_id" name="kepala_id">
             <option value="">Pilih staf</option>
             @foreach ($data_staf as $staf)
               <option value="{{ $staf->id }}"
-                {{ old('kepala_unit', $data_unit->kepala_id) == $staf->id ? 'selected' : '' }}>
+                {{ old('kepala_id', $data_unit->kepala_id) == $staf->id ? 'selected' : '' }}>
                 {{ $staf->user->name }}
               </option>
             @endforeach
           </select>
-          @error('kepala_unit')
+          @error('kepala_id')
             <div class="invalid-feedback">{{ $message }}</div>
           @enderror
         </div>

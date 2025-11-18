@@ -65,7 +65,7 @@ class UnitController extends Controller
 
         $data_unit->update([
             'nama_unit' => $request->nama_unit,
-            'kepala_id' => $request->kepala_unit,
+            'kepala_id' => $request->kepala_id,
         ]);
 
         return redirect()->route('unit.index')->with('success', 'Unit berhasil diperbarui.');
@@ -75,7 +75,7 @@ class UnitController extends Controller
     {
         $data_unit = Unit::findOrFail($id);
         if ($data_unit->staff()->count() > 0) {
-            return redirect()->route('unit.index')->with('error', 'Unit ini masih memiliki staff terdaftar.');
+            return redirect()->route('unit.index')->with('error', 'Unit ini masih memiliki staf terdaftar.');
         }
 
         try {
