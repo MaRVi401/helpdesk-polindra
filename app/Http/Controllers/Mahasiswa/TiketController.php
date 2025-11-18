@@ -22,7 +22,7 @@ class TiketController extends Controller
     {
         $userId = Auth::id();
         $tikets = Tiket::where('pemohon_id', $userId)
-            ->with('layanan.unit')
+            ->with(['layanan.unit', 'riwayatStatus' ])
             ->orderBy('created_at', 'desc')
             ->get();
         return view('mahasiswa.tiket.index', compact('tikets'));
@@ -186,16 +186,9 @@ class TiketController extends Controller
         $tiket = Tiket::where('id', $id)
             ->where('pemohon_id', $userId)
             ->firstOrFail();
-
-        // Meskipun DB sudah ON DELETE CASCADE, ini adalah implementasi
-        // 'cascade on delete' di level Controller sesuai permintaan.
         try {
             DB::beginTransaction();
-
-            // 1. Hapus semua komentar terkait
             KomentarTiket::where('tiket_id', $tiket->id)->delete();
-
-            // 2. Hapus data detail terkait
             switch ($tiket->layanan->nama) {
                 case 'Surat Keterangan Aktif Kuliah':
                     DetailTiketSuratKetAktif::where('tiket_id', $tiket->id)->delete();
@@ -216,13 +209,9 @@ class TiketController extends Controller
                     $detailPub->delete();
                     break;
             }
-
-            // 3. Hapus lampiran tiket utama jika ada
             if ($tiket->lampiran) {
                 Storage::disk('public')->delete($tiket->lampiran);
             }
-
-            // 4. Hapus tiket utama
             $tiket->delete();
 
             DB::commit();

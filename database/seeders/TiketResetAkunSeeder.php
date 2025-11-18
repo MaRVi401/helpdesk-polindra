@@ -5,58 +5,55 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\Layanan;
-use App\Models\Tiket;
-use App\Models\DetailTiketResetAkun;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class TiketResetAkunSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
     public function run()
     {
-        // 1. Cari User Mahasiswa dengan ID 32
         $mahasiswaUser = User::where('id', 32)->where('role', 'mahasiswa')->first();
-        
-        // 2. Cari Layanan "Reset Akun"
-        $layanan = Layanan::where('nama', 'Reset Akun')->first();
+        $layanan = Layanan::where('nama', 'Reset Akun E-Learning & Siakad')->first();
 
         if (!$mahasiswaUser || !$layanan) {
-            $this->command->error('User ID 32 dengan role "mahasiswa" atau Layanan "Reset Akun" tidak ditemukan. Seeder ini akan dilewati.');
+            $this->command->error('User ID 32 atau Layanan Reset Akun tidak ditemukan.');
             return;
         }
 
         DB::beginTransaction();
         try {
-            // 3. Buat detail
-            $detail = DetailTiketResetAkun::create([
-                'aplikasi' => 'sevima',
-            ]);
-
-            // 4. Buat tiket
-            $tiket = new Tiket([
-                'pemohon_id' => $mahasiswaUser->id, // Langsung pakai ID 32
+            
+            $tiketId = DB::table('tiket')->insertGetId([
+                'pemohon_id' => $mahasiswaUser->id,
                 'layanan_id' => $layanan->id,
-                'deskripsi' => 'Saya lupa password SIAKAD (Sevima). Mohon bantuan untuk reset password akun saya.',
-                'no_tiket' => 'TKT-' . time() . Str::random(4),
-                'status' => 'menunggu',
-                'prioritas' => 'tinggi',
+                'deskripsi' => 'Saya lupa password akun SEVIMA saya.',
+                'no_tiket' => time() + 1,
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
 
-            // 5. Asosiasikan
-            $tiket->detail()->associate($detail);
-            $tiket->save();
+           
+            DB::table('riwayat_status_tiket')->insert([
+                'tiket_id' => $tiketId,
+                'user_id' => $mahasiswaUser->id,
+                'status' => 'Pending',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            
+            DB::table('detail_tiket_reset_akun')->insert([
+                'tiket_id' => $tiketId,
+                'aplikasi' => 'sevima', 
+                'deskripsi' => 'Terakhir login minggu lalu, sekarang tidak bisa masuk.',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
 
             DB::commit();
-            $this->command->info('Tiket Reset Akun (User ID 32) berhasil dibuat.');
-
+            $this->command->info('Tiket Reset Akun berhasil dibuat.');
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->command->error('Gagal membuat tiket: ' . $e->getMessage());
+            $this->command->error('Gagal: ' . $e->getMessage());
         }
     }
 }

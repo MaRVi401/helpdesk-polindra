@@ -5,6 +5,13 @@
 @section('vendor-style')
 <link rel="stylesheet" href="{{asset('assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css')}}">
 <link rel="stylesheet" href="{{asset('assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css')}}">
+<style>
+    .badge-status { padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: #fff; }
+    .bg-Pending { background-color: #f6ad55; }
+    .bg-Diproses { background-color: #4299e1; }
+    .bg-Selesai { background-color: #48bb78; }
+    .bg-Ditolak { background-color: #f56565; }
+</style>
 @endsection
 
 @section('vendor-script')
@@ -43,17 +50,17 @@
       {{ session('success') }}
     </div>
     @endif
+
     <div class="table-responsive text-nowrap">
       <table class="table table-striped" id="tiket-table">
         <thead>
           <tr>
-            {{-- PERBAIKAN: Ganti Judul -> No. Tiket --}}
             <th>No. Tiket</th>
             <th>Layanan</th>
             <th>Status</th>
             <th>Prioritas</th>
             <th>Tgl Dibuat</th>
-            <th>Aksi</th>
+            <th class="text-center">Aksi</th> {{-- Tambah text-center --}}
           </tr>
         </thead>
         <tbody class="table-border-bottom-0">
@@ -61,35 +68,59 @@
           <tr>
             <td>
               <a href="{{ route('mahasiswa.tiket.show', $tiket->id) }}">
-                {{-- PERBAIKAN: Ganti judul -> no_tiket --}}
-                <strong>{{ $tiket->no_tiket }}</strong>
+                <strong>#{{ $tiket->no_tiket }}</strong>
               </a>
             </td>
-            {{-- Tampilkan nama layanan dan unitnya --}}
-            <td>{{ $tiket->layanan->nama }} ({{ $tiket->layanan->unit->nama_unit ?? '' }})</td>
+            
             <td>
-              @if($tiket->status == 'menunggu')
-                <span class="badge bg-label-warning">Menunggu</span>
-              @elseif($tiket->status == 'diproses')
-                <span class="badge bg-label-info">Diproses</span>
-              @elseif($tiket->status == 'selesai')
-                <span class="badge bg-label-success">Selesai</span>
-              @elseif($tiket->status == 'ditutup')
-                <span class="badge bg-label-secondary">Ditutup</span>
-              @endif
+                {{ $tiket->layanan->nama ?? '-' }} 
+                <br>
+                <small class="text-muted">({{ $tiket->layanan->unit->nama_unit ?? 'N/A' }})</small>
             </td>
+            
             <td>
-              @if($tiket->prioritas == 'rendah')
-                <span class="badge bg-label-secondary">Rendah</span>
-              @elseif($tiket->prioritas == 'sedang')
-                <span class="badge bg-label-warning">Sedang</span>
-              @elseif($tiket->prioritas == 'tinggi')
-                <span class="badge bg-label-danger">Tinggi</span>
-              @endif
+                @php
+                    $statusTerakhir = $tiket->riwayatStatus->sortByDesc('created_at')->first()->status ?? 'Pending';
+                @endphp
+                <span class="badge-status bg-{{ $statusTerakhir }}">
+                    {{ $statusTerakhir }}
+                </span>
             </td>
+            
+            <td>
+              @php
+                  $prioVal = $tiket->layanan->prioritas ?? 0;
+                  $prioBadge = 'secondary';
+                  $prioText = '-';
+
+                  if($prioVal == 1) { $prioBadge = 'success'; $prioText = 'Rendah'; }
+                  if($prioVal == 2) { $prioBadge = 'warning'; $prioText = 'Sedang'; }
+                  if($prioVal == 3) { $prioBadge = 'danger'; $prioText = 'Tinggi'; }
+              @endphp
+              <span class="badge bg-label-{{ $prioBadge }}">{{ $prioText }}</span>
+            </td>
+
             <td>{{ $tiket->created_at->format('d M Y, H:i') }}</td>
+            
+            {{-- ====================================================== --}}
+            {{-- TOMBOL AKSI: DETAIL (Atas) & HAPUS (Bawah) --}}
+            {{-- ====================================================== --}}
             <td>
-              <a href="{{ route('mahasiswa.tiket.show', $tiket->id) }}" class="btn btn-sm btn-info">Detail</a>
+              <div class="d-flex flex-column gap-2">
+                  {{-- Tombol Detail --}}
+                  <a href="{{ route('mahasiswa.tiket.show', $tiket->id) }}" class="btn btn-sm btn-info w-100">
+                    Detail
+                  </a>
+                  
+                  {{-- Tombol Hapus --}}
+                  <form action="{{ route('mahasiswa.tiket.destroy', $tiket->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus tiket ini?');">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-sm btn-danger w-100">
+                      Hapus
+                    </button>
+                  </form>
+              </div>
             </td>
           </tr>
           @empty

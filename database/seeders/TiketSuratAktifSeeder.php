@@ -6,61 +6,60 @@ use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\Layanan;
 use App\Models\Tiket;
-use App\Models\DetailTiketSuratKetAktif;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class TiketSuratAktifSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
     public function run()
     {
-        // 1. Cari User Mahasiswa dengan ID 32
+
         $mahasiswaUser = User::where('id', 32)->where('role', 'mahasiswa')->first();
+        
 
-        // 2. Cari Layanan "Surat Keterangan Aktif"
-        $layanan = Layanan::where('nama', 'Surat Keterangan Aktif')->first();
+        $layanan = Layanan::where('nama', 'Surat Keterangan Aktif Kuliah')->first();
 
-        // Jika user atau layanan tidak ditemukan, jangan jalankan seeder
         if (!$mahasiswaUser || !$layanan) {
-            $this->command->error('User ID 32 dengan role "mahasiswa" atau Layanan "Surat Keterangan Aktif" tidak ditemukan. Seeder ini akan dilewati.');
+            $this->command->error('User ID 32 atau Layanan "Surat Keterangan Aktif Kuliah" tidak ditemukan.');
             return;
         }
 
         DB::beginTransaction();
         try {
-            // 3. Buat data detailnya terlebih dahulu
-            $detail = DetailTiketSuratKetAktif::create([
-                'keperluan' => 'Pendaftaran Beasiswa KIP',
-                'tahun_ajaran' => '2024/2025',
-                'semester' => 3
-            ]);
 
-            // 4. Buat data tiket utama
-            $tiket = new Tiket([
-                'pemohon_id' => $mahasiswaUser->id, // Langsung pakai ID 32
+            $tiketId = DB::table('tiket')->insertGetId([
+                'pemohon_id' => $mahasiswaUser->id,
                 'layanan_id' => $layanan->id,
-                'deskripsi' => 'Mohon dibuatkan surat keterangan aktif untuk keperluan pendaftaran beasiswa KIP. Terima kasih.',
-                'no_tiket' => 'TKT-' . time() . Str::random(4),
-                'status' => 'menunggu',
-                'prioritas' => 'sedang',
-                // 'lampiran' => 'path/ke/file_contoh.pdf' 
+                'deskripsi' => 'Mohon dibuatkan surat keterangan aktif untuk keperluan pendaftaran beasiswa KIP.',
+                'no_tiket' => time(), 
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
 
-            // 5. Asosiasikan tiket dengan detail
-            $tiket->detail()->associate($detail);
-            $tiket->save();
+
+            DB::table('riwayat_status_tiket')->insert([
+                'tiket_id' => $tiketId,
+                'user_id' => $mahasiswaUser->id,
+                'status' => 'Pending',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+
+            DB::table('detail_tiket_surat_ket_aktif')->insert([
+                'tiket_id' => $tiketId,
+                'keperluan' => 'Pendaftaran Beasiswa KIP',
+                'tahun_ajaran' => '2024', 
+                'semester' => 3,
+                'keperluan_lainnya' => null, 
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
 
             DB::commit();
-            $this->command->info('Tiket Surat Keterangan Aktif (User ID 32) berhasil dibuat.');
-
+            $this->command->info('Tiket Surat Aktif berhasil dibuat.');
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->command->error('Gagal membuat tiket: ' . $e->getMessage());
+            $this->command->error('Gagal: ' . $e->getMessage());
         }
     }
 }
