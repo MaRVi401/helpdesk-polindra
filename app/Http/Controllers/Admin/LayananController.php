@@ -83,7 +83,7 @@ class LayananController extends Controller
                 ),
             ],
             'unit_id' => 'required|exists:units,id',
-            'prioritas' => 'nullable|integer',
+            'prioritas' => 'required|integer|in:1,2,3',
             'penanggung_jawab_ids' => 'nullable|array',
             'penanggung_jawab_ids.*' => 'exists:staff,id',
             'status_arsip' => 'required|in:0,1',
@@ -173,7 +173,7 @@ class LayananController extends Controller
                         ),
                     ],
                     'unit_id' => 'required|exists:units,id',
-                    'prioritas' => 'nullable|integer',
+                    'prioritas' => 'required|integer|in:1,2,3',
                     'status_arsip' => 'required|in:0,1',
                 ], [
                     'nama.unique' => 'Nama layanan sudah digunakan pada unit ini.',

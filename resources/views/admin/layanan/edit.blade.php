@@ -175,9 +175,16 @@
             </div>
 
             <div class="form-group">
-                <label for="prioritas">Prioritas (0 = Terendah)</label>
-                <input type="number" name="prioritas" id="prioritas"
-                    value="{{ old('prioritas', $layanan->prioritas) }}" min="0" required>
+                <label for="prioritas">Prioritas</label>
+                <select name="prioritas" id="prioritas" required>
+                    <option value="1" {{ old('prioritas', $layanan->prioritas) == 1 ? 'selected' : '' }}>
+                        Normal</option>
+                    <option value="2" {{ old('prioritas', $layanan->prioritas) == 2 ? 'selected' : '' }}>
+                        Sedang</option>
+                    <option value="3" {{ old('prioritas', $layanan->prioritas) == 3 ? 'selected' : '' }}>
+                        Tinggi</option>
+                </select>
+
             </div>
 
             <div class="form-group">

@@ -139,6 +139,30 @@
             margin: 0;
             padding-left: 1.2rem;
         }
+
+        /* Badge prioritas */
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .prioritas-1 {
+            background-color: #4b5563;
+            /* Gray-600 */
+        }
+
+        .prioritas-2 {
+            background-color: #16a34a;
+            /* Green-600 */
+        }
+
+        .prioritas-3 {
+            background-color: #dc2626;
+            /* Red-600 */
+        }
     </style>
 </head>
 
@@ -151,7 +175,6 @@
                 <a href="{{ route('admin.layanan.create') }}" class="button button-primary">Tambah Layanan</a>
             </div>
 
-            {{-- Filter Unit --}}
             <form id="filter-form" action="{{ route('admin.layanan.index') }}" method="GET" class="search-form"
                 style="gap: 10px;">
                 <select name="unit_id" onchange="this.form.submit()" class="button">
@@ -171,7 +194,6 @@
                 <input type="search" id="search-input" name="q" placeholder="Cari layanan, unit, atau PIC..."
                     value="{{ $searchQuery ?? '' }}">
             </form>
-            {{-- Akhir dari filter Unit --}}
         </div>
 
         @if (session('success'))
@@ -187,7 +209,8 @@
                     <th style="width: 1%;">No</th>
                     <th>Nama Layanan</th>
                     <th>Unit</th>
-                    <th>PIC (Penanggung Jawab)</th>
+                    <th>PIC</th>
+                    <th>Prioritas</th>
                     <th style="width: 15%;">Aksi</th>
                 </tr>
             </thead>
@@ -202,8 +225,9 @@
                             @endif
                         </td>
                         <td>{{ $layanan->unit->nama_unit ?? 'N/A' }}</td>
+
+                        <!-- PIC -->
                         <td>
-                            {{-- Menggunakan relasi 'penanggungJawab' --}}
                             @if ($layanan->penanggungJawab->isEmpty())
                                 <span style="color: #718096;">Belum diatur</span>
                             @else
@@ -214,6 +238,21 @@
                                 </ul>
                             @endif
                         </td>
+
+                        <!-- PRIORITAS -->
+                        <td>
+                            @if ($layanan->prioritas == 1)
+                                <span class="badge prioritas-1">Rendah</span>
+                            @elseif ($layanan->prioritas == 2)
+                                <span class="badge prioritas-2">Sedang</span>
+                            @elseif ($layanan->prioritas == 3)
+                                <span class="badge prioritas-3">Tinggi</span>
+                            @else
+                                <span style="color:#718096">N/A</span>
+                            @endif
+                        </td>
+
+                        <!-- Aksi -->
                         <td class="action-buttons">
                             <a href="{{ route('admin.layanan.edit', $layanan) }}">Edit</a>
                             <form action="{{ route('admin.layanan.destroy', $layanan) }}" method="POST"
@@ -227,11 +266,12 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" style="text-align: center;">Tidak ada data layanan.</td>
+                        <td colspan="6" style="text-align: center;">Tidak ada data layanan.</td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
+
         <div class="pagination-container">
             {{ $layanans->links() }}
         </div>
@@ -240,14 +280,12 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const searchInput = document.getElementById('search-input');
-            const filterForm = document.getElementById('filter-form'); // Mengubah ke filter-form
+            const filterForm = document.getElementById('filter-form');
             let debounceTimer;
 
             searchInput.addEventListener('keyup', function() {
                 clearTimeout(debounceTimer);
                 debounceTimer = setTimeout(function() {
-                    // Pastikan nilai unit_id yang sudah dipilih tetap terkirim saat pencarian di-trigger
-                    // Karena kita menggunakan satu form, ini sudah otomatis terhandle.
                     filterForm.submit();
                 }, 300);
             });
