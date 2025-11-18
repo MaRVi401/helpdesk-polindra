@@ -25,7 +25,7 @@ class UserRoleSeeder extends Seeder
             $unitTikId = Unit::where('nama_unit', 'UPA TIK')->firstOrFail()->id;
             $unitAkademikId = Unit::where('nama_unit', 'Akademik')->firstOrFail()->id;
             $unitKemahasiswaanId = Unit::where('nama_unit', 'Kemahasiswaan')->firstOrFail()->id;
-
+            $unitUptBahasaId = Unit::where('nama_unit', 'UPT. Bahasa')->firstOrFail()->id;
 
             // /** ======================
             //  * 1. SUPER ADMIN → UPA TIK
@@ -58,7 +58,7 @@ class UserRoleSeeder extends Seeder
 
 
             // /** ============================
-            // * 3. ADMIN UNIT → AKADEMIK
+            // * 3. ADMIN AKADEMIK
             //  ===============================*/
             $adminAkademik = User::firstOrCreate(
                 ['email' => 'fachrizal@email.com'],
@@ -86,7 +86,7 @@ class UserRoleSeeder extends Seeder
 
 
             // /** ============================
-            //  * 5. ADMIN UPA TIK
+            //  * 5. ADMIN UPA BAHASA
             //  ===============================*/
             $febri = User::firstOrCreate(
                 ['email' => 'febri@example.com'],
@@ -95,15 +95,13 @@ class UserRoleSeeder extends Seeder
 
             $febri->staff()->updateOrCreate(
                 ['user_id' => $febri->id],
-                ['unit_id' => $unitTikId, 'jabatan_id' => $jabatanStaffId, 'nik' => '3201010909000009']
+                ['unit_id' => $unitUptBahasaId, 'jabatan_id' => $jabatanStaffId, 'nik' => '3201010909000009'] // <-- Ganti ke $unitUptBahasaId
             );
 
-            $this->command->info("UserRoleSeeder berhasil dijalankan!");
-
+            // $this->command->info("UserRoleSeeder berhasil dijalankan!");
         } catch (\Exception $e) {
 
             $this->command->error('Gagal menjalankan UserRoleSeeder: ' . $e->getMessage());
         }
     }
-
 }

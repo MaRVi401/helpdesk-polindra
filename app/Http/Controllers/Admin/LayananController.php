@@ -18,28 +18,40 @@ class LayananController extends Controller
     public function index(Request $request)
     {
         $searchQuery = $request->input('q');
+        // Tambahkan pengambilan unit_id dari request
+        $filterUnitId = $request->input('unit_id');
         $perPage = $request->input('per_page', 10);
 
+        // Ambil semua unit untuk ditampilkan sebagai filter
+        $units = Unit::orderBy('nama_unit')->get(); //
+
         // Gunakan relasi 'penanggungJawab' (dari Layanan.php)
-        $query = Layanan::with(['unit', 'penanggungJawab.user'])
-            ->latest();
+        $query = Layanan::with(['unit', 'penanggungJawab.user']) //
+            ->latest(); //
+
+        // --- Tambahkan logika filter berdasarkan unit_id ---
+        if ($filterUnitId) {
+            $query->where('unit_id', $filterUnitId);
+        }
+        // ----------------------------------------------------
 
         if ($searchQuery) {
             $query->where(function ($q) use ($searchQuery) {
-                $q->where('nama', 'like', "%{$searchQuery}%")
+                $q->where('nama', 'like', "%{$searchQuery}%") //
                     ->orWhereHas('unit', function ($subQ) use ($searchQuery) {
-                        $subQ->where('nama_unit', 'like', "%{$searchQuery}%");
+                        $subQ->where('nama_unit', 'like', "%{$searchQuery}%"); //
                     })
                     // Gunakan relasi 'penanggungJawab.user' untuk mencari nama PIC
                     ->orWhereHas('penanggungJawab.user', function ($subQ) use ($searchQuery) {
-                        $subQ->where('name', 'like', "%{$searchQuery}%");
+                        $subQ->where('name', 'like', "%{$searchQuery}%"); //
                     });
             });
         }
 
-        $layanans = $query->paginate($perPage)->withQueryString();
+        $layanans = $query->paginate($perPage)->withQueryString(); //
 
-        return view('admin.layanan.index', compact('layanans', 'searchQuery', 'perPage'));
+        // Tambahkan 'units' dan 'filterUnitId' ke compact untuk dioper ke view
+        return view('admin.layanan.index', compact('layanans', 'searchQuery', 'perPage', 'units', 'filterUnitId')); //
     }
 
     /**
@@ -65,7 +77,6 @@ class LayananController extends Controller
                 'required',
                 'string',
                 'max:255',
-                // FIX: Mengubah 'layanans' menjadi 'layanan' (atau nama tabel yang benar)
                 Rule::unique('layanan', 'nama')->where(
                     fn($query) =>
                     $query->where('unit_id', $request->unit_id)

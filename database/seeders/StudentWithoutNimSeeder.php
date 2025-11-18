@@ -57,10 +57,10 @@ class StudentWithoutNimSeeder extends Seeder
 
                 // JANGAN buat data Mahasiswa -> biarkan kosong untuk testing
 
-                $this->command->info("Student without NIM created: {$user_data['email']}");
-            } else {
-                $this->command->warn("User {$user_data['email']} already exists.");
-            }
+                // $this->command->info("Student without NIM created: {$user_data['email']}");
+             } //else {
+            //     $this->command->warn("User {$user_data['email']} already exists.");
+            // }
         }
     }
 }
