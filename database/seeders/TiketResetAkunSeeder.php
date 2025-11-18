@@ -11,27 +11,29 @@ class TiketResetAkunSeeder extends Seeder
 {
     public function run()
     {
-        $mahasiswaUser = User::where('id', 32)->where('role', 'mahasiswa')->first();
-        $layanan = Layanan::where('nama', 'Reset Akun E-Learning & Siakad')->first();
+        $mahasiswaUser = User::where('role', 'mahasiswa')->first();
+        if (!$mahasiswaUser) {
+            $this->command->error('User mahasiswa tidak ditemukan. Jalankan TiketSuratAktifSeeder terlebih dahulu untuk membuat user dummy.');
+            return;
+        }
 
-        if (!$mahasiswaUser || !$layanan) {
-            $this->command->error('User ID 32 atau Layanan Reset Akun tidak ditemukan.');
+        $layanan = Layanan::where('nama', 'Reset Akun E-Learning & Siakad')->first();
+        if (!$layanan) {
+            $this->command->error('Layanan Reset Akun tidak ditemukan.');
             return;
         }
 
         DB::beginTransaction();
         try {
-            
             $tiketId = DB::table('tiket')->insertGetId([
                 'pemohon_id' => $mahasiswaUser->id,
                 'layanan_id' => $layanan->id,
-                'deskripsi' => 'Saya lupa password akun SEVIMA saya.',
+                'deskripsi' => 'Saya lupa password SIAKAD.',
                 'no_tiket' => time() + 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
 
-           
             DB::table('riwayat_status_tiket')->insert([
                 'tiket_id' => $tiketId,
                 'user_id' => $mahasiswaUser->id,
@@ -40,11 +42,10 @@ class TiketResetAkunSeeder extends Seeder
                 'updated_at' => now(),
             ]);
 
-            
             DB::table('detail_tiket_reset_akun')->insert([
                 'tiket_id' => $tiketId,
-                'aplikasi' => 'sevima', 
-                'deskripsi' => 'Terakhir login minggu lalu, sekarang tidak bisa masuk.',
+                'aplikasi' => 'sevima',
+                'deskripsi' => 'Tidak bisa login.',
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);

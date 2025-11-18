@@ -22,7 +22,7 @@ class TiketController extends Controller
     {
         $userId = Auth::id();
         $tikets = Tiket::where('pemohon_id', $userId)
-            ->with(['layanan.unit', 'riwayatStatus' ])
+            ->with('layanan.unit', 'riwayatStatus') // Load riwayatStatus
             ->orderBy('created_at', 'desc')
             ->get();
         return view('mahasiswa.tiket.index', compact('tikets'));
@@ -106,10 +106,19 @@ class TiketController extends Controller
                 $tiket->lampiran = $path;
             }
             
-            $tiket->save(); 
+            $tiket->save();
+
+    
+            DB::table('riwayat_status_tiket')->insert([
+                'tiket_id' => $tiket->id,
+                'user_id' => Auth::id(),
+                'status' => 'Pending',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
 
             $detailData = $request->all();
-            $detailData['tiket_id'] = $tiket->id; 
+            $detailData['tiket_id'] = $tiket->id;
 
             switch ($layanan->nama) {
                 case 'Surat Keterangan Aktif Kuliah':
@@ -134,6 +143,7 @@ class TiketController extends Controller
             }
 
             DB::commit();
+
             return redirect()->route('mahasiswa.tiket.show', $tiket->id)->with('success', 'Tiket berhasil dibuat.');
 
         } catch (\Exception $e) {
@@ -147,7 +157,11 @@ class TiketController extends Controller
         $userId = Auth::id();
         $tiket = Tiket::where('id', $id)
             ->where('pemohon_id', $userId)
-            ->with('layanan.unit', 'komentar.pengirim.mahasiswa', 'komentar.pengirim.staff')
+            ->with([
+                'layanan.unit', 
+                'komentar.pengirim', 
+                'riwayatStatus.user' 
+            ])
             ->firstOrFail();
             
         $detail = null;
@@ -166,8 +180,41 @@ class TiketController extends Controller
                 $detail = DetailTiketReqPublikasi::where('tiket_id', $tiket->id)->first();
                 break;
         }
+        $timeline = collect();
 
-        return view('mahasiswa.tiket.show', compact('tiket', 'detail'));
+
+        $timeline->push([
+            'type' => 'created',
+            'user' => $tiket->pemohon,
+            'created_at' => $tiket->created_at,
+            'data' => null,
+            'lampiran' => null
+        ]);
+
+
+        foreach($tiket->riwayatStatus as $riwayat) {
+            $timeline->push([
+                'type' => 'status_change',
+                'user' => $riwayat->user, 
+                'created_at' => $riwayat->created_at,
+                'data' => $riwayat->status,
+                'lampiran' => null
+            ]);
+        }
+
+        foreach($tiket->komentar as $komen) {
+            $timeline->push([
+                'type' => 'comment',
+                'user' => $komen->pengirim,
+                'created_at' => $komen->created_at,
+                'data' => $komen->komentar,
+                'lampiran' => $komen->lampiran
+            ]);
+        }
+
+        $timeline = $timeline->sortByDesc('created_at');
+
+        return view('mahasiswa.tiket.show', compact('tiket', 'detail', 'timeline'));
     }
 
     public function edit(string $id)
@@ -186,9 +233,11 @@ class TiketController extends Controller
         $tiket = Tiket::where('id', $id)
             ->where('pemohon_id', $userId)
             ->firstOrFail();
+
         try {
             DB::beginTransaction();
             KomentarTiket::where('tiket_id', $tiket->id)->delete();
+            
             switch ($tiket->layanan->nama) {
                 case 'Surat Keterangan Aktif Kuliah':
                     DetailTiketSuratKetAktif::where('tiket_id', $tiket->id)->delete();
@@ -201,19 +250,19 @@ class TiketController extends Controller
                     DetailTiketUbahDataMhs::where('tiket_id', $tiket->id)->delete();
                     break;
                 case 'Request Publikasi Event':
-                    // Hapus gambar jika ada
                     $detailPub = DetailTiketReqPublikasi::where('tiket_id', $tiket->id)->first();
                     if ($detailPub && $detailPub->gambar) {
                         Storage::disk('public')->delete($detailPub->gambar);
                     }
-                    $detailPub->delete();
+                    if($detailPub) $detailPub->delete();
                     break;
             }
+
             if ($tiket->lampiran) {
                 Storage::disk('public')->delete($tiket->lampiran);
             }
-            $tiket->delete();
 
+            $tiket->delete();
             DB::commit();
 
             return redirect()->route('mahasiswa.tiket.index')->with('success', 'Tiket berhasil dihapus.');

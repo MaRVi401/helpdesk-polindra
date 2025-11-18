@@ -4,26 +4,48 @@
 
 @section('vendor-style')
 <style>
-    /* --- LAYOUT & CARD STYLES (Mirip Admin) --- */
+    /* --- LAYOUT --- */
     .ticket-layout { display: flex; flex-wrap: wrap; gap: 1.5rem; }
     .ticket-main { flex: 2; min-width: 300px; }
     .ticket-sidebar { flex: 1; min-width: 300px; }
 
+    /* --- CARD CUSTOM --- */
     .card-header-custom { 
         padding: 1rem 1.5rem; 
         background-color: #f8f9fa; 
         border-bottom: 1px solid #e2e8f0; 
-        font-weight: 600; 
-        color: #4a5568; 
+        font-weight: 700; 
+        color: #566a7f; 
         display: flex;
         align-items: center;
+        font-size: 0.95rem;
     }
     .card-body-custom { padding: 1.5rem; }
     
-    /* --- DEFINITION LIST (SIDEBAR) --- */
-    .info-grid { display: grid; grid-template-columns: 130px 1fr; gap: 0.75rem; font-size: 0.9rem; margin-bottom: 0; }
-    .info-grid dt { font-weight: 600; color: #718096; }
-    .info-grid dd { margin: 0; color: #2d3748; font-weight: 500; word-wrap: break-word;}
+    /* --- INFO GRID (LABEL : VALUE) --- */
+    .info-grid { 
+        display: grid; 
+        grid-template-columns: 130px 1fr; 
+        gap: 0.75rem; 
+        font-size: 0.9rem; 
+        margin-bottom: 0; 
+    }
+    .info-grid dt { 
+        font-weight: 600; 
+        color: #8592a3; /* Warna text muted */
+    }
+    .info-grid dd { 
+        margin: 0; 
+        color: #566a7f; /* Warna text utama */
+        font-weight: 500; 
+        word-wrap: break-word;
+    }
+    /* Garis pemisah antar item detail */
+    .detail-divider {
+        border-bottom: 1px dashed #d9dee3;
+        margin: 0.5rem 0;
+        grid-column: 1 / -1; /* Span full width */
+    }
 
     /* --- TIMELINE STYLES --- */
     .timeline-custom { border-left: 2px solid #e2e8f0; margin-left: 10px; padding-left: 25px; padding-top: 5px; }
@@ -50,7 +72,6 @@
         color: #4a5568;
         position: relative;
     }
-    /* Panah kecil di kiri box komentar */
     .timeline-content::before {
         content: ''; position: absolute; left: -6px; top: 10px;
         width: 10px; height: 10px; background: #fff;
@@ -58,26 +79,19 @@
         transform: rotate(45deg);
     }
 
-    /* --- WARNA ROLE (Sesuai Admin) --- */
-    /* Super Admin: Merah */
+    /* --- WARNA ROLE --- */
     .role-super_admin .timeline-dot { background-color: #e53e3e; box-shadow: 0 0 0 2px #fed7d7; }
     .role-super_admin .badge-role { background-color: #fed7d7; color: #c53030; }
     
-    /* Mahasiswa: Biru */
     .role-mahasiswa .timeline-dot { background-color: #4299e1; box-shadow: 0 0 0 2px #bee3f8; }
     .role-mahasiswa .badge-role { background-color: #ebf8ff; color: #2b6cb0; }
 
-    /* Kepala Unit: Ungu */
     .role-kepala_unit .timeline-dot { background-color: #805ad5; box-shadow: 0 0 0 2px #e9d8fd; }
     .role-kepala_unit .badge-role { background-color: #faf5ff; color: #553c9a; }
 
-    /* Admin Unit / Staff: Hijau */
     .role-admin_unit .timeline-dot { background-color: #38a169; box-shadow: 0 0 0 2px #c6f6d5; }
     .role-admin_unit .badge-role { background-color: #f0fff4; color: #22543d; }
-    .role-staff .timeline-dot { background-color: #38a169; box-shadow: 0 0 0 2px #c6f6d5; }
-    .role-staff .badge-role { background-color: #f0fff4; color: #22543d; }
-
-    /* Default: Abu */
+    
     .role-unknown .timeline-dot { background-color: #718096; }
     
     /* Status Badges */
@@ -105,13 +119,10 @@
         </div>
         <div class="text-end">
             @php
-                // Ambil status terakhir dari tabel riwayat
                 $statusTerakhir = $tiket->riwayatStatus->sortByDesc('created_at')->first();
                 $statusLabel = $statusTerakhir ? $statusTerakhir->status : 'Pending';
             @endphp
-            <span class="badge-status bg-{{ $statusLabel }}">
-                {{ $statusLabel }}
-            </span>
+            <span class="badge-status bg-{{ $statusLabel }}">{{ $statusLabel }}</span>
         </div>
     </div>
 </div>
@@ -168,7 +179,6 @@
                 <div class="timeline-custom">
                     @forelse($tiket->komentar->sortByDesc('created_at') as $komen)
                         @php
-                            // Tentukan Role dan Kelas CSS
                             $role = $komen->pengirim->role ?? 'unknown';
                             $roleClass = 'role-' . $role;
                             $roleLabel = str_replace('_', ' ', $role);
@@ -178,7 +188,7 @@
                             <span class="timeline-dot"></span>
                             
                             <div class="timeline-header">
-                                <span class="timeline-user">{{ $komen->pengirim->name }}</span>
+                                <span class="timeline-user">{{ $komen->pengirim->nama }}</span>
                                 <span class="badge badge-role timeline-role">{{ $roleLabel }}</span>
                                 <span class="timeline-time">{{ $komen->created_at->diffForHumans() }}</span>
                             </div>
@@ -208,25 +218,22 @@
     {{-- KOLOM SIDEBAR (KANAN) --}}
     <div class="ticket-sidebar">
         
-        {{-- INFO TIKET & LAYANAN --}}
+        {{-- CARD 1: INFORMASI UMUM TIKET --}}
         <div class="card mb-4 shadow-sm">
             <div class="card-header-custom">Informasi Tiket</div>
             <div class="card-body-custom">
                 <dl class="info-grid">
                     <dt>Layanan</dt>
-                    <dd class="text-primary">{{ $tiket->layanan->nama }}</dd>
+                    <dd class="text-primary fw-bold">{{ $tiket->layanan->nama }}</dd>
 
-                    <dt>Unit</dt>
+                    <dt>Unit Tujuan</dt>
                     <dd>{{ $tiket->layanan->unit->nama_unit ?? '-' }}</dd>
 
-                    {{-- PRIORITAS (Dari Tabel Layanan) --}}
                     <dt>Prioritas</dt>
                     <dd>
                         @php
-                            $prioVal = $tiket->layanan->prioritas; // 1, 2, 3
-                            $prioBadge = 'secondary';
-                            $prioText = 'Normal';
-                            
+                            $prioVal = $tiket->layanan->prioritas;
+                            $prioBadge = 'secondary'; $prioText = 'Normal';
                             if($prioVal == 1) { $prioBadge = 'success'; $prioText = 'Rendah'; }
                             if($prioVal == 2) { $prioBadge = 'warning'; $prioText = 'Sedang'; }
                             if($prioVal == 3) { $prioBadge = 'danger'; $prioText = 'Tinggi'; }
@@ -238,9 +245,9 @@
                 <hr class="my-3 border-light">
                 
                 <div class="mb-2">
-                    <span class="fw-bold text-muted small text-uppercase">Deskripsi Awal Anda:</span>
+                    <span class="fw-bold text-muted small text-uppercase">Deskripsi Awal:</span>
                 </div>
-                <div class="bg-lighter p-3 rounded small text-secondary">
+                <div class="bg-lighter p-3 rounded small text-secondary border">
                     {!! nl2br(e($tiket->deskripsi)) !!}
                 </div>
                 
@@ -254,38 +261,75 @@
             </div>
         </div>
 
-        {{-- DETAIL UNIK LAYANAN --}}
+        {{-- CARD 2: DETAIL LAYANAN UNIK --}}
         @if($detail)
         <div class="card mb-4 shadow-sm">
-            <div class="card-header-custom bg-white">
-                <span class="text-primary"><i class="ti ti-list-details me-1"></i> Detail Data</span>
+            <div class="card-header-custom bg-white border-bottom-0 pt-4 pb-0">
+                <span class="text-primary"><i class="ti ti-file-description me-1"></i> Detail Data Layanan</span>
             </div>
             <div class="card-body-custom">
                 <dl class="info-grid mb-0">
-                    @if($tiket->layanan->nama == 'Surat Keterangan Aktif Kuliah')
-                        <dt>Keperluan</dt> <dd>{{ $detail->keperluan }}</dd>
-                        <dt>Thn. Ajaran</dt> <dd>{{ $detail->tahun_ajaran }}</dd>
-                        <dt>Semester</dt> <dd>{{ $detail->semester }}</dd>
                     
+                    {{-- 1. SURAT KETERANGAN AKTIF --}}
+                    @if($tiket->layanan->nama == 'Surat Keterangan Aktif Kuliah')
+                        <dt>Keperluan</dt> 
+                        <dd>{{ $detail->keperluan }}</dd>
+                        
+                        <div class="detail-divider"></div>
+                        
+                        <dt>Tahun Akademik</dt> 
+                        <dd>{{ $detail->tahun_ajaran }}</dd>
+                        
+                        <dt>Semester</dt> 
+                        <dd class="fw-bold">{{ $detail->semester }}</dd>
+                    
+                    {{-- 2. RESET AKUN (E-Learning / Email) --}}
                     @elseif($tiket->layanan->nama == 'Reset Akun E-Learning & Siakad' || $tiket->layanan->nama == 'Permintaan Reset Akun E-Mail')
-                        <dt>Aplikasi</dt> <dd class="text-uppercase fw-bold">{{ $detail->aplikasi }}</dd>
+                        <dt>Aplikasi</dt> 
+                        <dd class="text-uppercase fw-bold text-primary">{{ $detail->aplikasi }}</dd>
+                        
                         @if(isset($detail->deskripsi))
-                           <dt>Keterangan</dt> <dd>{{ $detail->deskripsi }}</dd>
+                           <div class="detail-divider"></div>
+                           <dt>Keterangan</dt> 
+                           <dd>{{ $detail->deskripsi }}</dd>
                         @endif
 
+                    {{-- 3. UBAH DATA MAHASISWA --}}
                     @elseif($tiket->layanan->nama == 'Ubah Data Mahasiswa')
-                        <dt>Nama Baru</dt> <dd>{{ $detail->data_nama_lengkap }}</dd>
-                        <dt>Tempat Lahir</dt> <dd>{{ $detail->data_tmp_lahir }}</dd>
-                        <dt>Tanggal Lahir</dt> <dd>{{ \Carbon\Carbon::parse($detail->data_tgl_lhr)->format('d M Y') }}</dd>
+                        <dt>Nama Baru</dt> 
+                        <dd>{{ $detail->data_nama_lengkap }}</dd>
+                        
+                        <div class="detail-divider"></div>
+                        
+                        <dt>Tempat Lahir</dt> 
+                        <dd>{{ $detail->data_tmp_lahir }}</dd>
+                        
+                        <dt>Tanggal Lahir</dt> 
+                        <dd>{{ \Carbon\Carbon::parse($detail->data_tgl_lhr)->translatedFormat('d F Y') }}</dd>
 
+                    {{-- 4. REQUEST PUBLIKASI EVENT --}}
                     @elseif($tiket->layanan->nama == 'Request Publikasi Event')
-                        <dt>Judul</dt> <dd>{{ $detail->judul }}</dd>
-                        <dt>Kategori</dt> <dd>{{ $detail->kategori }}</dd>
-                        {{-- PERBAIKAN UTAMA: Menggunakan \Illuminate\Support\Str --}}
-                        <dt>Konten</dt> <dd class="fst-italic small">"{{ \Illuminate\Support\Str::limit($detail->konten, 60) }}"</dd>
+                        <dt>Judul Event</dt> 
+                        <dd class="fw-bold">{{ $detail->judul }}</dd>
+                        
+                        <dt>Kategori</dt> 
+                        <dd><span class="badge bg-label-info">{{ $detail->kategori }}</span></dd>
+                        
+                        <div class="detail-divider"></div>
+                        
+                        <dt>Isi Konten</dt> 
+                        <dd class="small text-muted fst-italic">
+                            "{!! \Illuminate\Support\Str::limit(strip_tags($detail->konten), 80) !!}"
+                        </dd>
+                        
                         @if($detail->gambar)
-                            <dt>Gambar</dt> 
-                            <dd><a href="{{ \Illuminate\Support\Facades\Storage::url($detail->gambar) }}" target="_blank" class="text-underline">Lihat Gambar</a></dd>
+                            <div class="detail-divider"></div>
+                            <dt>Poster/Gambar</dt> 
+                            <dd>
+                                <a href="{{ \Illuminate\Support\Facades\Storage::url($detail->gambar) }}" target="_blank" class="btn btn-xs btn-primary">
+                                    <i class="ti ti-photo me-1"></i> Lihat Gambar
+                                </a>
+                            </dd>
                         @endif
                     @endif
                 </dl>
@@ -293,7 +337,7 @@
         </div>
         @endif
 
-        {{-- RIWAYAT STATUS --}}
+        {{-- CARD 3: RIWAYAT STATUS --}}
         <div class="card shadow-sm">
             <div class="card-header-custom">
                 <i class="ti ti-activity me-1"></i> Timeline Status
