@@ -12,14 +12,19 @@ class TiketSeeder extends Seeder
     public function run(): void
     {
         DB::transaction(function () {
+            
+            // Tentukan Tanggal Hari Ini (YYYYMMDD) dan Nomor Urut Awal
+            $date = now()->format('Ymd'); // Contoh: 20251119
+            $sequence = 1; // Mulai nomor urut dari 1
 
             // ===============================
-            // 1. Tiket Surat Keterangan Aktif
+            // 1. Tiket Surat Keterangan Aktif (SKA)
             // ===============================
             $tiket1 = Tiket::create([
-                'no_tiket'   => 'SKA-' . Str::upper(Str::random(6)),
+                // Format: SKA-YYYYMMDD-0001
+                'no_tiket'   => 'SKA-' . $date . '-' . str_pad($sequence++, 4, '0', STR_PAD_LEFT),
                 'pemohon_id' => 15,      
-                'layanan_id' => 1,      
+                'layanan_id' => 1,       
                 'deskripsi'  => 'Permohonan surat keterangan aktif kuliah untuk keperluan administrasi.',
             ]);
 
@@ -28,17 +33,18 @@ class TiketSeeder extends Seeder
                 'keperluan'         => 'Beasiswa',
                 'tahun_ajaran'      => 2024,
                 'semester'          => 5,
-                'keperluan_lainnya' => null,
+                'keperluan_lainnya' => 'Saya ingin memukul kevin',
                 'created_at'        => now(),
                 'updated_at'        => now(),
             ]);
 
 
             // ===============================
-            // 2. Tiket Reset Akun
+            // 2. Tiket Reset Akun (RAM)
             // ===============================
             $tiket2 = Tiket::create([
-                'no_tiket'   => 'RAM-' . Str::upper(Str::random(6)),
+                // Format: RAM-YYYYMMDD-0002
+                'no_tiket'   => 'RAM-' . $date . '-' . str_pad($sequence++, 4, '0', STR_PAD_LEFT),
                 'pemohon_id' => 15,
                 'layanan_id' => 2,
                 'deskripsi'  => 'Akun tidak bisa login sejak kemarin.',
@@ -54,10 +60,11 @@ class TiketSeeder extends Seeder
 
 
             // ===============================
-            // 3. Tiket Ubah Data Mahasiswa
+            // 3. Tiket Ubah Data Mahasiswa (UDM)
             // ===============================
             $tiket3 = Tiket::create([
-                'no_tiket'   => 'UDM-' . Str::upper(Str::random(6)),
+                // Format: UDM-YYYYMMDD-0003
+                'no_tiket'   => 'UDM-' . $date . '-' . str_pad($sequence++, 4, '0', STR_PAD_LEFT),
                 'pemohon_id' => 15,
                 'layanan_id' => 3,
                 'deskripsi'  => 'Perubahan data di KTP dan data kampus.',
@@ -74,10 +81,11 @@ class TiketSeeder extends Seeder
 
 
             // ===============================
-            // 4. Tiket Request Publikasi
+            // 4. Tiket Request Publikasi (RPK)
             // ===============================
             $tiket4 = Tiket::create([
-                'no_tiket'   => 'RPK-' . Str::upper(Str::random(6)),
+                // Format: RPK-YYYYMMDD-0004
+                'no_tiket'   => 'RPK-' . $date . '-' . str_pad($sequence++, 4, '0', STR_PAD_LEFT),
                 'pemohon_id' => 15,
                 'layanan_id' => 4,
                 'deskripsi'  => 'Permohonan publikasi kegiatan seminar.',

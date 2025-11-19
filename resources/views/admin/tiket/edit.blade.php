@@ -220,6 +220,7 @@
             border-radius: 6px;
         }
 
+        /* --- CSS Status Badge Berdasarkan Nilai ENUM Baru (untuk header) --- */
         .status-badge {
             padding: 4px 8px;
             border-radius: 12px;
@@ -229,25 +230,33 @@
             text-transform: capitalize;
         }
 
-        .status-pending {
-            background-color: #f6ad55;
-        }
-
-        .status-diproses {
-            background-color: #4299e1;
-        }
-
-        .status-selesai {
-            background-color: #48bb78;
-        }
-
-        .status-ditolak {
-            background-color: #f56565;
-        }
-
-        .status-draft {
+        /* Abu-abu: Diajukan oleh Pemohon */
+        .status-diajukan_oleh_pemohon {
             background-color: #a0aec0;
+            /* Abu-abu */
         }
+
+        /* Kuning: Ditangani/Diselesaikan oleh PIC */
+        .status-ditangani_oleh_pic,
+        .status-diselesaikan_oleh_pic {
+            background-color: #f6ad55;
+            /* Kuning */
+        }
+
+        /* Merah: Belum Selesai/Bermasalah */
+        .status-dinilai_belum_selesai_oleh_pemohon,
+        .status-pemohon_bermasalah {
+            background-color: #f56565;
+            /* Merah */
+        }
+
+        /* Hijau: Selesai oleh Kepala/Pemohon */
+        .status-dinilai_selesai_oleh_kepala,
+        .status-dinilai_selesai_oleh_pemohon {
+            background-color: #48bb78;
+            /* Hijau */
+        }
+
 
         /* --- CSS Khusus Role Komentar --- */
         /* Warna untuk super_admin (misalnya: Merah) */
@@ -289,6 +298,143 @@
             background-color: #f0fff4 !important;
             border-color: #c6f6d5 !important;
         }
+
+        /* Tambahan style untuk tag status di riwayat (Sesuai dengan kode Anda di bawah) */
+        .bg-gray-200 {
+            background-color: #edf2f7;
+            color: #2d3748;
+        }
+
+        .bg-orange-100 {
+            background-color: #feebc8;
+            color: #9c4221;
+        }
+
+        /* Kuning muda/Orange muda */
+        .bg-red-100 {
+            background-color: #fed7d7;
+            color: #9b2c2c;
+        }
+
+        /* Merah muda */
+        .bg-green-100 {
+            background-color: #c6f6d5;
+            color: #2f855a;
+        }
+
+        /* Hijau muda */
+        .px-2 {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+
+        .inline-flex {
+            display: inline-flex;
+        }
+
+        .text-xs {
+            font-size: 0.75rem;
+        }
+
+        .leading-5 {
+            line-height: 1.25rem;
+        }
+
+        .font-semibold {
+            font-weight: 600;
+        }
+
+        .rounded-full {
+            border-radius: 9999px;
+        }
+
+        /* --- CSS Tambahan untuk Coloring Opsi Select --- */
+
+        .option-diajukan_oleh_pemohon {
+            background-color: #edf2f7 !important;
+            color: #2d3748 !important;
+        }
+
+        /* Abu-abu */
+        .option-ditangani_oleh_pic {
+            background-color: #fef2c5 !important;
+            color: #f6ad55 !important;
+        }
+
+        /* Kuning Muda */
+        .option-diselesaikan_oleh_pic {
+            background-color: #fef2c5 !important;
+            color: #f6ad55 !important;
+        }
+
+        /* Kuning Muda */
+        .option-dinilai_belum_selesai_oleh_pemohon {
+            background-color: #fed7d7 !important;
+            color: #9b2c2c !important;
+        }
+
+        /* Merah Muda */
+        .option-pemohon_bermasalah {
+            background-color: #fed7d7 !important;
+            color: #9b2c2c !important;
+        }
+
+        /* Merah Muda */
+        .option-dinilai_selesai_oleh_kepala {
+            background-color: #c6f6d5 !important;
+            color: #2f855a !important;
+        }
+
+        /* Hijau Muda */
+        .option-dinilai_selesai_oleh_pemohon {
+            background-color: #c6f6d5 !important;
+            color: #2f855a !important;
+        }
+
+        /* Hijau Muda */
+
+        /* Atur warna text/border untuk Select Box saat ada opsi terpilih agar terlihat */
+        #status.status-diajukan_oleh_pemohon {
+            background-color: #edf2f7;
+            color: #2d3748;
+            border-color: #a0aec0;
+        }
+
+        #status.status-ditangani_oleh_pic {
+            background-color: #fef2c5;
+            color: #f6ad55;
+            border-color: #f6ad55;
+        }
+
+        #status.status-diselesaikan_oleh_pic {
+            background-color: #fef2c5;
+            color: #f6ad55;
+            border-color: #f6ad55;
+        }
+
+        #status.status-dinilai_belum_selesai_oleh_pemohon {
+            background-color: #fed7d7;
+            color: #9b2c2c;
+            border-color: #f56565;
+        }
+
+        #status.status-pemohon_bermasalah {
+            background-color: #fed7d7;
+            color: #9b2c2c;
+            border-color: #f56565;
+        }
+
+        #status.status-dinilai_selesai_oleh_kepala {
+            background-color: #c6f6d5;
+            color: #2f855a;
+            border-color: #48bb78;
+        }
+
+        #status.status-dinilai_selesai_oleh_pemohon {
+            background-color: #c6f6d5;
+            color: #2f855a;
+            border-color: #48bb78;
+        }
     </style>
 </head>
 
@@ -302,10 +448,12 @@
             </div>
             <div class="header-info">
                 @php
+                    // Ambil status ENUM dan konversi untuk tampilan
                     $status = $statusSekarang;
                     $statusClass = 'status-' . strtolower($status);
+                    $statusHeaderLabel = str_replace('_', ' ', $status); // Tampilan rapi di header
                 @endphp
-                <span class="status-badge {{ $statusClass }}" style="font-size: 1rem;">{{ $status }}</span>
+                <span class="status-badge {{ $statusClass }}" style="font-size: 1rem;">{{ $statusHeaderLabel }}</span>
             </div>
         </div>
 
@@ -343,11 +491,17 @@
 
                             <div class="form-group">
                                 <label for="status">Ubah Status Tiket</label>
-                                <select name="status" id="status">
+                                {{-- Tambahkan kelas status saat ini pada elemen SELECT --}}
+                                <select name="status" id="status" class="status-{{ strtolower($statusSekarang) }}">
                                     @foreach ($statuses as $status)
+                                        @php
+                                            $optionClass = 'option-' . strtolower($status);
+                                            $optionLabel = str_replace('_', ' ', $status);
+                                        @endphp
                                         <option value="{{ $status }}"
-                                            {{ $statusSekarang == $status ? 'selected' : '' }}>
-                                            {{ $status }}
+                                            {{ $statusSekarang == $status ? 'selected' : '' }}
+                                            class="{{ $optionClass }}">
+                                            {{ $optionLabel }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -490,8 +644,8 @@
                                     @if ($detailLayanan->gambar)
                                         <dt>Lampiran Gambar</dt>
                                         <dd>
-                                            <a href="{{ asset('storage/lampiran-req-publikasi/' . $detailLayanan->gambar) }}" target="_blank"
-                                                class="text-blue-500 underline">
+                                            <a href="{{ asset('storage/lampiran-req-publikasi/' . $detailLayanan->gambar) }}"
+                                                target="_blank" class="text-blue-500 underline">
                                                 Lihat Gambar
                                             </a>
                                         </dd>
@@ -506,16 +660,80 @@
                     <div class="card-header">Riwayat Status</div>
                     <div class="card-body">
                         <div class="timeline">
-                            @foreach ($tiket->riwayatStatus as $riwayat)
+                            {{-- Urutkan berdasarkan waktu dibuat terbaru muncul di atas --}}
+                            @foreach ($tiket->riwayatStatus->sortByDesc('created_at') as $riwayat)
+                                @php
+                                    $statusValue = $riwayat->status;
+                                    $role = $riwayat->user->role ?? 'Sistem';
+                                    $labelClass = '';
+                                    $dotColor = '';
+
+                                    switch ($statusValue) {
+                                        case 'Diajukan_oleh_Pemohon':
+                                            $statusLabel = 'Diajukan oleh Pemohon';
+                                            $labelClass = 'bg-gray-200 text-gray-800'; // Abu-abu
+                                            $dotColor = '#a0aec0';
+                                            break;
+                                        case 'Ditangani_oleh_PIC':
+                                            $statusLabel = 'Ditangani oleh PIC';
+                                            $labelClass = 'bg-orange-100 text-orange-800'; // Kuning
+                                            $dotColor = '#f6ad55';
+                                            break;
+                                        case 'Diselesaikan_oleh_PIC':
+                                            $statusLabel = 'Diselesaikan oleh PIC';
+                                            $labelClass = 'bg-orange-100 text-orange-800'; // Kuning
+                                            $dotColor = '#f6ad55';
+                                            break;
+                                        case 'Dinilai_Belum_Selesai_oleh_Pemohon':
+                                            $statusLabel = 'Dinilai Belum Selesai oleh Pemohon';
+                                            $labelClass = 'bg-red-100 text-red-800'; // Merah
+                                            $dotColor = '#f56565';
+                                            break;
+                                        case 'Pemohon_Bermasalah':
+                                            $statusLabel = 'Pemohon Bermasalah';
+                                            $labelClass = 'bg-red-100 text-red-800'; // Merah
+                                            $dotColor = '#f56565';
+                                            break;
+                                        case 'Dinilai_Selesai_oleh_Kepala':
+                                            $statusLabel = 'Dinilai Selesai oleh Kepala';
+                                            $labelClass = 'bg-green-100 text-green-800'; // Hijau
+                                            $dotColor = '#48bb78';
+                                            break;
+                                        case 'Dinilai_Selesai_oleh_Pemohon':
+                                            $statusLabel = 'Dinilai Selesai oleh Pemohon';
+                                            $labelClass = 'bg-green-100 text-green-800'; // Hijau
+                                            $dotColor = '#48bb78';
+                                            break;
+                                        default:
+                                            $statusLabel = 'Status Tidak Dikenal';
+                                            $labelClass = 'bg-white text-black';
+                                            $dotColor = '#000000';
+                                            break;
+                                    }
+                                @endphp
                                 <div class="timeline-item">
-                                    <span class="timeline-dot" style="background-color: #718096;"></span>
+                                    {{-- Terapkan warna dot yang sudah ditentukan (Sesuai dengan warna di gambar) --}}
+                                    <span class="timeline-dot" style="background-color: {{ $dotColor }};"></span>
                                     <div class="timeline-time">{{ $riwayat->created_at->format('d M Y, H:i') }}</div>
-                                    <div class="timeline-title">Status diubah ke: {{ $riwayat->status }}</div>
+
+                                    {{-- Gunakan $statusLabel dan $labelClass untuk tampilan tag status --}}
+                                    <div class="timeline-title">
+                                        {{-- Style inline untuk tag status di riwayat (Sesuai dengan warna di gambar) --}}
+                                        <span
+                                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $labelClass }}">
+                                            {{ $statusLabel }}
+                                        </span>
+                                    </div>
+
                                     <div class="timeline-body">
-                                        <p>Oleh: {{ $riwayat->user->name ?? 'Sistem' }}</p>
+                                        <p>Oleh: {{ $riwayat->user->name ?? 'Sistem' }} (<strong
+                                                style="text-transform: capitalize;">{{ $role }}</strong>)</p>
                                     </div>
                                 </div>
                             @endforeach
+                            @if ($tiket->riwayatStatus->isEmpty())
+                                <p>Belum ada riwayat status tercatat.</p>
+                            @endif
                         </div>
                     </div>
                 </div>

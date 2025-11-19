@@ -17,7 +17,15 @@ use Maatwebsite\Excel\Facades\Excel;
 class AdminTiketController extends Controller
 {
     // Daftar status yang valid (sesuaikan jika perlu)
-    private $validStatuses = ['Pending', 'Diproses', 'Selesai', 'Ditolak'];
+    private $validStatuses = [
+        'Diajukan_oleh_Pemohon',
+        'Ditangani_oleh_PIC',
+        'Diselesaikan_oleh_PIC',
+        'Dinilai_Belum_Selesai_oleh_Pemohon',
+        'Pemohon_Bermasalah',
+        'Dinilai_Selesai_oleh_Kepala',
+        'Dinilai_Selesai_oleh_Pemohon',
+    ];
 
     /**
      * Menampilkan daftar semua tiket (index).
@@ -93,16 +101,10 @@ class AdminTiketController extends Controller
                 // 2. Buat Riwayat Status Awal
                 RiwayatStatusTiket::create([
                     'tiket_id' => $tiket->id,
-                    'user_id' => Auth::id(), // Dibuat oleh Admin
-                    'status' => 'Pending', // Status awal
+                    'user_id' => Auth::id(),
+                    'status' => 'Diajukan_oleh_Pemohon',
                 ]);
 
-                // 3. (Opsional) Buat detail tiket
-                // Ini memerlukan logika tambahan berdasarkan $request->layanan_id
-                // Contoh:
-                // if ($tiket->layanan->nama == 'Surat Keterangan Aktif') {
-                //     DetailTiketSuratKetAktif::create([...]);
-                // }
             });
 
             return redirect()->route('admin.tiket.index')->with('success', 'Tiket berhasil dibuat.');

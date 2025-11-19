@@ -128,7 +128,15 @@ return new class extends Migration
             $table->id();
             $table->foreignId('tiket_id')->constrained('tiket')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users');
-            $table->enum('status', ['Pending', 'Diproses', 'Selesai', 'Ditolak'])->default('Pending');
+            $table->enum('status', [
+                'Diajukan_oleh_Pemohon',
+                'Ditangani_oleh_PIC',
+                'Diselesaikan_oleh_PIC',
+                'Dinilai_Belum_Selesai_oleh_Pemohon',
+                'Pemohon_Bermasalah',
+                'Dinilai_Selesai_oleh_Kepala',
+                'Dinilai_Selesai_oleh_Pemohon',
+            ])->default('Diajukan_oleh_Pemohon');
             $table->timestamps();
         });
 

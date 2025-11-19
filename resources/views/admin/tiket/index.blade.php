@@ -44,12 +44,40 @@
         .pagination-container { margin-top: 20px; }
         /* Pastikan elemen aksi sejajar */
         .action-buttons a, .action-buttons form { display: inline-block; margin-right: 5px; vertical-align: middle; }
-        .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; color: white; text-transform: capitalize; }
-        .status-pending { background-color: #f6ad55; }
-        .status-diproses { background-color: #4299e1; }
-        .status-selesai { background-color: #48bb78; }
-        .status-ditolak { background-color: #f56565; }
-        .status-draft { background-color: #a0aec0; }
+        
+        /* --- CSS BARU UNTUK STATUS DETAIL --- */
+        /* Hapus CSS status lama (status-pending, status-diproses, dll.) */
+        
+        .status-badge { 
+            padding: 4px 8px; 
+            border-radius: 12px; 
+            font-size: 0.8rem; 
+            font-weight: 600; 
+            color: white;
+            text-transform: capitalize; 
+        }
+
+        /* Abu-abu: Diajukan oleh Pemohon */
+        .status-diajukan_oleh_pemohon { 
+            background-color: #a0aec0; /* Abu-abu */
+            color: #2d3748; /* Text gelap agar terlihat di abu-abu terang */
+        } 
+        /* Kuning: Ditangani/Diselesaikan oleh PIC */
+        .status-ditangani_oleh_pic, .status-diselesaikan_oleh_pic { 
+            background-color: #f6ad55; /* Kuning */
+            color: white;
+        }
+        /* Merah: Belum Selesai/Bermasalah */
+        .status-dinilai_belum_selesai_oleh_pemohon, .status-pemohon_bermasalah { 
+            background-color: #f56565; /* Merah */
+            color: white;
+        }
+        /* Hijau: Selesai oleh Kepala/Pemohon */
+        .status-dinilai_selesai_oleh_kepala, .status-dinilai_selesai_oleh_pemohon { 
+            background-color: #48bb78; /* Hijau */
+            color: white;
+        }
+        /* --- AKHIR CSS BARU --- */
     </style>
 </head>
 <body>
@@ -70,7 +98,10 @@
                 <select name="status" id="status-filter" onchange="this.form.submit()">
                     <option value="">Semua Status</option>
                     @foreach($statuses as $status)
-                        <option value="{{ $status }}" {{ $statusFilter == $status ? 'selected' : '' }}>{{ $status }}</option>
+                        {{-- Tampilkan label status yang rapi di filter --}}
+                        <option value="{{ $status }}" {{ $statusFilter == $status ? 'selected' : '' }}>
+                            {{ str_replace('_', ' ', $status) }}
+                        </option>
                     @endforeach
                 </select>
                 <input type="search" id="search-input" name="q" placeholder="Cari (No. Tiket, Pemohon, Layanan...)" value="{{ $searchQuery ?? '' }}" style="width: 250px;">
@@ -108,10 +139,14 @@
                     <td>{{ $tiket->layanan->unit->nama_unit ?? 'N/A' }}</td>
                     <td>
                         @php
-                            $status = $tiket->statusTerbaru->status ?? 'Draft';
+                            // Ambil nilai ENUM status terbaru (Default jika null)
+                            $status = $tiket->statusTerbaru->status ?? 'Diajukan_oleh_Pemohon';
+                            // Konversi status ENUM menjadi kelas CSS
                             $statusClass = 'status-' . strtolower($status);
+                            // Konversi status ENUM menjadi label yang mudah dibaca
+                            $statusLabel = str_replace('_', ' ', $status);
                         @endphp
-                        <span class="status-badge {{ $statusClass }}">{{ $status }}</span>
+                        <span class="status-badge {{ $statusClass }}">{{ $statusLabel }}</span>
                     </td>
                     <td class="action-buttons">
                         
@@ -187,7 +222,7 @@
             
             exportBtn.addEventListener('click', function() {
                 const selectedIds = Array.from(document.querySelectorAll('.row-checkbox:checked'))
-                                        .map(cb => cb.value);
+                                             .map(cb => cb.value);
                 
                 if (selectedIds.length > 0) {
                     const baseUrl = '{{ route("admin.tiket.export.excel") }}';

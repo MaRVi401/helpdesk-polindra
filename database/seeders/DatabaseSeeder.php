@@ -21,13 +21,8 @@ class DatabaseSeeder extends Seeder
             MahasiswaSeeder::class,
             LayananSeeder::class,
             KategoriArtikelSeeder::class,
-            ApiTestSeeder::class,
             StudentWithoutNimSeeder::class,
             TiketSeeder::class,
-            // TiketResetAkunSeeder::class,
-            // TiketUbahDataMhsSeeder::class,
-            // TiketSuratAktifSeeder::class,
-            // TiketReqPublikasiSeeder::class,
         ]);
     }
 }
