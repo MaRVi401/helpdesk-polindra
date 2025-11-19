@@ -106,7 +106,7 @@
                 Simpan Perubahan
               </button>
               <a href="{{ route('user-profile.index') }}" class="btn btn-outline-secondary">
-                Batal
+                Kembali
               </a>
             </div>
           </form>
