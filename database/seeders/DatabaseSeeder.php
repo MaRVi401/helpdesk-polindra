@@ -24,8 +24,8 @@ class DatabaseSeeder extends Seeder
             StudentWithoutNimSeeder::class,
             tiketResetAkunSeeder::class,
             TiketUbahDataMhsSeeder::class,
-            tiketSuratKeteranganAktifKuliahSeeder::class,
-            tiketRequestPublikasiSeeder::class,
+            TiketSuratAktifSeeder::class,
+            TiketReqPublikasiSeeder::class,
         ]);
     }
 }
