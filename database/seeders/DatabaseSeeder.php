@@ -22,10 +22,10 @@ class DatabaseSeeder extends Seeder
             KategoriArtikelSeeder::class,
             ApiTestSeeder::class,
             StudentWithoutNimSeeder::class,
-            tiketResetAkunSeeder::class,
-            TiketUbahDataMhsSeeder::class,
-            TiketSuratAktifSeeder::class,
-            TiketReqPublikasiSeeder::class,
+            // TiketResetAkunSeeder::class,
+            // TiketUbahDataMhsSeeder::class,
+            // TiketSuratAktifSeeder::class,
+            // TiketReqPublikasiSeeder::class,
         ]);
     }
 }

@@ -57,7 +57,7 @@ class Tiket extends Model
         return $this->belongsTo(Mahasiswa::class, 'pemohon_id', 'user_id');
     }
 
-    public function detail(): \Illuminate\Database\Eloquent\Relations\MorphTo
+    public function detail(): MorphTo
     {
         return $this->morphTo();
     }
