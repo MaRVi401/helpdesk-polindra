@@ -6,11 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class KategoriArtikel extends Model
 {
     use HasFactory;
-    
+
     protected $table = 'kategori_artikel';
     protected $guarded = ['id'];
 
-    public function artikels()
+    public function artikel()
     {
         return $this->hasMany(Artikel::class, 'kategori_id');
     }

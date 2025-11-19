@@ -59,14 +59,15 @@ class ArticleCategoryController extends Controller
 
   public function destroy($id)
   {
+    $data_kategori = KategoriArtikel::findOrFail($id);
+    if ($data_kategori->artikel()->count() > 0) {
+      return redirect()->back()->with('error', 'Kategori artikel ini masih memiliki artikel terkait.');
+    }
     try {
-      $data_kategori = KategoriArtikel::findOrFail($id);
       $data_kategori->delete();
-
       return redirect()->route('article-category.index')->with('success', 'Kategori Artikel berhasil dihapus');
     } catch (\Exception $e) {
       return redirect()->route('article-category.index')->with('error', 'Gagal menghapus Kategori Artikel: ' . $e->getMessage());
     }
-
   }
 }
