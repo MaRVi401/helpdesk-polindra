@@ -63,8 +63,8 @@ document.addEventListener('DOMContentLoaded', function (e) {
               },
               stringLength: {
                 min: 7,
-                max: 15,
-                message: 'NIM harus antara 7 dan 15 karakter'
+                max: 8,
+                message: 'NIM harus antara 7 dan 8 karakter'
               }
             }
           },
@@ -112,6 +112,25 @@ document.addEventListener('DOMContentLoaded', function (e) {
         submitButton.addEventListener('click', function (e) {
           e.preventDefault();
           Steps.validate();
+        });
+      }
+
+      // Revalidate select2 fields on change to remove error styling
+      const select2Fields = stepsValidationForm.querySelectorAll('.select2');
+      if (select2Fields.length > 0) {
+        select2Fields.forEach(field => {
+          $(field).on('change', function () {
+            // Revalidate this field to clear error messages
+            Steps.revalidateField(field.name);
+          });
+        });
+      }
+
+      // Also handle nim field input for real-time validation
+      const nimField = stepsValidationForm.querySelector('#nim');
+      if (nimField) {
+        nimField.addEventListener('input', function () {
+          Steps.revalidateField('nim');
         });
       }
     }

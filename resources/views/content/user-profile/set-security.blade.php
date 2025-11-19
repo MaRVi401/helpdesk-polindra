@@ -86,7 +86,7 @@
                 @enderror
               </div>
             </div>
-            <h6 class="text-body">Persyaratan Password:</h6>
+            <h6 class="text-body">Saran Password:</h6>
             <ul class="ps-4 mb-0">
               <li class="mb-4">Minimal 8 karakter - semakin banyak semakin baik</li>
               <li class="mb-4">Setidaknya satu karakter huruf kecil</li>
@@ -95,7 +95,7 @@
             <div class="mt-6">
               <button type="submit"
                 class="btn btn-primary me-3">{{ $hasPassword ? 'Simpan Perubahan' : 'Atur Password' }}</button>
-              <button type="reset" class="btn btn-label-secondary">Ulang</button>
+              <button type="reset" class="btn btn-outline-secondary">Ulang</button>
             </div>
           </form>
         </div>
