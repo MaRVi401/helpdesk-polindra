@@ -116,7 +116,7 @@ class AdminTiketController extends Controller
      */
     public function edit(Tiket $tiket)
     {
-        // Load semua relasi yang diperlukan
+        // ... (kode load relasi tetap sama)
         $tiket->load([
             'pemohon.mahasiswa.programStudi.jurusan',
             'layanan.unit',
@@ -124,18 +124,16 @@ class AdminTiketController extends Controller
             'komentar.pengirim'
         ]);
 
-        // Load detail spesifik (jika ada)
-        // Anda perlu menyesuaikan ini berdasarkan nama layanan
         $detailLayanan = null;
         $namaLayanan = $tiket->layanan->nama;
 
-        if ($namaLayanan == 'Surat Keterangan Aktif') {
+        if (str_contains($namaLayanan, 'Surat Keterangan Aktif Kuliah')) {
             $detailLayanan = $tiket->detailSuratKetAktif;
-        } elseif ($namaLayanan == 'Reset Akun') {
+        } elseif (str_contains($namaLayanan, 'Reset Akun')) {
             $detailLayanan = $tiket->detailResetAkun;
-        } elseif ($namaLayanan == 'Ubah Data Mahasiswa') {
+        } elseif (str_contains($namaLayanan, 'Ubah Data Mahasiswa')) {
             $detailLayanan = $tiket->detailUbahDataMhs;
-        } elseif ($namaLayanan == 'Request Publikasi') {
+        } elseif (str_contains($namaLayanan, 'Request Publikasi')) {
             $detailLayanan = $tiket->detailReqPublikasi;
         }
 
@@ -247,11 +245,11 @@ class AdminTiketController extends Controller
         // Format akhir: SKA-YYYYMMDD-XXXX (misal: SKA-20251114-0001)
         return $code . '-' . $date . '-' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
     }
-    
+
     /**
      * Menghapus tiket beserta semua relasinya secara permanen (destroy).
      */
-    
+
     public function destroy(Tiket $tiket)
     {
         try {

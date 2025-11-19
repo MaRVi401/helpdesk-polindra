@@ -17,9 +17,9 @@ class TiketSeeder extends Seeder
             // 1. Tiket Surat Keterangan Aktif
             // ===============================
             $tiket1 = Tiket::create([
-                'no_tiket'   => 'TKT-' . Str::upper(Str::random(6)),
-                'pemohon_id' => 1,      // id user pemohon
-                'layanan_id' => 1,      // id layanan surat ket. aktif
+                'no_tiket'   => 'SKA-' . Str::upper(Str::random(6)),
+                'pemohon_id' => 15,      
+                'layanan_id' => 1,      
                 'deskripsi'  => 'Permohonan surat keterangan aktif kuliah untuk keperluan administrasi.',
             ]);
 
@@ -38,8 +38,8 @@ class TiketSeeder extends Seeder
             // 2. Tiket Reset Akun
             // ===============================
             $tiket2 = Tiket::create([
-                'no_tiket'   => 'TKT-' . Str::upper(Str::random(6)),
-                'pemohon_id' => 1,
+                'no_tiket'   => 'RAM-' . Str::upper(Str::random(6)),
+                'pemohon_id' => 15,
                 'layanan_id' => 2,
                 'deskripsi'  => 'Akun tidak bisa login sejak kemarin.',
             ]);
@@ -57,8 +57,8 @@ class TiketSeeder extends Seeder
             // 3. Tiket Ubah Data Mahasiswa
             // ===============================
             $tiket3 = Tiket::create([
-                'no_tiket'   => 'TKT-' . Str::upper(Str::random(6)),
-                'pemohon_id' => 1,
+                'no_tiket'   => 'UDM-' . Str::upper(Str::random(6)),
+                'pemohon_id' => 15,
                 'layanan_id' => 3,
                 'deskripsi'  => 'Perubahan data di KTP dan data kampus.',
             ]);
@@ -77,8 +77,8 @@ class TiketSeeder extends Seeder
             // 4. Tiket Request Publikasi
             // ===============================
             $tiket4 = Tiket::create([
-                'no_tiket'   => 'TKT-' . Str::upper(Str::random(6)),
-                'pemohon_id' => 1,
+                'no_tiket'   => 'RPK-' . Str::upper(Str::random(6)),
+                'pemohon_id' => 15,
                 'layanan_id' => 4,
                 'deskripsi'  => 'Permohonan publikasi kegiatan seminar.',
             ]);
@@ -88,7 +88,7 @@ class TiketSeeder extends Seeder
                 'judul'    => 'Seminar Nasional Teknologi Informasi',
                 'kategori' => 'Event',
                 'konten'   => 'Seminar nasional dengan tema Teknologi Masa Depan.',
-                'gambar'   => null,
+                'gambar'   => 'testing.jpg',
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
