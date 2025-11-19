@@ -13,6 +13,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Storage;
 
 class AdminTiketController extends Controller
 {
@@ -104,7 +105,6 @@ class AdminTiketController extends Controller
                     'user_id' => Auth::id(),
                     'status' => 'Diajukan_oleh_Pemohon',
                 ]);
-
             });
 
             return redirect()->route('admin.tiket.index')->with('success', 'Tiket berhasil dibuat.');
@@ -251,7 +251,6 @@ class AdminTiketController extends Controller
     /**
      * Menghapus tiket beserta semua relasinya secara permanen (destroy).
      */
-
     public function destroy(Tiket $tiket)
     {
         try {
@@ -262,13 +261,39 @@ class AdminTiketController extends Controller
                 // 2. Hapus Riwayat Status Tiket terkait
                 $tiket->riwayatStatus()->delete();
 
-                // 3. Hapus Detail Layanan Spesifik (jika ada)
-                // Diasumsikan model Tiket memiliki relasi kondisional ke detail
+                // 3. Hapus Detail Layanan Spesifik (jika ada) dan file terkait
+
+                // Hapus Detail Surat Keterangan Aktif
                 if ($tiket->detailSuratKetAktif) {
                     $tiket->detailSuratKetAktif->delete();
                 }
-                // Tambahkan pengecekan untuk model detail lainnya jika diperlukan
-                // if ($tiket->detailResetAkun) { $tiket->detailResetAkun->delete(); }
+
+                // Hapus Detail Request Publikasi (HAPUS GAMBAR DULU)
+                if ($tiket->detailReqPublikasi) {
+                    $detailPublikasi = $tiket->detailReqPublikasi;
+
+                    // Cek dan hapus file gambar jika ada
+                    if ($detailPublikasi->gambar) {
+                        $filePath = 'lampiran-req-publikasi/' . $detailPublikasi->gambar;
+                        // Hapus dari public disk
+                        if (Storage::disk('public')->exists($filePath)) {
+                            Storage::disk('public')->delete($filePath);
+                        }
+                    }
+
+                    // Hapus record detail publikasi dari database
+                    $detailPublikasi->delete();
+                }
+
+                // Hapus Detail Reset Akun
+                if ($tiket->detailResetAkun) {
+                    $tiket->detailResetAkun->delete();
+                }
+
+                // Hapus Detail Ubah Data Mahasiswa
+                if ($tiket->detailUbahDataMhs) {
+                    $tiket->detailUbahDataMhs->delete();
+                }
 
                 // 4. Hapus Tiket utama
                 $tiket->delete();
@@ -277,7 +302,7 @@ class AdminTiketController extends Controller
             return redirect()->route('admin.tiket.index')->with('success', 'Tiket berhasil dihapus secara permanen.');
         } catch (\Exception $e) {
             // Log::error("Gagal menghapus tiket: " . $e->getMessage()); // Opsional untuk debugging
-            return redirect()->route('admin.tiket.index')->with('error', 'Gagal menghapus tiket. Pastikan semua relasi sudah dihapus atau coba lagi.');
+            return redirect()->route('admin.tiket.index')->with('error', 'Gagal menghapus tiket: ' . $e->getMessage());
         }
     }
 }

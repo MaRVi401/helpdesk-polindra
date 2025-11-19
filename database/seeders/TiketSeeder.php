@@ -72,7 +72,7 @@ class TiketSeeder extends Seeder
 
             DB::table('detail_tiket_ubah_data_mhs')->insert([
                 'tiket_id'          => $tiket3->id,
-                'data_nama_lengkap' => 'Ahmad Yassin',
+                'data_nama_lengkap' => 'Padilah Rohman Faletehan',
                 'data_tmp_lahir'    => 'Indramayu',
                 'data_tgl_lhr'      => '2003-11-22',
                 'created_at'        => now(),
