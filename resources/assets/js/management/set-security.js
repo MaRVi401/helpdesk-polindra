@@ -1,9 +1,3 @@
-/**
- * Setting - Security
- */
-
-'use strict';
-
 document.addEventListener('DOMContentLoaded', function (e) {
   (function () {
     const formChangePass = document.querySelector('#formAccountSettings');
@@ -88,6 +82,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
 
     // Display success message
     if (typeof window.passwordSuccessMessage !== 'undefined' && window.passwordSuccessMessage) {
+      console.log('Showing success message:', window.passwordSuccessMessage);
       if (typeof Swal !== 'undefined') {
         Swal.fire({
           icon: 'success',
@@ -98,6 +93,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
           },
           buttonsStyling: false
         }).then(() => {
+          // Clear the message after showing
           window.passwordSuccessMessage = undefined;
         });
       } else {
@@ -108,6 +104,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
 
     // Display error message
     if (typeof window.passwordErrorMessage !== 'undefined' && window.passwordErrorMessage) {
+      console.log('Showing error message:', window.passwordErrorMessage);
       if (typeof Swal !== 'undefined') {
         Swal.fire({
           icon: 'error',
@@ -118,6 +115,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
           },
           buttonsStyling: false
         }).then(() => {
+          // Clear the message after showing
           window.passwordErrorMessage = undefined;
         });
       } else {

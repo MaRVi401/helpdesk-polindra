@@ -31,8 +31,8 @@ document.addEventListener('DOMContentLoaded', function (e) {
               message: 'Nomor WhatsApp maksimal 13 karakter'
             },
             regexp: {
-              regexp: /^[0-9+\-\s()]*$/,
-              message: 'Nomor WhatsApp hanya boleh berisi angka'
+              regexp: /^08[0-9]{8,11}$/,
+              message: 'Nomor WhatsApp harus dimulai dengan 08 dan terdiri dari 10–13 angka'
             }
           }
         }
@@ -218,15 +218,4 @@ document.addEventListener('DOMContentLoaded', function (e) {
       window.profileErrorMessage = undefined;
     }
   }
-
-  // Phone number formatting
-  var phoneNumber = document.querySelector('#no_wa');
-  if (phoneNumber) {
-    new Cleave(phoneNumber, {
-      phone: true,
-      phoneRegionCode: 'ID'
-    });
-  }
 });
-
-
