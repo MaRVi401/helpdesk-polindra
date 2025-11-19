@@ -33,7 +33,7 @@ class TiketSeeder extends Seeder
                 'keperluan'         => 'Beasiswa',
                 'tahun_ajaran'      => 2024,
                 'semester'          => 5,
-                'keperluan_lainnya' => 'Saya ingin memukul kevin',
+                'keperluan_lainnya' => 'Diomelin yassin mulu',
                 'created_at'        => now(),
                 'updated_at'        => now(),
             ]);
