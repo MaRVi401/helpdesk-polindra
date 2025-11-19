@@ -83,6 +83,7 @@ class LayananController extends Controller
                 ),
             ],
             'unit_id' => 'required|exists:units,id',
+            // UBAH baris ini agar wajib diisi angka 1, 2, atau 3
             'prioritas' => 'required|integer|in:1,2,3',
             'penanggung_jawab_ids' => 'nullable|array',
             'penanggung_jawab_ids.*' => 'exists:staff,id',
@@ -95,8 +96,8 @@ class LayananController extends Controller
             $layanan = Layanan::create([
                 'nama' => $request->nama,
                 'unit_id' => $request->unit_id,
-                'prioritas' => $request->prioritas ?? 0,
-                // Gunakan nilai integer langsung dari select
+                // Hapus '?? 0' karena sekarang input wajib diisi
+                'prioritas' => $request->prioritas,
                 'status_arsip' => (int) $request->status_arsip,
             ]);
 

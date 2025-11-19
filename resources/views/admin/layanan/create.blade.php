@@ -176,8 +176,14 @@
             </div>
 
             <div class="form-group">
-                <label for="prioritas">Prioritas (0 = Terendah)</label>
-                <input type="number" name="prioritas" id="prioritas" value="{{ old('prioritas', 0) }}" min="0">
+                <label for="prioritas">Prioritas</label>
+                <select name="prioritas" id="prioritas" required>
+                    <option value="" disabled {{ old('prioritas') ? '' : 'selected' }}>-- Pilih Prioritas --
+                    </option>
+                    <option value="1" {{ old('prioritas') == 1 ? 'selected' : '' }}>Rendah</option>
+                    <option value="2" {{ old('prioritas') == 2 ? 'selected' : '' }}>Sedang</option>
+                    <option value="3" {{ old('prioritas') == 3 ? 'selected' : '' }}>Tinggi</option>
+                </select>
             </div>
 
             <div class="form-group">
@@ -185,7 +191,8 @@
                 <select name="status_arsip" id="status_arsip" required>
                     <option value="0" {{ old('status_arsip', 0) == 0 ? 'selected' : '' }}>Tidak Diarsip (Aktif)
                     </option>
-                    <option value="1" {{ old('status_arsip') == 1 ? 'selected' : '' }}>Diarsip (Non-aktif)</option>
+                    <option value="1" {{ old('status_arsip') == 1 ? 'selected' : '' }}>Diarsip (Non-aktif)
+                    </option>
                 </select>
             </div>
 
@@ -232,19 +239,20 @@
             const picCountSpan = document.getElementById('picCount');
 
             // Untuk melacak PIC yang sudah ditambahkan: { id: { name: '...', nik: '...' } }
-            let activePICs = {}; 
+            let activePICs = {};
 
             function updateList() {
                 activeList.innerHTML = '';
                 let count = 0;
 
                 if (Object.keys(activePICs).length === 0) {
-                    activeList.innerHTML = '<li class="pic-placeholder">Belum ada Penanggung Jawab yang ditetapkan.</li>';
+                    activeList.innerHTML =
+                        '<li class="pic-placeholder">Belum ada Penanggung Jawab yang ditetapkan.</li>';
                 } else {
                     for (const id in activePICs) {
                         const pic = activePICs[id];
                         count++;
-                        
+
                         const listItem = document.createElement('li');
                         listItem.classList.add('pic-item');
                         listItem.dataset.id = id;
@@ -260,7 +268,7 @@
                     }
                 }
                 picCountSpan.textContent = count;
-                
+
                 // Re-enable/disable options di select box
                 const options = selectElement.options;
                 for (let i = 0; i < options.length; i++) {
@@ -293,7 +301,7 @@
                     }
                 }
             });
-            
+
             // Handle form submission: inject selected IDs into the form as multiple hidden inputs
             document.getElementById('layananForm').addEventListener('submit', function(e) {
                 // Hapus placeholder hidden input
@@ -309,7 +317,7 @@
                     this.appendChild(newHiddenInput);
                 }
             });
-            
+
             updateList();
         });
     </script>
