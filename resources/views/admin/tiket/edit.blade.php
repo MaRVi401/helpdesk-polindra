@@ -644,7 +644,7 @@
                                     @if ($detailLayanan->gambar)
                                         <dt>Lampiran Gambar</dt>
                                         <dd>
-                                            <a href="{{ asset('storage/lampiran-req-publikasi/' . $detailLayanan->gambar) }}"
+                                            <a href="{{ asset('storage/' . $detailLayanan->gambar) }}"
                                                 target="_blank" class="text-blue-500 underline">
                                                 Lihat Gambar
                                             </a>
