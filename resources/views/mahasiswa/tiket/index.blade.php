@@ -1,4 +1,4 @@
-@extends('layouts/layoutMaster')
+@extends('layouts.layoutMaster')
 
 @section('title', 'Daftar Tiket')
 
@@ -6,11 +6,23 @@
 <link rel="stylesheet" href="{{asset('assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css')}}">
 <link rel="stylesheet" href="{{asset('assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css')}}">
 <style>
-    .badge-status { padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: #fff; }
-    .bg-Pending { background-color: #f6ad55; }
-    .bg-Diproses { background-color: #4299e1; }
-    .bg-Selesai { background-color: #48bb78; }
-    .bg-Ditolak { background-color: #f56565; }
+    .badge-status { padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: #fff; white-space: nowrap; }
+    
+    /* --- CSS Status Badge (Sama dengan Detail) --- */
+    /* Abu-abu */
+    .status-diajukan_oleh_pemohon { background-color: #a0aec0; }
+
+    /* Kuning */
+    .status-ditangani_oleh_pic,
+    .status-diselesaikan_oleh_pic { background-color: #f6ad55; }
+
+    /* Merah */
+    .status-dinilai_belum_selesai_oleh_pemohon,
+    .status-pemohon_bermasalah { background-color: #f56565; }
+
+    /* Hijau */
+    .status-dinilai_selesai_oleh_kepala,
+    .status-dinilai_selesai_oleh_pemohon { background-color: #48bb78; }
 </style>
 @endsection
 
@@ -60,7 +72,7 @@
             <th>Status</th>
             <th>Prioritas</th>
             <th>Tgl Dibuat</th>
-            <th class="text-center">Aksi</th> {{-- Tambah text-center --}}
+            <th class="text-center">Aksi</th>
           </tr>
         </thead>
         <tbody class="table-border-bottom-0">
@@ -80,10 +92,12 @@
             
             <td>
                 @php
-                    $statusTerakhir = $tiket->riwayatStatus->sortByDesc('created_at')->first()->status ?? 'Pending';
+                    $statusTerakhir = $tiket->riwayatStatus->sortByDesc('created_at')->first()->status ?? 'Diajukan_oleh_Pemohon';
+                    // Konversi ke nama class (snake_case)
+                    $statusClass = 'status-' . strtolower($statusTerakhir);
                 @endphp
-                <span class="badge-status bg-{{ $statusTerakhir }}">
-                    {{ $statusTerakhir }}
+                <span class="badge-status {{ $statusClass }}">
+                    {{ str_replace('_', ' ', $statusTerakhir) }}
                 </span>
             </td>
             
@@ -102,17 +116,11 @@
 
             <td>{{ $tiket->created_at->format('d M Y, H:i') }}</td>
             
-            {{-- ====================================================== --}}
-            {{-- TOMBOL AKSI: DETAIL (Atas) & HAPUS (Bawah) --}}
-            {{-- ====================================================== --}}
             <td>
               <div class="d-flex flex-column gap-2">
-                  {{-- Tombol Detail --}}
                   <a href="{{ route('mahasiswa.tiket.show', $tiket->id) }}" class="btn btn-sm btn-info w-100">
                     Detail
                   </a>
-                  
-                  {{-- Tombol Hapus --}}
                   <form action="{{ route('mahasiswa.tiket.destroy', $tiket->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus tiket ini?');">
                     @csrf
                     @method('DELETE')

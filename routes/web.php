@@ -177,6 +177,7 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
         Route::get('buat-tiket', [MahasiswaTiketController::class, 'showCreateForm'])->name('tiket.show-create-form');
         Route::resource('tiket', MahasiswaTiketController::class);
         Route::post('tiket/{id}/komentar', [MahasiswaTiketController::class, 'storeKomentar'])->name('tiket.komentar.store');
+        Route::post('tiket/{id}/komentar', [MahasiswaTiketController::class, 'storeKomentar'])->name('tiket.storeKomentar');
     });
 
     // Kepala Unit

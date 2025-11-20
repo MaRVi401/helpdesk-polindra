@@ -1,227 +1,259 @@
-@extends('layouts/layoutMaster')
+@extends('layouts.layoutMaster')
 
 @section('title', 'Buat Tiket Baru')
 
-@section('vendor-style')
-<link rel="stylesheet" href="{{asset('assets/vendor/libs/select2/select2.css')}}" />
-<link rel="stylesheet" href="{{asset('assets/vendor/libs/flatpickr/flatpickr.css')}}" />
-
-<style>
-  .select2-container--default .select2-selection--single .select2-selection__rendered {
-    color: var(--bs-body-color) !important;
-  }
-  .select2-dropdown {
-    background-color: var(--bs-body-bg) !important;
-    border-color: var(--bs-border-color) !important;
-  }
-  .select2-container--default .select2-results__option {
-    color: var(--bs-body-color) !important;
-  }
-  .select2-container--default .select2-results__option[aria-selected=true] {
-    background-color: var(--bs-primary-bg-subtle) !important;
-  }
-  .select2-container--default .select2-results__option--highlighted[aria-selected] {
-    background-color: var(--bs-primary) !important;
-    color: var(--bs-white) !important;
-  }
-  .select2-search--dropdown .select2-search__field {
-    color: var(--bs-body-color) !important;
-    background-color: var(--bs-card-bg) !important;
-    border-color: var(--bs-border-color) !important;
-  }
-</style>
-@endsection
-
-@section('vendor-script')
-<script src="{{asset('assets/vendor/libs/select2/select2.js')}}"></script>
-<script src="{{asset('assets/vendor/libs/flatpickr/flatpickr.js')}}"></script>
-@endsection
-
-@section('page-script')
-<script src="{{asset('assets/js/forms-selects.js')}}"></script>
-<script>
-  $(document).ready(function() {
-    $('.datepicker').flatpickr({
-      dateFormat: 'Y-m-d'
-    });
-  });
-</script>
-@endsection
-
 @section('content')
-<h4 class="py-3 mb-4">
-  <span class="text-muted fw-light">Tiket /</span> Buat Tiket Baru
-</h4>
+<style>
+    /* Style tambahan agar kotak preview gambar terlihat rapi (Sama seperti di Show) */
+    .image-preview-box {
+        padding: 1.5rem;
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0; /* Ditambah border agar terlihat jelas di form */
+        border-radius: 8px;
+        text-align: center;
+        margin-top: 15px;
+    }
+    .img-thumbnail-container {
+        display: inline-block;
+        border: 1px solid #e2e8f0;
+        padding: 6px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        max-width: 100%;
+        transition: transform 0.2s;
+    }
+    .img-thumbnail-container:hover {
+        transform: scale(1.01);
+    }
+    .img-thumbnail-container img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 4px;
+        display: block;
+        max-height: 300px; 
+        object-fit: contain;
+    }
+    .img-caption {
+        margin-top: 10px;
+        font-size: 0.85rem;
+        color: #64748b;
+    }
+</style>
 
-<div class="row">
-  <div class="col-12">
-    <div class="card">
-      <div class="card-header">
-        <h5 class="mb-0">Formulir Pengajuan Tiket Bantuan</h5>
-      </div>
-      <div class="card-body">
-        
-        @if ($errors->any())
-          <div class="alert alert-danger">
-            <p class="mb-1"><strong>Oops! Terjadi kesalahan:</strong></p>
-            <ul class="mb-0">
-              @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-              @endforeach
-            </ul>
-          </div>
-        @endif
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="fw-bold py-3 mb-4">
+        <span class="text-muted fw-light">Tiket /</span> Buat Tiket Baru
+    </h4>
 
-        @if(!$layananTerpilih)
-          
-          <p>Silakan pilih jenis layanan yang Anda butuhkan untuk melanjutkan.</p>
-          <form id="form-pilih-layanan" action="{{ route('mahasiswa.tiket.show-create-form') }}" method="GET">
-            <div class="row g-3">
-              <div class="col-12">
-                <label class="form-label" for="layanan_id">Jenis Layanan</label>
-                <select id="layanan_id" name="layanan_id" class="select2 form-select" data-placeholder="Pilih Layanan" required>
-                  <option value="" selected disabled>Pilih Layanan</option>
-                  @foreach($layanans as $layanan)
-                    <option value="{{ $layanan->id }}">
-                      {{ $layanan->nama }} ({{ $layanan->unit->nama_unit ?? 'Tanpa Unit' }})
-                    </option>
-                  @endforeach
-                </select>
-              </div>
-              <div class="col-12 text-end">
-                <a href="{{ route('mahasiswa.tiket.index') }}" class="btn btn-label-secondary me-2">Batal</a>
-                <button type="submit" class="btn btn-primary">Lanjut</button>
-              </div>
+    <div class="row">
+        <div class="col-xl">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Formulir Pengajuan Tiket</h5>
+                    <small class="text-muted float-end">Isi data dengan benar</small>
+                </div>
+                <div class="card-body">
+                    <form action="{{ route('mahasiswa.tiket.store') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        
+                        <div class="mb-3">
+                            <label class="form-label" for="layanan_id">Pilih Layanan <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="ti ti-files"></i></span>
+                                <select class="form-select" id="layanan_id" name="layanan_id" required onchange="toggleSpecificForm()">
+                                    <option value="" selected disabled>-- Pilih Layanan --</option>
+                                    @foreach($layanans as $layanan)
+                                        {{-- Mengirim nama layanan sebagai data attribute untuk diproses JS --}}
+                                        <option value="{{ $layanan->id }}" data-nama="{{ $layanan->nama }}">
+                                            {{ $layanan->nama }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-text">Formulir tambahan akan muncul sesuai layanan yang dipilih.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="deskripsi">Deskripsi Singkat / Alasan Pengajuan <span class="text-danger">*</span></label>
+                            <div class="input-group input-group-merge">
+                                <span class="input-group-text"><i class="ti ti-message-dots"></i></span>
+                                <textarea class="form-control" id="deskripsi" name="deskripsi" rows="2" placeholder="Jelaskan secara singkat..." required></textarea>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div id="form-ska" class="specific-form d-none">
+                            <h6 class="fw-bold text-primary"><i class="ti ti-file-certificate me-1"></i> Detail Surat Keterangan Aktif</h6>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Keperluan <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="keperluan" placeholder="Contoh: Beasiswa BI">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">Tahun Ajaran <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" name="tahun_ajaran" value="{{ date('Y') }}">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">Semester <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" name="semester" placeholder="1-8">
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <label class="form-label">Keperluan Lainnya (Opsional)</label>
+                                    <input type="text" class="form-control" name="keperluan_lainnya">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="form-reset" class="specific-form d-none">
+                            <h6 class="fw-bold text-danger"><i class="ti ti-lock-open me-1"></i> Detail Reset Akun</h6>
+                            <div class="mb-3">
+                                <label class="form-label">Aplikasi yang bermasalah <span class="text-danger">*</span></label>
+                                <select class="form-select" name="aplikasi">
+                                    <option value="sevima">Sevima</option>
+                                    <option value="gmail">Gmail Institusi</option>
+                                    <option value="office">Office 365</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Detail Masalah Akun <span class="text-danger">*</span></label>
+                                <textarea class="form-control" name="deskripsi_detail" rows="3" placeholder="Contoh: Lupa password dan nomor HP pemulihan hilang"></textarea>
+                            </div>
+                        </div>
+
+                        <div id="form-ubah-data" class="specific-form d-none">
+                            <h6 class="fw-bold text-warning"><i class="ti ti-id me-1"></i> Detail Perubahan Data</h6>
+                            <div class="mb-3">
+                                <label class="form-label">Nama Lengkap Baru <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="data_nama_lengkap" placeholder="Sesuai KTP/Ijazah">
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Tempat Lahir <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="data_tmp_lahir">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Tanggal Lahir <span class="text-danger">*</span></label>
+                                    <input type="date" class="form-control" name="data_tgl_lhr">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="form-publikasi" class="specific-form d-none">
+                            <h6 class="fw-bold text-info"><i class="ti ti-news me-1"></i> Detail Publikasi</h6>
+                            <div class="mb-3">
+                                <label class="form-label">Judul Publikasi <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="judul_publikasi" placeholder="Judul Acara / Berita">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Kategori <span class="text-danger">*</span></label>
+                                <select class="form-select" name="kategori">
+                                    <option value="Event">Event / Acara</option>
+                                    <option value="Berita">Berita Kampus</option>
+                                    <option value="Lomba">Lomba / Prestasi</option>
+                                    <option value="Lainnya">Lainnya</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Konten / Isi Publikasi <span class="text-danger">*</span></label>
+                                <textarea class="form-control" name="konten" rows="4"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Upload Gambar / Poster</label>
+                                <!-- ID imgInp digunakan oleh JS untuk trigger preview -->
+                                <input type="file" class="form-control" name="gambar" id="imgInp" accept="image/*">
+                                <div class="form-text">Format: JPG, PNG. Max 2MB.</div>
+                                
+                                <!-- AREA PREVIEW GAMBAR (Sama Style dengan Show) -->
+                                <div id="preview-box" class="image-preview-box d-none">
+                                    <h6 style="color:#475569; margin-bottom:10px; font-size:0.85rem; font-weight:600; text-transform:uppercase;">Preview Lampiran Gambar</h6>
+                                    <div class="img-thumbnail-container">
+                                        <a id="preview-link" href="#" target="_blank">
+                                            <img id="preview-img" src="#" alt="Preview Gambar">
+                                        </a>
+                                    </div>
+                                    <div class="img-caption">
+                                        <a id="preview-btn-link" href="#" target="_blank" class="text-primary" style="font-size: 0.85rem;">
+                                            <i class="ti ti-zoom-in"></i> Lihat Ukuran Penuh
+                                        </a>
+                                    </div>
+                                </div>
+                                <!-- End Area Preview -->
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary"><i class="ti ti-send me-1"></i> Kirim Tiket</button>
+                        <a href="{{ route('mahasiswa.tiket.index') }}" class="btn btn-label-secondary">Batal</a>
+                    </form>
+                </div>
             </div>
-          </form>
-
-        @else
-          
-          <form id="form-buat-tiket" action="{{ route('mahasiswa.tiket.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            <input type="hidden" name="layanan_id" value="{{ $layananTerpilih->id }}">
-
-            <div class="row g-3 mb-3">
-              <div class="col-12">
-                <label class="form-label">Layanan Dipilih:</label>
-                <input type="text" class="form-control" 
-                       value="{{ $layananTerpilih->nama }} ({{ $layananTerpilih->unit->nama_unit ?? 'Tanpa Unit' }})" 
-                       disabled readonly />
-              </div>
-            </div>
-
-            <hr class="my-4">
-            
-            @if($layananTerpilih->nama == 'Surat Keterangan Aktif Kuliah')
-            <div id="form-surat-aktif">
-              <h5 class="mb-3">Detail Surat Keterangan Aktif</h5>
-              <div class="row g-3">
-                <div class="col-md-4">
-                  <label class="form-label" for="keperluan">Keperluan</label>
-                  <input type="text" id="keperluan" name="keperluan" class="form-control" placeholder="Contoh: Tunjangan Gaji" value="{{ old('keperluan') }}" required />
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label" for="tahun_ajaran">Tahun Ajaran</label>
-                  <input type="text" id="tahun_ajaran" name="tahun_ajaran" class="form-control" placeholder="Contoh: 2024" value="{{ old('tahun_ajaran') }}" required />
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label" for="semester">Semester</label>
-                  <input type="number" id="semester" name="semester" class="form-control" placeholder="Contoh: 5" value="{{ old('semester') }}" required />
-                </div>
-              </div>
-            </div>
-
-            @elseif($layananTerpilih->nama == 'Reset Akun E-Learning & Siakad' || $layananTerpilih->nama == 'Permintaan Reset Akun E-Mail')
-            <div id="form-reset-akun">
-              <h5 class="mb-3">Detail Reset Akun</h5>
-              <div class="row g-3">
-                <div class="col-12">
-                  <label class="form-label" for="aplikasi">Aplikasi</label>
-                  <select id="aplikasi" name="aplikasi" class="form-select" required>
-                    <option value="" selected disabled>Pilih Aplikasi</option>
-                    <option value="gmail" {{ old('aplikasi') == 'gmail' ? 'selected' : '' }}>Email (Gmail)</option>
-                    <option value="office" {{ old('aplikasi') == 'office' ? 'selected' : '' }}>Office 365</option>
-                    <option value="sevima" {{ old('aplikasi') == 'sevima' ? 'selected' : '' }}>SIAKAD (Sevima)</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            @elseif($layananTerpilih->nama == 'Ubah Data Mahasiswa')
-            <div id="form-ubah-data">
-              <h5 class="mb-3">Detail Perubahan Data Mahasiswa</h5>
-              <p>Masukkan data yang BENAR. (Lampirkan KTP/KK/Ijazah di field Lampiran di bawah)</p>
-              <div class="row g-3">
-                <div class="col-md-6">
-                  <label class="form-label" for="data_nama_lengkap">Nama Lengkap (Sesuai Ijazah)</label>
-                  <input type="text" id="data_nama_lengkap" name="data_nama_lengkap" class="form-control" value="{{ old('data_nama_lengkap') }}" required />
-                </div>
-                <div class="col-md-3">
-                  <label class="form-label" for="data_tmp_lahir">Tempat Lahir</label>
-                  <input type="text" id="data_tmp_lahir" name="data_tmp_lahir" class="form-control" value="{{ old('data_tmp_lahir') }}" required />
-                </div>
-                <div class="col-md-3">
-                  <label class="form-label" for="data_tgl_lhr">Tanggal Lahir</label>
-                  <input type="text" id="data_tgl_lhr" name="data_tgl_lhr" class="form-control datepicker" placeholder="YYYY-MM-DD" value="{{ old('data_tgl_lhr') }}" required />
-                </div>
-              </div>
-            </div>
-
-            @elseif($layananTerpilih->nama == 'Request Publikasi Event')
-            <div id="form-req-publikasi">
-              <h5 class="mb-3">Detail Request Publikasi</h5>
-              <div class="row g-3">
-                <div class="col-md-6">
-                  <label class="form-label" for="judul_publikasi">Judul Publikasi</label>
-                  <input type="text" id="judul_publikasi" name="judul_publikasi" class="form-control" value="{{ old('judul_publikasi') }}" required />
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label" for="kategori_publikasi">Kategori</label>
-                  <input type="text" id="kategori_publikasi" name="kategori_publikasi" class="form-control" placeholder="Contoh: Berita, Event, Prestasi" value="{{ old('kategori_publikasi') }}" required />
-                </div>
-                <div class="col-12">
-                  <label class="form-label" for="konten">Konten/Naskah Berita</label>
-                  <textarea id="konten" name="konten" class="form-control" rows="4" required>{{ old('konten') }}</textarea>
-                </div>
-                <div class="col-12">
-                  <label class="form-label" for="gambar_publikasi">Gambar (Opsional)</label>
-                  <input type="file" id="gambar_publikasi" name="gambar_publikasi" class="form-control" />
-                </div>
-              </div>
-            </div>
-            @endif
-            
-            <hr class="my-4">
-
-            <div class="row g-3">
-              <div class="col-12">
-                <label class="form-label" for="deskripsi">Deskripsi Tambahan</label>
-                <p class="form-text">Jelaskan detail masalah atau permintaan Anda. (Wajib diisi)</p>
-                <textarea 
-                  class="form-control" 
-                  id="deskripsi" 
-                  name="deskripsi" 
-                  rows="6" 
-                  placeholder="Jelaskan detail masalah atau permintaan Anda..." 
-                  required>{{ old('deskripsi') }}</textarea>
-              </div>
-
-              <div class="col-12">
-                <label class="form-label" for="lampiran">Lampiran (Opsional)</label>
-                <input type="file" id="lampiran" name="lampiran" class="form-control" />
-                <div class="form-text">Maksimal 5MB. Format: jpg, png, pdf, docx, xlsx.</div>
-              </div>
-
-              <div class="col-12 text-end">
-                <a href="{{ route('mahasiswa.tiket.show-create-form') }}" class="btn btn-label-secondary me-2">Ganti Layanan</a>
-                <button type="submit" class="btn btn-primary">Kirim Tiket</button>
-              </div>
-            </div>
-          </form>
-        @endif
-        
-      </div>
+        </div>
     </div>
-  </div>
 </div>
+
+<script>
+    // 1. Logic untuk Toggle Form Layanan
+    function toggleSpecificForm() {
+        const forms = document.querySelectorAll('.specific-form');
+        forms.forEach(el => {
+            el.classList.add('d-none');
+            const inputs = el.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => input.disabled = true);
+        });
+        const select = document.getElementById('layanan_id');
+        const selectedOption = select.options[select.selectedIndex];
+        const namaLayanan = selectedOption.getAttribute('data-nama'); 
+
+        if (!namaLayanan) return;
+
+        let activeFormId = null;
+        if (namaLayanan.includes('Surat Keterangan Aktif')) {
+            activeFormId = 'form-ska';
+        } else if (namaLayanan.includes('Reset Akun')) {
+            activeFormId = 'form-reset';
+        } else if (namaLayanan.includes('Ubah Data')) {
+            activeFormId = 'form-ubah-data';
+        } else if (namaLayanan.includes('Publikasi')) {
+            activeFormId = 'form-publikasi';
+        }
+
+        // Tampilkan form yang sesuai & Enable inputs
+        if (activeFormId) {
+            const activeForm = document.getElementById(activeFormId);
+            activeForm.classList.remove('d-none');
+            const inputs = activeForm.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => input.disabled = false);
+        }
+    }
+
+    // 2. Logic untuk Preview Image dengan Style Kotak
+    const imgInp = document.getElementById('imgInp');
+    const previewBox = document.getElementById('preview-box');
+    const previewImg = document.getElementById('preview-img');
+    const previewLink = document.getElementById('preview-link');
+    const previewBtnLink = document.getElementById('preview-btn-link');
+
+    if (imgInp) {
+        imgInp.onchange = evt => {
+            const [file] = imgInp.files
+            if (file) {
+                // Membuat URL objek sementara dari file yang dipilih user
+                const objectUrl = URL.createObjectURL(file);
+                
+                previewImg.src = objectUrl;
+                
+                // Set link agar bisa diklik "Lihat Ukuran Penuh" (membuka di tab baru secara lokal)
+                previewLink.href = objectUrl;
+                previewBtnLink.href = objectUrl;
+                
+                // Tampilkan kotaknya
+                previewBox.classList.remove('d-none');
+            } else {
+                // Sembunyikan jika user membatalkan pilih file
+                previewBox.classList.add('d-none');
+            }
+        }
+    }
+</script>
 @endsection
