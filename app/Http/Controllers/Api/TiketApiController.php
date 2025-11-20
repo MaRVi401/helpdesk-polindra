@@ -38,7 +38,7 @@ class TiketApiController extends Controller
         }
 
         // 🔎 Cari tiket berdasarkan id atau no_tiket
-        $tiket = Tiket::with(['layanan', 'riwayatStatus.user'])
+        $tiket = Tiket::with(['layanan', 'riwayatStatus.user', 'komentar.user'])
             ->where('id', $id_or_no_tiket)
             ->orWhere('no_tiket', $id_or_no_tiket)
             ->first();

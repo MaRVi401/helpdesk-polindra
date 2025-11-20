@@ -96,7 +96,7 @@ class TiketSeeder extends Seeder
                 'judul'    => 'Seminar Nasional Teknologi Informasi',
                 'kategori' => 'Event',
                 'konten'   => 'Seminar nasional dengan tema Teknologi Masa Depan.',
-                'gambar'   => 'testing.jpg',
+                'gambar'   => 'lampiran-req-publikasi/testing.jpg',
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
