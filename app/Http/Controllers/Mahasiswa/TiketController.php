@@ -83,8 +83,11 @@ class TiketController extends Controller
             'layanan_id' => 'required|exists:layanan,id',
             'deskripsi'  => 'required|string',
             'lampiran'   => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx,xls,xlsx|max:5120',
-            // PERBAIKAN: Nama input disesuaikan dengan view ('gambar')
             'gambar'     => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'judul_publikasi' => 'nullable|string',
+            'kategori_publikasi' => 'nullable|string',
+            'konten' => 'nullable|string',
+            'kategori'   => 'nullable|string|max:255',
         ]);
 
         $layanan = Layanan::findOrFail($request->layanan_id);
@@ -150,19 +153,16 @@ class TiketController extends Controller
         } elseif (str_contains($namaLayanan, 'Publikasi')) {
             $gambarPath = null;
             
-            // PERBAIKAN: Menggunakan 'gambar' agar cocok dengan view create.blade.php
-            // Simpan ke folder 'lampiran-req-publikasi' di disk 'public'
             if ($request->hasFile('gambar')) {
                 $gambarPath = $request->file('gambar')->store('lampiran-req-publikasi', 'public');
             }
-
-            DetailTiketReqPublikasi::create([
-                'tiket_id' => $tiketId,
-                'judul'    => $request->judul_publikasi ?? $request->judul, 
-                'kategori' => $request->kategori_publikasi ?? $request->kategori,
-                'konten'   => $request->konten,
-                'gambar'   => $gambarPath, 
-            ]);
+            $detail = new DetailTiketReqPublikasi();
+            $detail->tiket_id = $tiketId;
+            $detail->judul    = $request->judul_publikasi ?? $request->judul ?? 'Tanpa Judul';
+            $detail->kategori = $request->kategori_publikasi ?? $request->kategori ?? 'Umum';
+            $detail->konten   = $request->konten ?? '-';
+            $detail->gambar   = $gambarPath;
+            $detail->save();
         }
     }
 

@@ -147,13 +147,10 @@
                                 <input type="text" class="form-control" name="judul_publikasi" placeholder="Judul Acara / Berita">
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Kategori <span class="text-danger">*</span></label>
-                                <select class="form-select" name="kategori">
-                                    <option value="Event">Event / Acara</option>
-                                    <option value="Berita">Berita Kampus</option>
-                                    <option value="Lomba">Lomba / Prestasi</option>
-                                    <option value="Lainnya">Lainnya</option>
-                                </select>
+                                <div class="mb-3">
+                            <label class="form-label">Kategori <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="kategori" placeholder="Contoh: Event, Berita, Pengumuman, dll" required>
+                            </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Konten / Isi Publikasi <span class="text-danger">*</span></label>
