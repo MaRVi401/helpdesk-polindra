@@ -19,11 +19,7 @@ class TiketController extends Controller
 {
     private $validStatuses = [
         'Diajukan_oleh_Pemohon',
-        'Ditangani_oleh_PIC',
-        'Diselesaikan_oleh_PIC',
         'Dinilai_Belum_Selesai_oleh_Pemohon',
-        'Pemohon_Bermasalah',
-        'Dinilai_Selesai_oleh_Kepala',
         'Dinilai_Selesai_oleh_Pemohon',
     ];
 
@@ -79,15 +75,25 @@ class TiketController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $layanan = Layanan::findOrFail($request->layanan_id);
+        $rules = [
             'layanan_id' => 'required|exists:layanan,id',
             'deskripsi'  => 'required|string',
-            'lampiran'   => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx,xls,xlsx|max:5120',
-            'gambar'     => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'judul_publikasi' => 'nullable|string',
-            'kategori_publikasi' => 'nullable|string',
-            'konten' => 'nullable|string',
-            'kategori'   => 'nullable|string|max:255',
+        ];
+        if (str_contains($layanan->nama, 'Publikasi')) {
+            $rules['judul_publikasi'] = 'required|string|max:255'; 
+            $rules['konten']          = 'required|string';         
+            $rules['gambar']          = 'required|image|mimes:jpg,jpeg,png|max:2048'; 
+        } else {
+            $rules['judul_publikasi']    = 'nullable|string';
+            $rules['kategori_publikasi'] = 'nullable|string';
+            $rules['konten']             = 'nullable|string';
+            $rules['gambar']             = 'nullable|image|mimes:jpg,jpeg,png|max:2048';
+        }
+        $request->validate($rules, [
+            'gambar.required' => 'Wajib melampirkan gambar/poster untuk Request Publikasi.',
+            'judul_publikasi.required' => 'Judul publikasi harus diisi.',
+            'konten.required' => 'Konten publikasi harus diisi.',
         ]);
 
         $layanan = Layanan::findOrFail($request->layanan_id);
@@ -96,12 +102,28 @@ class TiketController extends Controller
             $words = explode(' ', $layanan->nama);
             $acronym = '';
             foreach ($words as $w) {
-                $acronym .= mb_substr($w, 0, 1);
+                if (ctype_alpha($w[0] ?? '')) {
+                    $acronym .= mb_substr($w, 0, 1);
+                }
             }
             $prefix = strtoupper($acronym);
-
+            if (str_contains($layanan->nama, 'Surat Keterangan Aktif Kuliah')) {
+                $prefix = 'SKA';
+            }
+            $date = now()->format('Ymd'); 
+            $lastTiket = Tiket::where('no_tiket', 'like', $prefix . '-' . $date . '-%')
+                ->orderBy('id', 'desc')
+                ->first();
+            
+            $seq = 1;
+            if ($lastTiket) {
+                $parts = explode('-', $lastTiket->no_tiket);
+                $lastSeqStr = end($parts);
+                $seq = intval($lastSeqStr) + 1;
+            }
+            
             $tiket = new Tiket();
-            $tiket->no_tiket   = $prefix . '-' . time() . rand(100,999);
+            $tiket->no_tiket = $prefix . '-' . $date . '-' . str_pad($seq, 4, '0', STR_PAD_LEFT);
             $tiket->pemohon_id = Auth::id();
             $tiket->layanan_id = $layanan->id;
             $tiket->deskripsi  = $request->deskripsi;
@@ -111,7 +133,7 @@ class TiketController extends Controller
             }
             
             $tiket->save();
-
+            
             DB::table('riwayat_status_tiket')->insert([
                 'tiket_id'   => $tiket->id,
                 'user_id'    => Auth::id(),
@@ -119,7 +141,6 @@ class TiketController extends Controller
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
-
             $this->storeDetail($tiket->id, $layanan->nama, $request);
         });
 
@@ -129,7 +150,7 @@ class TiketController extends Controller
 
     private function storeDetail($tiketId, $namaLayanan, $request)
     {
-        if (str_contains($namaLayanan, 'Surat Keterangan Aktif')) {
+        if (str_contains($namaLayanan, 'Surat Keterangan Aktif Kuliah')) {
             DetailTiketSuratKetAktif::create([
                 'tiket_id'          => $tiketId,
                 'keperluan'         => $request->keperluan,
@@ -137,22 +158,24 @@ class TiketController extends Controller
                 'semester'          => $request->semester,
                 'keperluan_lainnya' => $request->keperluan_lainnya,
             ]);
-        } elseif (str_contains($namaLayanan, 'Reset Akun')) {
+        } 
+        elseif (str_contains($namaLayanan, 'Reset Akun')) {
             DetailTiketResetAkun::create([
                 'tiket_id'  => $tiketId,
                 'aplikasi'  => $request->aplikasi,
                 'deskripsi' => $request->deskripsi_detail ?? $request->deskripsi,
             ]);
-        } elseif (str_contains($namaLayanan, 'Ubah Data')) {
+        } 
+        elseif (str_contains($namaLayanan, 'Ubah Data Mahasiswa')) {
             DetailTiketUbahDataMhs::create([
                 'tiket_id'          => $tiketId,
                 'data_nama_lengkap' => $request->data_nama_lengkap,
                 'data_tmp_lahir'    => $request->data_tmp_lahir,
                 'data_tgl_lhr'      => $request->data_tgl_lhr,
             ]);
-        } elseif (str_contains($namaLayanan, 'Publikasi')) {
+        } 
+        elseif (str_contains($namaLayanan, 'Request Publikasi')) {
             $gambarPath = null;
-            
             if ($request->hasFile('gambar')) {
                 $gambarPath = $request->file('gambar')->store('lampiran-req-publikasi', 'public');
             }
@@ -187,13 +210,13 @@ class TiketController extends Controller
         elseif ($tiket->detailPublikasi) $detail = $tiket->detailPublikasi;
 
         if (!$detail) {
-             if (str_contains($tiket->layanan->nama, 'Surat')) 
+             if (str_contains($tiket->layanan->nama, 'Surat Keterangan Aktif Kuliah')) 
                  $detail = DetailTiketSuratKetAktif::where('tiket_id', $tiket->id)->first();
-             elseif (str_contains($tiket->layanan->nama, 'Reset')) 
+             elseif (str_contains($tiket->layanan->nama, 'Reset Akun')) 
                  $detail = DetailTiketResetAkun::where('tiket_id', $tiket->id)->first();
-             elseif (str_contains($tiket->layanan->nama, 'Ubah')) 
+             elseif (str_contains($tiket->layanan->nama, 'Ubah Data Mahasiswa')) 
                  $detail = DetailTiketUbahDataMhs::where('tiket_id', $tiket->id)->first();
-             elseif (str_contains($tiket->layanan->nama, 'Publikasi')) 
+             elseif (str_contains($tiket->layanan->nama, 'Request Publikasi')) 
                  $detail = DetailTiketReqPublikasi::where('tiket_id', $tiket->id)->first();
         }
 
