@@ -21,7 +21,7 @@
       <h5 class="card-title">Daftar Program Studi</h5>
     </div>
     <div class="card-datatable table-responsive">
-      <table class="datatables-study-program table">
+      <table class="datatables-basic table">
         <thead>
           <tr>
             <th></th>

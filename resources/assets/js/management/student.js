@@ -1,5 +1,5 @@
 /**
- * Student (Canvas)
+ * Student (Canvas) - with Loading State
  */
 
 'use strict';
@@ -14,6 +14,55 @@ document.addEventListener('DOMContentLoaded', function (e) {
 
   const dt_student_table = document.querySelector('.datatables-basic'),
     studentAdd = baseUrl + 'student/create';
+
+  // Tampilkan loading overlay saat halaman dimuat
+  function showTableLoading() {
+    const loadingHtml = `
+      <div class="datatable-loading-overlay" style="
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        border-radius: 0.5rem;
+        min-height: 400px;
+      ">
+        <div class="text-center">
+          <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="text-muted fw-medium">Memuat data mahasiswa...</p>
+        </div>
+      </div>
+    `;
+
+    // Cari card atau container wrapper tabel
+    const tableWrapper =
+      dt_student_table.closest('.card') || dt_student_table.closest('.card-body') || dt_student_table.parentElement;
+
+    if (tableWrapper) {
+      tableWrapper.style.position = 'relative';
+      tableWrapper.style.minHeight = '400px';
+      tableWrapper.insertAdjacentHTML('beforeend', loadingHtml);
+    }
+  }
+
+  // Sembunyikan loading overlay
+  function hideTableLoading() {
+    const loadingOverlay = document.querySelector('.datatable-loading-overlay');
+    if (loadingOverlay) {
+      loadingOverlay.style.opacity = '0';
+      loadingOverlay.style.transition = 'opacity 0.3s ease';
+      setTimeout(() => {
+        loadingOverlay.remove();
+      }, 300);
+    }
+  }
 
   (function () {
     const formAddNewRecord = document.getElementById('form-add-new-record');
@@ -109,23 +158,28 @@ document.addEventListener('DOMContentLoaded', function (e) {
   })();
 
   // Student datatable
-  // Student datatable
   if (dt_student_table) {
+    // Tampilkan loading sebelum inisialisasi DataTable
+    showTableLoading();
+
+    // Sembunyikan tabel sementara
+    dt_student_table.style.opacity = '0';
+    dt_student_table.style.transition = 'opacity 0.3s ease';
+
     var dt_student = new DataTable(dt_student_table, {
       columns: [
         { data: 'id' },
         { data: 'id', orderable: false, render: DataTable.render.select() },
         { data: null, name: 'no' },
-        { data: 'full_name' },
-        { data: 'nim', visible: false }, // Kolom NIM disembunyikan
+        { data: 'name' },
+        { data: 'nim', visible: false },
         { data: 'email' },
         { data: 'prodi' },
-        { data: 'tahun_masuk', visible: false }, // Kolom Tahun Masuk disembunyikan
+        { data: 'tahun_masuk', visible: false },
         { data: 'id' }
       ],
       columnDefs: [
         {
-          // For Responsive
           className: 'control',
           searchable: false,
           orderable: false,
@@ -136,7 +190,6 @@ document.addEventListener('DOMContentLoaded', function (e) {
           }
         },
         {
-          // For Checkboxes
           targets: 1,
           orderable: false,
           searchable: false,
@@ -150,7 +203,6 @@ document.addEventListener('DOMContentLoaded', function (e) {
           }
         },
         {
-          // Nomor urut
           targets: 2,
           orderable: false,
           searchable: false,
@@ -159,14 +211,12 @@ document.addEventListener('DOMContentLoaded', function (e) {
           }
         },
         {
-          // Nama Lengkap dengan Avatar
           targets: 3,
           responsivePriority: 1,
           render: function (data, type, full, meta) {
             const name = data;
             const nim = full['nim'];
 
-            // Generate initials for avatar
             let initials = name.match(/\b\w/g) || [];
             initials = ((initials.shift() || '') + (initials.pop() || '')).toUpperCase();
 
@@ -191,15 +241,13 @@ document.addEventListener('DOMContentLoaded', function (e) {
           }
         },
         {
-          // NIM (hidden column - no render needed since it's invisible)
           targets: 4,
           visible: false,
           render: function (data, type, full, meta) {
-            return data; // Tetap return data untuk export data
+            return data;
           }
         },
         {
-          // Email
           targets: 5,
           responsivePriority: 1,
           render: function (data, type, full, meta) {
@@ -207,31 +255,26 @@ document.addEventListener('DOMContentLoaded', function (e) {
           }
         },
         {
-          // Prodi
           targets: 6,
           render: function (data, type, full, meta) {
             return `<span>${data}</span>`;
           }
         },
         {
-          // Tahun Masuk (hidden column)
           targets: 7,
           visible: false,
           render: function (data, type, full, meta) {
-            return data; // Tetap return data untuk export data
+            return data;
           }
         },
         {
-          // Actions
           targets: 8,
           title: 'Aksi',
           searchable: false,
           orderable: false,
           className: 'text-center',
           render: function (data, type, full, meta) {
-            // Get all rows
             const rows = dt_student_table?.querySelectorAll('tbody tr');
-            // If rows exist and the current row exists, get its ID
             const id = rows && rows[meta.row] ? rows[meta.row].querySelector('td:last-child')?.dataset?.id : '';
 
             return `
@@ -513,6 +556,14 @@ document.addEventListener('DOMContentLoaded', function (e) {
             return false;
           }
         }
+      },
+      // Event callback ketika DataTable selesai di-draw
+      initComplete: function () {
+        setTimeout(() => {
+          dt_student_table.style.visibility = 'visible';
+          dt_student_table.style.opacity = '1';
+          setTimeout(() => hideTableLoading(), 300);
+        }, 100);
       }
     });
 
@@ -549,19 +600,16 @@ document.addEventListener('DOMContentLoaded', function (e) {
           buttonsStyling: false
         }).then(function (result) {
           if (result.value) {
-            // Buat form dan submit
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = baseUrl + 'student/' + id;
 
-            // CSRF Token
             const csrfInput = document.createElement('input');
             csrfInput.type = 'hidden';
             csrfInput.name = '_token';
             csrfInput.value = document.querySelector('meta[name="csrf-token"]').content;
             form.appendChild(csrfInput);
 
-            // Method DELETE
             const methodInput = document.createElement('input');
             methodInput.type = 'hidden';
             methodInput.name = '_method';

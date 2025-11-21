@@ -1,7 +1,7 @@
 /**
  * FAQ (Client-side version with SweetAlert2)
  */
-// REFERENSI NYA 
+// REFERENSI NYA
 'use strict';
 
 document.addEventListener('DOMContentLoaded', function (e) {
@@ -11,15 +11,70 @@ document.addEventListener('DOMContentLoaded', function (e) {
   bodyBg = config.colors.bodyBg;
   headingColor = config.colors.headingColor;
 
-  const dt_faq_table = document.querySelector('.datatables-faq'),
+  const dt_faq_table = document.querySelector('.datatables-basic'),
     faqAdd = baseUrl + 'faq/create',
     statusObj = {
       Post: { title: 'Post', class: 'bg-label-success' },
       Draft: { title: 'Draft', class: 'bg-label-warning' }
     };
 
+  // Tampilkan loading overlay saat halaman dimuat
+  function showTableLoading() {
+    const loadingHtml = `
+      <div class="datatable-loading-overlay" style="
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        border-radius: 0.5rem;
+        min-height: 400px;
+      ">
+        <div class="text-center">
+          <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="text-muted fw-medium">Memuat data faq...</p>
+        </div>
+      </div>
+    `;
+
+    // Cari card atau container wrapper tabel
+    const tableWrapper =
+      dt_faq_table.closest('.card') || dt_faq_table.closest('.card-body') || dt_faq_table.parentElement;
+
+    if (tableWrapper) {
+      tableWrapper.style.position = 'relative';
+      tableWrapper.style.minHeight = '400px';
+      tableWrapper.insertAdjacentHTML('beforeend', loadingHtml);
+    }
+  }
+
+  // Sembunyikan loading overlay
+  function hideTableLoading() {
+    const loadingOverlay = document.querySelector('.datatable-loading-overlay');
+    if (loadingOverlay) {
+      loadingOverlay.style.opacity = '0';
+      loadingOverlay.style.transition = 'opacity 0.3s ease';
+      setTimeout(() => {
+        loadingOverlay.remove();
+      }, 300);
+    }
+  }
+
   // FAQ datatable
   if (dt_faq_table) {
+    // Tampilkan loading sebelum inisialisasi DataTable
+    showTableLoading();
+
+    // Sembunyikan tabel sementara
+    dt_faq_table.style.opacity = '0';
+    dt_faq_table.style.transition = 'opacity 0.3s ease';
     var dt_faq = new DataTable(dt_faq_table, {
       columns: [
         { data: 'id' },
@@ -296,10 +351,16 @@ document.addEventListener('DOMContentLoaded', function (e) {
           }
         }
       },
+      // Event callback ketika DataTable selesai di-draw
       initComplete: function () {
-        const api = this.api();
+        setTimeout(() => {
+          dt_faq_table.style.visibility = 'visible';
+          dt_faq_table.style.opacity = '1';
+          setTimeout(() => hideTableLoading(), 300);
+        }, 100);
 
-        api.columns(5).every(function () {
+        const api = this.api();
+        api.columns(5).every(function (settings, json) {
           const column = this;
           const select = document.createElement('select');
           select.id = 'FaqStatus';

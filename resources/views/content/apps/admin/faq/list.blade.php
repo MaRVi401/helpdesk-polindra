@@ -24,7 +24,7 @@
       <div class="col-md-4 judul"></div>
     </div>
     <div class="card-datatable table-responsive">
-      <table class="datatables-faq table">
+      <table class="datatables-basic table">
         <thead>
           <tr>
             <th></th>

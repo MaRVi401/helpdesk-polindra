@@ -14,6 +14,55 @@ document.addEventListener('DOMContentLoaded', function (e) {
 
   const dt_staff_table = document.querySelector('.datatables-basic');
 
+  // Tampilkan loading overlay saat halaman dimuat
+  function showTableLoading() {
+    const loadingHtml = `
+      <div class="datatable-loading-overlay" style="
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        border-radius: 0.5rem;
+        min-height: 400px;
+      ">
+        <div class="text-center">
+          <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="text-muted fw-medium">Memuat data staf...</p>
+        </div>
+      </div>
+    `;
+
+    // Cari card atau container wrapper tabel
+    const tableWrapper =
+      dt_staff_table.closest('.card') || dt_staff_table.closest('.card-body') || dt_staff_table.parentElement;
+
+    if (tableWrapper) {
+      tableWrapper.style.position = 'relative';
+      tableWrapper.style.minHeight = '400px';
+      tableWrapper.insertAdjacentHTML('beforeend', loadingHtml);
+    }
+  }
+
+  // Sembunyikan loading overlay
+  function hideTableLoading() {
+    const loadingOverlay = document.querySelector('.datatable-loading-overlay');
+    if (loadingOverlay) {
+      loadingOverlay.style.opacity = '0';
+      loadingOverlay.style.transition = 'opacity 0.3s ease';
+      setTimeout(() => {
+        loadingOverlay.remove();
+      }, 300);
+    }
+  }
+
   (function () {
     const formAddNewRecord = document.getElementById('form-add-new-record');
 
@@ -115,12 +164,18 @@ document.addEventListener('DOMContentLoaded', function (e) {
 
   // Staff datatable
   if (dt_staff_table) {
+    // Tampilkan loading sebelum inisialisasi DataTable
+    showTableLoading();
+
+    // Sembunyikan tabel sementara
+    dt_staff_table.style.opacity = '0';
+    dt_staff_table.style.transition = 'opacity 0.3s ease';
     var dt_staff = new DataTable(dt_staff_table, {
       columns: [
         { data: 'id' },
         { data: 'id', orderable: false, render: DataTable.render.select() },
         { data: null, name: 'no' },
-        { data: 'full_name' },
+        { data: 'name' },
         { data: 'nik' },
         { data: 'email' },
         { data: 'unit' },
@@ -512,6 +567,14 @@ document.addEventListener('DOMContentLoaded', function (e) {
             return false;
           }
         }
+      },
+      // Event callback ketika DataTable selesai di-draw
+      initComplete: function () {
+        setTimeout(() => {
+          dt_staff_table.style.visibility = 'visible';
+          dt_staff_table.style.opacity = '1';
+          setTimeout(() => hideTableLoading(), 300);
+        }, 100);
       }
     });
 

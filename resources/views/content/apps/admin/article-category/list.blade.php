@@ -21,7 +21,7 @@
       <h5 class="card-title">Kategori Artikel</h5>
     </div>
     <div class="card-datatable table-responsive">
-      <table class="datatables-article-category table">
+      <table class="datatables-basic table">
         <thead>
           <tr>
             <th></th>
