@@ -25,7 +25,7 @@ class Layanan extends Model
         return $this->belongsTo(Unit::class, 'unit_id');
     }
 
-    public function tikets()
+    public function tiket()
     {
         return $this->hasMany(Tiket::class, 'layanan_id');
     }

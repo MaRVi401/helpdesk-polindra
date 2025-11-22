@@ -42,37 +42,50 @@
     {
       "name": "Layanan",
       "icon": "menu-icon icon-base ti tabler-layout-grid-add",
-      "slug": "layanan",
+      "slug": "service",
       "roles": [
         "super_admin",
-        "admin_unit",
-        "kepala_unit"
+        "kepala_unit",
+        "admin_unit"
       ],
       "submenu": [
         {
-          "url": "/upatik",
+          "url": "/service/upatik",
           "name": "UPA TIK",
-          "slug": "dashboard-upatik",
+          "slug": "service.unit.upatik",
           "roles": [
             "super_admin",
+            "kepala_unit",
             "admin_unit"
           ]
         },
         {
-          "url": "/akademik",
+          "url": "/service/academy",
           "name": "Akademik",
-          "slug": "dashboard-akademik",
+          "slug": "service.unit.academy",
           "roles": [
             "super_admin",
+            "kepala_unit",
             "admin_unit"
           ]
         },
         {
-          "url": "/pku",
-          "name": "PKU",
-          "slug": "dashboard-pku",
+          "url": "/service/student-affairs",
+          "name": "Kemahasiswaan",
+          "slug": "service.unit.student-affairs",
           "roles": [
             "super_admin",
+            "kepala_unit",
+            "admin_unit"
+          ]
+        },
+        {
+          "url": "/service/upt-bahasa",
+          "name": "UPT Bahasa",
+          "slug": "service.unit.upt-bahasa",
+          "roles": [
+            "super_admin",
+            "kepala_unit",
             "admin_unit"
           ]
         }
@@ -201,10 +214,17 @@
           "name": "Jurusan",
           "slug": [
             "major.index",
-            "major.create",
             "major.show",
             "major.edit"
           ],
+          "roles": [
+            "super_admin"
+          ]
+        },
+        {
+          "url": "/major/create",
+          "name": "Tambah Jurusan",
+          "slug": "major.create",
           "roles": [
             "super_admin"
           ]
@@ -214,10 +234,17 @@
           "name": "Program Studi",
           "slug": [
             "study-program.index",
-            "study-program.create",
             "study-program.show",
             "study-program.edit"
           ],
+          "roles": [
+            "super_admin"
+          ]
+        },
+        {
+          "url": "/study-program/create",
+          "name": "Tambah Program Studi",
+          "slug": "study-program.create",
           "roles": [
             "super_admin"
           ]

@@ -10,14 +10,14 @@
   <div class="card">
     <h5 class="card-header">Edit Data Staf</h5>
     <div class="card-body">
-      <form action="{{ route('staff.update', $data_staff->id) }}" method="POST">
+      <form action="{{ route('staff.update', $data_staf->id) }}" method="POST">
         @csrf
         @method('PUT')
         {{-- NAMA LENGKAP --}}
         <div class="mb-6">
           <label for="name" class="form-label">Nama Lengkap</label>
           <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name"
-            value="{{ old('name', $data_staff->user->name ?? '') }}" placeholder="Nama Lengkap" required />
+            value="{{ old('name', $data_staf->user->name ?? '') }}" placeholder="Nama Lengkap" required />
           @error('name')
             <div class="invalid-feedback">{{ $message }}</div>
           @enderror
@@ -26,7 +26,7 @@
         <div class="mb-6">
           <label for="nik" class="form-label">NIK</label>
           <input type="text" class="form-control @error('nik') is-invalid @enderror" id="nik" name="nik"
-            value="{{ old('nik', $data_staff->nik) }}" placeholder="Nomor Induk Karyawan" required />
+            maxlength="16" value="{{ old('nik', $data_staf->nik) }}" placeholder="Nomor Induk Karyawan" required />
           @error('nik')
             <div class="invalid-feedback">{{ $message }}</div>
           @enderror
@@ -35,7 +35,7 @@
         <div class="mb-6">
           <label for="email" class="form-label">Email</label>
           <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email"
-            value="{{ old('email', $data_staff->user->email ?? '') }}" placeholder="email@polindra.ac.id" required />
+            value="{{ old('email', $data_staf->user->email ?? '') }}" placeholder="email@polindra.ac.id" required />
           @error('email')
             <div class="invalid-feedback">{{ $message }}</div>
           @enderror
@@ -44,7 +44,7 @@
         <div class="mb-6">
           <label for="role" class="form-label">Role</label>
           @php
-            $currentRole = $data_staff->user->role ?? '';
+            $currentRole = $data_staf->user->role ?? '';
           @endphp
           <select class="form-select @error('role') is-invalid @enderror" id="role" name="role"
             {{ $currentRole === 'super_admin' ? 'disabled' : '' }} required>
@@ -75,9 +75,9 @@
           <label for="unit_id" class="form-label">Unit</label>
           <select class="form-select @error('unit_id') is-invalid @enderror" id="unit_id" name="unit_id" required>
             <option value="" disabled>Pilih Unit</option>
-            @foreach ($data_units as $unit)
+            @foreach ($data_unit as $unit)
               <option value="{{ $unit->id }}"
-                {{ old('unit_id', $data_staff->unit_id) == $unit->id ? 'selected' : '' }}>
+                {{ old('unit_id', $data_staf->unit_id) == $unit->id ? 'selected' : '' }}>
                 {{ $unit->nama_unit }}
               </option>
             @endforeach
@@ -90,8 +90,8 @@
         <div class="mb-6">
           <label for="jabatan_id" class="form-label">Jabatan</label>
           @php
-            $currentRole = $data_staff->user->role ?? '';
-            $currentJabatanId = old('jabatan_id', $data_staff->jabatan_id);
+            $currentRole = $data_staf->user->role ?? '';
+            $currentJabatanId = old('jabatan_id', $data_staf->jabatan_id);
           @endphp
           <select class="form-select @error('jabatan_id') is-invalid @enderror" id="jabatan_id" name="jabatan_id"
             {{ $currentRole === 'super_admin' ? 'disabled' : '' }} required>

@@ -156,7 +156,6 @@
 
   @if ($errors->any())
     <script>
-      // Show the first validation error using the same Swal flow
       window.studentErrorMessage = "{{ $errors->first() }}";
     </script>
   @endif

@@ -14,14 +14,14 @@ class StaffController extends Controller
 {
   public function index(Request $request)
   {
-    $data_staff = Staff::with(['user', 'unit', 'jabatan'])
+    $data_staf = Staff::with(['user', 'unit', 'jabatan'])
       ->orderBy('id', 'asc')
       ->get();
 
-    $data_units = Unit::orderBy('nama_unit', 'asc')->get();
+    $data_unit = Unit::orderBy('nama_unit', 'asc')->get();
     $data_jabatan = Jabatan::orderBy('nama_jabatan', 'asc')->get();
 
-    return view('content.apps.admin.manage-users.staff.list', compact('data_staff', 'data_units', 'data_jabatan'));
+    return view('content.apps.admin.manage-users.staff.list', compact('data_staf', 'data_unit', 'data_jabatan'));
   }
 
   public function store(Request $request)
@@ -54,7 +54,7 @@ class StaffController extends Controller
       'role' => $request->input('role')
     ]);
 
-    // Buat data staff
+    // Buat data staf
     Staff::create([
       'user_id' => $user->id,
       'nik' => $request->input('nik'),
@@ -62,29 +62,29 @@ class StaffController extends Controller
       'jabatan_id' => $request->input('jabatan_id'),
     ]);
 
-    return redirect()->route('staff.index')->with('success', 'Data staff berhasil ditambahkan.');
+    return redirect()->route('staff.index')->with('success', 'Data staf berhasil ditambahkan.');
   }
 
   public function show($id)
   {
-    $data_staff = Staff::with(['user', 'unit', 'jabatan'])->findOrFail($id);
+    $data_staf = Staff::with(['user', 'unit', 'jabatan'])->findOrFail($id);
 
-    return view('content.apps.admin.manage-users.staff.show', compact('data_staff'));
+    return view('content.apps.admin.manage-users.staff.show', compact('data_staf'));
   }
 
   public function edit($id)
   {
-    $data_staff = Staff::with(['user', 'unit', 'jabatan'])->findOrFail($id);
-    $data_units = Unit::orderBy('nama_unit', 'asc')->get();
+    $data_staf = Staff::with(['user', 'unit', 'jabatan'])->findOrFail($id);
+    $data_unit = Unit::orderBy('nama_unit', 'asc')->get();
     $data_jabatan = Jabatan::orderBy('nama_jabatan', 'asc')->get();
 
-    return view('content.apps.admin.manage-users.staff.edit', compact('data_staff', 'data_units', 'data_jabatan'));
+    return view('content.apps.admin.manage-users.staff.edit', compact('data_staf', 'data_unit', 'data_jabatan'));
   }
 
   public function update(Request $request, $id)
   {
-    $data_staff = Staff::findOrFail($id);
-    $isSuperAdmin = $data_staff->user && $data_staff->user->role === 'super_admin';
+    $data_staf = Staff::findOrFail($id);
+    $isSuperAdmin = $data_staf->user && $data_staf->user->role === 'super_admin';
 
     $rules = [
       'name' => 'required|string|max:255',
@@ -97,7 +97,7 @@ class StaffController extends Controller
       'email' => [
         'required',
         'email',
-        Rule::unique('users', 'email')->ignore($data_staff->user_id ?? null),
+        Rule::unique('users', 'email')->ignore($data_staf->user_id ?? null),
       ],
       'unit_id' => 'required|exists:units,id',
       'jabatan_id' => 'required|exists:jabatan,id',
@@ -118,15 +118,15 @@ class StaffController extends Controller
       $validated['role'] = 'super_admin';
     }
 
-    if ($data_staff->user) {
-      $data_staff->user->update([
+    if ($data_staf->user) {
+      $data_staf->user->update([
         'name' => $validated['name'],
         'email' => $validated['email'],
         'role' => $validated['role'],
       ]);
     }
 
-    $data_staff->update([
+    $data_staf->update([
       'nik' => $validated['nik'],
       'unit_id' => $validated['unit_id'],
       'jabatan_id' => $validated['jabatan_id'],
@@ -138,20 +138,20 @@ class StaffController extends Controller
   public function destroy($id)
   {
     try {
-      $data_staff = Staff::findOrFail($id);
+      $data_staf = Staff::findOrFail($id);
 
       // Cek apakah user terkait memiliki role super_admin
-      if ($data_staff->user && $data_staff->user->role === 'super_admin') {
+      if ($data_staf->user && $data_staf->user->role === 'super_admin') {
         return redirect()->route('staff.index')
           ->with('error', 'Akun dengan role Super Admin tidak dapat dihapus.');
       }
 
       // Hapus user terkait jika bukan super_admin
-      if ($data_staff->user) {
-        $data_staff->user->delete();
+      if ($data_staf->user) {
+        $data_staf->user->delete();
       }
 
-      $data_staff->delete();
+      $data_staf->delete();
 
       return redirect()->route('staff.index')
         ->with('success', 'Data staff dan akun pengguna berhasil dihapus.');

@@ -36,27 +36,27 @@
           </tr>
         </thead>
         <tbody>
-          @foreach ($data_staff as $staff)
+          @foreach ($data_staf as $staf)
             <tr>
               <td></td>
               <td></td>
               <td></td>
-              <td>{{ $staff->user->name ?? '-' }}</td>
-              <td>{{ $staff->nik }}</td>
-              <td>{{ $staff->user->email ?? '-' }}</td>
-              <td>{{ $staff->unit->nama_unit ?? '-' }}</td>
-              <td>{{ $staff->jabatan->nama_jabatan ?? '-' }}</td>
-              <td data-id="{{ $staff->id }}"></td>
+              <td>{{ $staf->user->name ?? '-' }}</td>
+              <td>{{ $staf->nik }}</td>
+              <td>{{ $staf->user->email ?? '-' }}</td>
+              <td>{{ $staf->unit->nama_unit ?? '-' }}</td>
+              <td>{{ $staf->jabatan->nama_jabatan ?? '-' }}</td>
+              <td data-id="{{ $staf->id }}"></td>
             </tr>
           @endforeach
         </tbody>
       </table>
     </div>
   </div>
-  {{-- MODAL TAMBAH STAFF --}}
+  {{-- MODAL TAMBAH STAF --}}
   <div class="offcanvas offcanvas-end" id="add-new-record">
     <div class="offcanvas-header border-bottom">
-      <h5 class="offcanvas-title">Tambah Staff</h5>
+      <h5 class="offcanvas-title">Tambah Staf</h5>
       <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body flex-grow-1">
@@ -77,8 +77,8 @@
           <label class="form-label" for="nik">NIK</label>
           <div class="input-group input-group-merge">
             <span class="input-group-text"><i class="icon-base ti tabler-id"></i></span>
-            <input type="text" id="nik" name="nik" class="form-control dt-nik" placeholder="NIK"
-              aria-label="NIK" />
+            <input type="text" id="nik" name="nik" maxlength="16" class="form-control dt-nik"
+              placeholder="NIK" aria-label="NIK" />
           </div>
         </div>
         {{-- EMAIL --}}
@@ -109,13 +109,12 @@
             <span class="input-group-text"><i class="icon-base ti tabler-building-community"></i></span>
             <select id="unit_id" name="unit_id" class="form-select dt-unit" required>
               <option value="">Pilih Unit</option>
-              @foreach ($data_units as $unit)
+              @foreach ($data_unit as $unit)
                 <option value="{{ $unit->id }}">{{ $unit->nama_unit }}</option>
               @endforeach
             </select>
           </div>
         </div>
-
         {{-- JABATAN --}}
         <div class="col-sm-12 form-control-validation">
           <label class="form-label" for="jabatan_id">Jabatan</label>
@@ -129,7 +128,6 @@
             </select>
           </div>
         </div>
-
         <button type="submit" class="btn btn-primary data-submit me-sm-4 me-1">Simpan</button>
         <button type="reset" class="btn btn-outline-secondary" data-bs-dismiss="offcanvas">Batal</button>
       </form>

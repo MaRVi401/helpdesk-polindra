@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\MajorController;
 use App\Http\Controllers\Admin\ManageUsers\StaffController;
 use App\Http\Controllers\Admin\ManageUsers\StudentController;
 use App\Http\Controllers\Admin\ManageArticleController;
+use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\StudyProgramController;
 use App\Http\Controllers\Admin\UnitController;
 use App\Http\Controllers\Admin\UnitControllerOld;
@@ -43,25 +44,6 @@ use App\Http\Controllers\AdminUnit\LayananController as AdminUnitLayananControll
 // FOR TESTING BLADE
 Route::get('/test', [TestPage::class, 'home'])->name('home.page');
 
-// Route::get('/app/ecommerce/product/list', [EcommerceProductList::class, 'index'])->name('app-ecommerce-product-list');
-// Route::get('/app/faq/all/list', [FaqList::class, 'index'])->name('app-faq-list');
-
-
-// Testing Super Admin - 04/11/2025
-
-
-
-
-// // Route untuk admin (harus login sebagai super_admin)
-// Route::middleware(['auth', 'role:super_admin'])->prefix('/faq')->group(function () {
-//     Route::get('/list', [FaqController::class, 'index'])->name('faq.list');
-//     Route::get('/add', [FaqController::class, 'create'])->name('add');
-//     Route::post('/add', [FaqController::class, 'store'])->name('add.faq');
-//     Route::get('/view/{id}', [FaqController::class, 'view'])->name('view');
-//     Route::get('/edit/{id}', [FaqController::class, 'edit'])->name('edit');
-//     Route::delete('/delete/{id}', [FaqController::class, 'delete'])->name('delete');
-// });
-
 // --- ROUTE FOR USERS WHO HAVE NOT LOGGED IN (GUEST) ---
 Route::middleware('guest')->group(function () {
 
@@ -91,7 +73,7 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
     Route::put('/user-profile/update', [UserProfileController::class, 'userProfileUpdate'])->name('user-profile.update');
     Route::get('/user-profile/setting-security', [UserProfileController::class, 'setSecurity'])->name('user-profile.set-security');
     Route::post('/user-profile/update-password', [UserProfileController::class, 'userPasswordUpdate'])->name('user-profile.update-password');
-    
+
     // COMPLETE PROFILE (STUDENT)
     Route::get('/complete-profile', [CompleteProfileController::class, 'completeProfile'])->name('complete.profile');
     Route::post('/save-profile', [CompleteProfileController::class, 'saveCompleteProfile'])->name('save.complete.profile');
@@ -109,6 +91,13 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
 
     // FAQ MANAGEMENT (SUPER ADMIN)
     Route::resource('faq', FaqController::class)->middleware('role:super_admin');
+
+    // SERVICE MANAGEMENT (SUPER ADMIN)
+    Route::get('/service/upatik', [ServiceController::class, 'filterByUnit'])->name('service.unit.upatik')->defaults('slug', 'upatik');
+    Route::get('/service/upt-bahasa', [ServiceController::class, 'filterByUnit'])->name('service.unit.upt-bahasa')->defaults('slug', 'upt.bahasa');
+    Route::get('/service/academy', [ServiceController::class, 'filterByUnit'])->name('service.unit.academy')->defaults('slug', 'academy');
+    Route::get('/service/student-affairs', [ServiceController::class, 'filterByUnit'])->name('service.unit.student-affairs')->defaults('slug', 'student-affairs');
+    Route::resource('service', ServiceController::class);
 
     // ARTICLE MANAGEMENT (SUPER ADMIN)
     Route::resource('article', ArticleController::class)->middleware('role:super_admin');
