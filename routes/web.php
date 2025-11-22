@@ -59,6 +59,26 @@ Route::middleware('guest')->group(function () {
 
 
     Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
+
+    // Forgot Password Form
+    Route::get('/forgot-password', [AuthController::class, 'showForgotForm'])
+        ->middleware('guest')
+        ->name('password.request');
+
+    // Send Reset Link Email
+    Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])
+        ->middleware('guest')
+        ->name('password.email');
+
+    // Reset Password Form
+    Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])
+        ->middleware('guest')
+        ->name('password.reset');
+
+    // Submit New Password
+    Route::post('/reset-password', [AuthController::class, 'resetPassword'])
+        ->middleware('guest')
+        ->name('password.update');
 });
 
 // --- ROUTE FOR ALREADY LOGGED IN USERS (AUTH) ---
