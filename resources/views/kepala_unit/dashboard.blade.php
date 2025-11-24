@@ -4,139 +4,144 @@
 
 @section('content')
 <div class="row">
-
-  <div class="col-12 mb-4">
-    <div class="card">
-      <div class="d-flex align-items-end row">
-        <div class="col-sm-7">
-          <div class="card-body">
-            <h5 class="card-title text-primary">Selamat Datang, {{ Auth::user()->nama }}! 👋</h5>
-            <p class="mb-4">Anda login sebagai Kepala Unit. Anda dapat melihat dan mengelola semua tiket yang masuk.</p>
-          </div>
+    
+    <div class="col-12 mb-4">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h4 class="text-white mb-0">Unit: {{ $unitDipimpin->nama_unit ?? 'Tidak Ada Unit' }}</h4>
+                <small>Kepala Unit: {{ Auth::user()->name }}</small>
+            </div>
         </div>
-        <div class="col-sm-5 text-center text-sm-left">
-          <div class="card-body pb-0 px-0 px-md-4">
-            <img src="{{ asset('assets/img/illustrations/man-with-laptop-light.png') }}" height="140" alt="View Badge User" data-app-dark-img="illustrations/man-with-laptop-dark.png" data-app-light-img="illustrations/man-with-laptop-light.png">
-          </div>
+    </div>
+
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Daftar Tiket Masuk (Unit {{ $unitDipimpin->nama_unit ?? '-' }})</h5>
+            </div>
+            <div class="table-responsive text-nowrap">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>No Tiket</th>
+                            <th>Judul</th>
+                            <th>Pelapor</th>
+                            <th>Layanan</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($tikets as $tiket)
+                        <tr>
+                            <td>{{ $tiket->no_tiket }}</td>
+                            <td>{{ Str::limit($tiket->judul ?? 'Tiket Tanpa Judul', 30) }}</td>
+                            <td>{{ $tiket->mahasiswa->user->name ?? 'N/A' }}</td>
+                            <td>{{ $tiket->layanan->nama ?? '-' }}</td>
+                            <td>
+                                @php
+                                    $status = $tiket->statusTerbaru->status ?? 'Diajukan_oleh_Pemohon';
+                                    $badgeClass = match($status) {
+                                        'Diselesaikan_oleh_PIC', 'Dinilai_Selesai_oleh_Pemohon' => 'bg-label-success',
+                                        'Ditangani_oleh_PIC' => 'bg-label-warning',
+                                        'Diajukan_oleh_Pemohon' => 'bg-label-primary',
+                                        default => 'bg-label-secondary'
+                                    };
+                                @endphp
+                                <span class="badge {{ $badgeClass }}">{{ str_replace('_', ' ', $status) }}</span>
+                            </td>
+                            <td>
+                                <a href="{{ url('kepala-unit/tiket/' . $tiket->id) }}" class="btn btn-sm btn-icon btn-primary">
+                                    <i class="bx bx-show"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="6" class="text-center">Tidak ada tiket untuk unit ini.</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 
-  <div class="col-12 mb-4">
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">Filter Tiket</h5>
-        <form action="{{ route('kepala_unit.dashboard') }}" method="GET">
-          <div class="row g-3">
-            <div class="col-md-3">
-              <label for="id_unit" class="form-label">Unit</label>
-              <select class="form-select" id="id_unit" name="id_unit">
-                <option value="">Semua Unit</option>
-                @foreach($units as $unit)
-                  <option value="{{ $unit->id }}" {{ request('id_unit') == $unit->id ? 'selected' : '' }}>
-                    {{ $unit->nama_unit }}
-                  </option>
-                @endforeach
-              </select>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Kelola Admin Unit / PIC Layanan</h5>
+                <small class="text-muted">Atur staff yang bertanggung jawab untuk setiap layanan di unit ini.</small>
             </div>
-            <div class="col-md-3">
-              <label for="status" class="form-label">Status</label>
-              <select class="form-select" id="status" name="status">
-                <option value="">Semua Status</option>
-                <option value="Dibuka" {{ request('status') == 'Dibuka' ? 'selected' : '' }}>Dibuka</option>
-                <option value="Sedang Dikerjakan" {{ request('status') == 'Sedang Dikerjakan' ? 'selected' : '' }}>Sedang Dikerjakan</option>
-                <option value="Ditutup" {{ request('status') == 'Ditutup' ? 'selected' : '' }}>Ditutup</option>
-                <option value="Selesai" {{ request('status') == 'Selesai' ? 'selected' : '' }}>Selesai</option>
-              </select>
-            </div>
-            <div class="col-md-3">
-              <label for="prioritas" class="form-label">Prioritas</label>
-              <select class="form-select" id="prioritas" name="prioritas">
-                <option value="">Semua Prioritas</option>
-                <option value="Rendah" {{ request('prioritas') == 'Rendah' ? 'selected' : '' }}>Rendah</option>
-                <option value="Sedang" {{ request('prioritas') == 'Sedang' ? 'selected' : '' }}>Sedang</option>
-                <option value="Tinggi" {{ request('prioritas') == 'Tinggi' ? 'selected' : '' }}>Tinggi</option>
-              </select>
-            </div>
-            <div class="col-md-3 d-flex align-items-end">
-              <button type="submit" class="btn btn-primary me-2">Cari</button>
-              <a href="{{ route('kepala_unit.dashboard') }}" class="btn btn-secondary">Reset</a>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Nama Layanan</th>
+                                <th>Penanggung Jawab (PIC) Saat Ini</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($layanans as $layanan)
+                            <tr>
+                                <td><strong>{{ $layanan->nama }}</strong></td>
+                                <td>
+                                    @forelse($layanan->penanggungJawab as $pic)
+                                        <span class="badge bg-label-info mb-1">{{ $pic->user->name ?? $pic->nik }}</span>
+                                    @empty
+                                        <span class="text-danger"><i class="bx bx-error"></i> Belum ada PIC</span>
+                                    @endforelse
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-outline-primary" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#modalKelolaPIC{{ $layanan->id }}">
+                                        Atur PIC
+                                    </button>
 
-  <div class="col-12">
-    <div class="card">
-      <h5 class="card-header">Daftar Tiket</h5>
-      <div class="table-responsive text-nowrap">
-        <table class="table table-hover">
-          <thead>
-            <tr>
-              <th>No. Tiket</th>
-              <th>Judul</th>
-              <th>Unit</th>
-              <th>Pemohon</th>
-              <th>Layanan</th>
-              <th>Status</th>
-              <th>Prioritas</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-          <tbody class="table-border-bottom-0">
-            @forelse ($tiket as $tkt)
-            <tr>
-              <td>
-                <span class="fw-medium">{{ $tkt->no_tiket }}</span>
-              </td>
-              
-              {{-- !! INI PERBAIKANNYA !! --}}
-              <td>{{ \Illuminate\Support\Str::limit($tkt->judul, 30) }}</td>
-              
-              <td>{{ $tkt->unit?->nama_unit ?? 'N/A' }}</td>
-              <td>{{ $tkt->mahasiswa?->user?->nama ?? 'N/A' }}</td>
-              <td>{{ $tkt->layanan?->nama_layanan ?? 'N/A' }}</td>
-              <td>
-                @if ($tkt->status == 'Dibuka')
-                  <span class="badge bg-label-info">{{ $tkt->status }}</span>
-                @elseif ($tkt->status == 'Sedang Dikerjakan')
-                  <span class="badge bg-label-warning">{{ $tkt->status }}</span>
-                @elseif ($tkt->status == 'Ditutup')
-                  <span class="badge bg-label-danger">{{ $tkt->status }}</span>
-                @elseif ($tkt->status == 'Selesai')
-                  <span class="badge bg-label-success">{{ $tkt->status }}</span>
-                @endif
-              </td>
-              <td>
-                @if ($tkt->prioritas == 'Rendah')
-                  <span class="badge bg-label-secondary">{{ $tkt->prioritas }}</span>
-                @elseif ($tkt->prioritas == 'Sedang')
-                  <span class="badge bg-label-warning">{{ $tkt->prioritas }}</span>
-                @elseif ($tkt->prioritas == 'Tinggi')
-                  <span class="badge bg-label-danger">{{ $tkt->prioritas }}</span>
-                @endif
-              </td>
-              <td>
-                <a href="{{ route('kepala_unit.tiket.show', $tkt->id) }}" class="btn btn-sm btn-primary">Detail</a>
-              </td>
-            </tr>
-            @empty
-            <tr>
-              <td colspan="8" class="text-center">Tidak ada tiket yang ditemukan.</td>
-            </tr>
-            @endforelse
-          </tbody>
-        </table>
-      </div>
-      
-      <div class="d-flex justify-content-center mt-4">
-        {{ $tiket->links() }}
-      </div>
+                                    <div class="modal fade" id="modalKelolaPIC{{ $layanan->id }}" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <form class="modal-content" action="{{ route('kepala-unit.update-pic', $layanan->id) }}" method="POST">
+                                                @csrf
+                                                @method('PUT')
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Atur PIC: {{ $layanan->nama }}</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Pilih Staff</label>
+                                                        <select name="staff_ids[]" class="form-select select2" multiple>
+                                                            @foreach($staffUnit as $staff)
+                                                                <option value="{{ $staff->id }}" 
+                                                                    {{ $layanan->penanggungJawab->contains($staff->id) ? 'selected' : '' }}>
+                                                                    {{ $staff->user->name ?? $staff->nik }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                        <small class="text-muted">Gunakan Ctrl+Click untuk memilih lebih dari satu.</small>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                                                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr><td colspan="3">Belum ada layanan terdaftar di unit ini.</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-  
+
 </div>
 @endsection

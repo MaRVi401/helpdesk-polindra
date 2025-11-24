@@ -35,7 +35,8 @@ use App\Http\Controllers\Mahasiswa\TiketController;
 use App\Http\Controllers\Admin\AdminTiketController;
 use App\Http\Controllers\Admin\ProgramStudiController;
 use App\Http\Controllers\Admin\KategoriArtikelController;
-// use App\Http\Controllers\Admin\KelolaPengguna\StaffController;
+use App\Http\Controllers\KepalaUnit\MonitoringTiketController;
+use App\Http\Controllers\KepalaUnit\KelolaPicController;
 use App\Http\Controllers\Mahasiswa\TiketController as MahasiswaTiketController;
 use App\Http\Controllers\KepalaUnit\TiketController as KepalaUnitTiketController;
 use App\Http\Controllers\AdminUnit\TiketController as AdminUnitTiketController;
@@ -188,15 +189,30 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
         Route::resource('tiket', MahasiswaTiketController::class);
         Route::post('tiket/{id}/komentar', [MahasiswaTiketController::class, 'storeKomentar'])->name('tiket.komentar.store');
         Route::post('tiket/{id}/komentar', [MahasiswaTiketController::class, 'storeKomentar'])->name('tiket.storeKomentar');
+        Route::patch('tiket/{id}/update-status', [MahasiswaTiketController::class, 'updateStatus'])->name('tiket.updateStatus');
     });
 
     // Kepala Unit
-    Route::middleware('role:kepala_unit')->prefix('kepala-unit')->name('kepala_unit.')->group(function () {
-        Route::get('/dashboard', [KepalaUnitTiketController::class, 'index'])->name('dashboard');
-        Route::get('/tiket', [KepalaUnitTiketController::class, 'index'])->name('tiket.index');
-        Route::get('/tiket/{id}', [KepalaUnitTiketController::class, 'show'])->name('tiket.show');
-        Route::put('/tiket/{id}', [KepalaUnitTiketController::class, 'update'])->name('tiket.update');
-        Route::post('/tiket/{id_tiket}/komentar', [KepalaUnitTiketController::class, 'storeKomentar'])->name('tiket.storeKomentar');
+    Route::middleware(['role:kepala_unit'])->group(function () {
+        Route::prefix('kepala-unit')->name('kepala-unit.')->group(function () {
+            Route::get('/monitoring-tiket', [MonitoringTiketController::class, 'index'])->name('monitoring.index');
+            Route::get('/monitoring-tiket/{tiket}', [MonitoringTiketController::class, 'show'])->name('monitoring.show');
+            Route::put('/monitoring-tiket/{tiket}', [MonitoringTiketController::class, 'update'])->name('monitoring.update');
+            Route::post('/monitoring-tiket/{tiket}/komentar', [MonitoringTiketController::class, 'storeKomentar'])->name('monitoring.komentar');
+            Route::get('/kelola-pic', [KelolaPicController::class, 'index'])->name('pic.index');
+            Route::get('/kelola-pic/{layanan}/edit', [KelolaPicController::class, 'edit'])->name('pic.edit');
+            Route::put('/kelola-pic/{layanan}', [KelolaPicController::class, 'update'])->name('pic.update');
+        });
+        Route::prefix('service')->name('service.unit.')->group(function() {
+            Route::get('/{slug}', [KepalaLayananController::class, 'index'])->name('index');
+            Route::post('/{slug}', [KepalaLayananController::class, 'store'])->name('store');
+            Route::put('/{slug}/{layanan}', [KepalaLayananController::class, 'update'])->name('update');
+            Route::prefix('service')->name('service.unit.')->group(function() {
+            Route::get('/{slug}', [KepalaLayananController::class, 'index'])->name('index');
+            Route::post('/{slug}', [KepalaLayananController::class, 'store'])->name('store');
+            Route::get('/{slug}/{layanan}/edit', [KepalaLayananController::class, 'edit'])->name('edit');
+            Route::put('/{slug}/{layanan}', [KepalaLayananController::class, 'update'])->name('update');
+        });
     });
     // Admin Unit
     Route::middleware('role:admin_unit')->prefix('admin-unit')->name('admin_unit.')->group(function () {
@@ -206,5 +222,6 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
         Route::put('/tiket/{id}', [AdminUnitTiketController::class, 'update'])->name('tiket.update');
         Route::post('/tiket/{id_tiket}/komentar', [AdminUnitTiketController::class, 'storeKomentar'])->name('tiket.storeKomentar');
         Route::resource('layanan', AdminUnitLayananController::class);
+    });
     });
 });

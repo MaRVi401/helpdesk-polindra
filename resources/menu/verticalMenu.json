@@ -92,6 +92,26 @@
       ]
     },
     {
+      "name": "Monitoring",
+      "icon": "menu-icon tf-icons bx bx-detail",
+      "slug": "monitoring",
+      "submenu": [
+        {
+          "url": "kepala-unit/monitoring-tiket", 
+          "name": "Tiket Masuk",
+          "slug": "monitoring-tiket"
+        },
+        {
+          "url": "kepala-unit/kelola-pic",
+          "name": "Kelola Tim (PIC)",
+          "slug": "kelola-pic"
+        }
+      ],
+      "roles": [
+        "kepala_unit"
+      ]
+    },
+    {
       "name": "Pengguna",
       "icon": "menu-icon icon-base ti tabler-user",
       "slug": [

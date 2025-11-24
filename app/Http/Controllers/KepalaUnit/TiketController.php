@@ -1,112 +1,73 @@
 <?php
 
-namespace App\Http\Controllers\KepalaUnit; 
+namespace App\Http\Controllers\KepalaUnit;
 
-use App\Models\Tiket;
-use App\Models\Unit;
-use App\Models\KomentarTiket;
-use Illuminate\Http\Request;
-use App\Models\RiwayatStatusTiket;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Tiket;
+use App\Models\Staff;
+use App\Models\Unit;
 
 class TiketController extends Controller
 {
     /**
-     * Tampilkan SEMUA tiket, dengan opsi filter.
+     * Menampilkan daftar tiket yang HANYA terkait dengan Unit yang dipimpin user login.
      */
     public function index(Request $request)
     {
-        $query = Tiket::with(['mahasiswa.user', 'layanan', 'unit']);
+        $user = Auth::user();
+        $staff = Staff::where('user_id', $user->id)->firstOrFail();
+
+        // 1. Identifikasi Unit yang dipimpin
+        $unitDipimpin = Unit::where('kepala_id', $staff->id)->first();
+
+        if (!$unitDipimpin) {
+            return redirect()->route('dashboard')->with('error', 'Akses ditolak. Anda bukan Kepala Unit.');
+        }
+
+        // 2. Query Strict: Hanya ambil tiket yang layanannya milik unit ini
+        $query = Tiket::with(['mahasiswa.user', 'layanan', 'statusTerbaru', 'pic.user'])
+            ->whereHas('layanan', function ($q) use ($unitDipimpin) {
+                $q->where('unit_id', $unitDipimpin->id);
+            });
+
+        // 3. Filter Tambahan
+        if ($request->filled('q')) {
+            $search = $request->q;
+            $query->where(function($q) use ($search) {
+                $q->where('judul', 'like', "%{$search}%")
+                  ->orWhere('no_tiket', 'like', "%{$search}%");
+            });
+        }
 
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-        if ($request->filled('prioritas')) {
-            $query->where('prioritas', $request->prioritas);
-        }
-        if ($request->filled('id_unit')) {
-            $query->where('id_unit', $request->id_unit);
+             // Asumsi status denormalisasi ada di tabel tiket atau via relasi riwayat
+             // Jika menggunakan RiwayatStatusTiket, gunakan whereHas('statusTerbaru', ...)
+             $query->whereHas('statusTerbaru', function($q) use ($request){
+                 $q->where('status', $request->status);
+             });
         }
 
-        $tiket = $query->latest()->paginate(10)->withQueryString(); 
-        $units = Unit::orderBy('nama_unit', 'asc')->get();
-        
-        return view('kepala_unit.dashboard', compact('tiket', 'units'));
+        $tikets = $query->latest()->paginate(10);
+
+        return view('kepala_unit.tiket.index', compact('tikets', 'unitDipimpin'));
     }
 
-    /**
-     * Tampilkan detail tiket.
-     */
     public function show($id)
     {
-        // !! INI PERBAIKANNYA !!
-        // Mengganti 'riwayatStatus.diubahOleh' menjadi 'riwayatStatus.user'
-        $tiket = Tiket::with(['mahasiswa.user', 'layanan', 'unit', 'komentar.user', 'riwayatStatus.user', 'detail'])
+        $user = Auth::user();
+        $staff = Staff::where('user_id', $user->id)->firstOrFail();
+        $unitDipimpin = Unit::where('kepala_id', $staff->id)->firstOrFail();
+
+        $tiket = Tiket::with(['mahasiswa.user', 'layanan.unit', 'komentar.user', 'riwayatStatus.user', 'detail'])
             ->findOrFail($id);
+
+        // SECURITY CHECK: Pastikan tiket ini milik unit yang dipimpin
+        if ($tiket->layanan->unit_id !== $unitDipimpin->id) {
+            abort(403, 'Tiket ini berasal dari layanan unit lain ('.$tiket->layanan->unit->nama_unit.'). Anda tidak memiliki akses.');
+        }
         
         return view('kepala_unit.tiket.show', compact('tiket'));
-    }
-
-    /**
-     * Update status/prioritas.
-     */
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            'status' => 'required|in:Dibuka,Sedang Dikerjakan,Ditutup,Selesai',
-            'prioritas' => 'required|in:Rendah,Sedang,Tinggi',
-        ]);
-
-        $tiket = Tiket::findOrFail($id);
-        
-        $oldStatus = $tiket->status;
-        $newStatus = $request->status;
-
-        $tiket->update([
-            'status' => $newStatus,
-            'prioritas' => $request->prioritas,
-        ]);
-
-        if ($oldStatus !== $newStatus) {
-            RiwayatStatusTiket::create([
-                'id_tiket' => $tiket->id,
-                'status_baru' => $newStatus,
-                'diubah_oleh' => Auth::id(),
-                'catatan' => 'Status diubah oleh Kepala Unit.'
-            ]);
-        }
-
-        return redirect()->route('kepala_unit.tiket.show', $tiket->id)->with('success', 'Status tiket berhasil diperbarui.');
-    }
-
-    /**
-     * Simpan komentar.
-     */
-    public function storeKomentar(Request $request, $id_tiket)
-    {
-        $request->validate([
-            'isi_komentar' => 'required|string',
-        ]);
-        
-        $tiket = Tiket::findOrFail($id_tiket);
-
-        KomentarTiket::create([
-            'id_tiket' => $tiket->id,
-            'id_user' => Auth::id(),
-            'isi_komentar' => $request->isi_komentar,
-        ]);
-
-        if ($tiket->status == 'Dibuka') {
-            $tiket->update(['status' => 'Sedang Dikerjakan']);
-            RiwayatStatusTiket::create([
-                'id_tiket' => $tiket->id,
-                'status_baru' => 'Sedang Dikerjakan',
-                'diubah_oleh' => Auth::id(),
-                'catatan' => 'Komentar ditambahkan oleh Kepala Unit.'
-            ]);
-        }
-
-        return redirect()->route('kepala_unit.tiket.show', $tiket->id)->with('success', 'Komentar berhasil ditambahkan.');
     }
 }
