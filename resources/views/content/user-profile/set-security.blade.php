@@ -95,7 +95,9 @@
             <div class="mt-6">
               <button type="submit"
                 class="btn btn-primary me-3">{{ $hasPassword ? 'Simpan Perubahan' : 'Atur Password' }}</button>
-              <button type="reset" class="btn btn-outline-secondary">Ulang</button>
+              <button type="reset" class="btn btn-outline-secondary">
+                <i class="icon-base ti tabler-reload me-1"></i>
+                Ulang</button>
             </div>
           </form>
         </div>
