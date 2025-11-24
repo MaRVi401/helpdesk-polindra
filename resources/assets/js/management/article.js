@@ -290,7 +290,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
                   ]
                 },
                 {
-                  text: '<i class="icon-base ti tabler-category-plus me-0 me-sm-1 icon-20px"></i><span class="d-none d-sm-inline-block">Kelola Kategori</span>',
+                  text: '<i class="icon-base ti tabler-category me-0 me-sm-1 icon-20px"></i><span class="d-none d-sm-inline-block">Kelola Kategori</span>',
                   className: 'add-new btn btn-primary me-2',
                   action: function () {
                     window.location.href = articleCategory;
