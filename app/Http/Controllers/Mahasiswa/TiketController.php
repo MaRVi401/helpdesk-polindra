@@ -75,25 +75,14 @@ class TiketController extends Controller
 
     public function store(Request $request)
     {
-        $layanan = Layanan::findOrFail($request->layanan_id);
-        $rules = [
+        $request->validate([
             'layanan_id' => 'required|exists:layanan,id',
             'deskripsi'  => 'required|string',
-        ];
-        if (str_contains($layanan->nama, 'Publikasi')) {
-            $rules['judul_publikasi'] = 'required|string|max:255'; 
-            $rules['konten']          = 'required|string';         
-            $rules['gambar']          = 'required|image|mimes:jpg,jpeg,png|max:2048'; 
-        } else {
-            $rules['judul_publikasi']    = 'nullable|string';
-            $rules['kategori_publikasi'] = 'nullable|string';
-            $rules['konten']             = 'nullable|string';
-            $rules['gambar']             = 'nullable|image|mimes:jpg,jpeg,png|max:2048';
-        }
-        $request->validate($rules, [
-            'gambar.required' => 'Wajib melampirkan gambar/poster untuk Request Publikasi.',
-            'judul_publikasi.required' => 'Judul publikasi harus diisi.',
-            'konten.required' => 'Konten publikasi harus diisi.',
+            'lampiran'   => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx,xls,xlsx|max:5120',
+            'gambar'     => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'judul_publikasi' => 'nullable|string',
+            'kategori' => 'nullable|string',
+            'konten' => 'nullable|string',
         ]);
 
         $layanan = Layanan::findOrFail($request->layanan_id);
@@ -107,9 +96,7 @@ class TiketController extends Controller
                 }
             }
             $prefix = strtoupper($acronym);
-            if (str_contains($layanan->nama, 'Surat Keterangan Aktif Kuliah')) {
-                $prefix = 'SKA';
-            }
+            
             $date = now()->format('Ymd'); 
             $lastTiket = Tiket::where('no_tiket', 'like', $prefix . '-' . $date . '-%')
                 ->orderBy('id', 'desc')
@@ -181,9 +168,9 @@ class TiketController extends Controller
             }
             $detail = new DetailTiketReqPublikasi();
             $detail->tiket_id = $tiketId;
-            $detail->judul    = $request->judul_publikasi ?? $request->judul ?? 'Tanpa Judul';
-            $detail->kategori = $request->kategori_publikasi ?? $request->kategori ?? 'Umum';
-            $detail->konten   = $request->konten ?? '-';
+            $detail->judul    = $request->judul_publikasi;
+            $detail->kategori = $request->kategori;
+            $detail->konten   = $request->konten;
             $detail->gambar   = $gambarPath;
             $detail->save();
         }
@@ -265,5 +252,42 @@ class TiketController extends Controller
 
         return redirect()->route('mahasiswa.tiket.index')
             ->with('success', 'Tiket berhasil dihapus.');
+    }
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|string',
+        ]);
+
+        $userId = Auth::id();
+        $tiket = Tiket::where('id', $id)->where('pemohon_id', $userId)->firstOrFail();
+        $lastStatus = $tiket->riwayatStatus->sortByDesc('created_at')->first();
+        
+        if ($lastStatus && $lastStatus->status == 'Diselesaikan_oleh_PIC') {
+            
+            $newStatus = $request->status;
+            if (!in_array($newStatus, ['Dinilai_Selesai_oleh_Pemohon', 'Dinilai_Belum_Selesai_oleh_Pemohon'])) {
+                return redirect()->back()->with('error', 'Status tidak valid.');
+            }
+
+            DB::table('riwayat_status_tiket')->insert([
+                'tiket_id'   => $tiket->id,
+                'user_id'    => Auth::id(),
+                'status'     => $newStatus, 
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+            
+            $msg = 'Status tiket berhasil diperbarui.';
+            if($newStatus == 'Ditangani_oleh_PIC') {
+                $msg = 'Tiket dikembalikan ke PIC untuk penanganan ulang.';
+            } elseif($newStatus == 'Dinilai_Selesai_oleh_Pemohon') {
+                $msg = 'Terima kasih! Tiket telah dinyatakan selesai.';
+            }
+
+            return redirect()->back()->with('success', $msg);
+        }
+
+        return redirect()->back()->with('error', 'Aksi tidak diizinkan untuk status tiket saat ini.');
     }
 }

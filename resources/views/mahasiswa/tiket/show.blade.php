@@ -6,236 +6,73 @@
 @section('content')
 <style>
     /* Layout Utama */
-    .main-container { 
-        background-color: #fff; 
-        padding: 32px; 
-        border-radius: 12px; 
-        box-shadow: 0 0 20px rgba(76, 87, 125, 0.05); 
-        width: 100%; 
-        margin: 0 auto; 
-    }
-
-    /* Header Style */
-    .header { 
-        display: flex; 
-        justify-content: space-between; 
-        align-items: flex-start; 
-        border-bottom: 2px solid #f1f5f9; 
-        padding-bottom: 1.5rem; 
-        margin-bottom: 2rem; 
-    }
-    .header h1 { 
-        margin: 0 0 5px 0; 
-        font-size: 1.75rem; 
-        color: #1e293b; 
-        font-weight: 700;
-    }
-    .meta-date {
-        color: #64748b;
-        font-size: 0.9rem;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    /* Tombol */
-    .button { 
-        display: inline-flex; 
-        align-items: center;
-        justify-content: center;
-        padding: 10px 20px; 
-        border-radius: 8px; 
-        font-weight: 600; 
-        text-decoration: none; 
-        cursor: pointer; 
-        font-size: 0.9rem; 
-        transition: all 0.2s;
-        border: none;
-    }
-    .button-primary { background-color: #3b82f6; color: white; box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.5); }
-    .button-primary:hover { background-color: #2563eb; transform: translateY(-1px); }
-    .button-secondary { background-color: #f1f5f9; color: #475569; }
-    .button-secondary:hover { background-color: #e2e8f0; }
-    .button-sm { padding: 6px 12px; font-size: 0.85rem; gap: 6px; } /* Tambahan untuk tombol kecil */
+    .main-container { background-color: white; padding: 32px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); width: 100%; margin: 0 auto; }
+    .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem; margin-bottom: 1.5rem; }
+    .header h1 { margin: 0; font-size: 1.5rem; }
+    .header-info { text-align: right; }
     
-    /* Layout Kolom */
+    .button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 16px; border: 1px solid transparent; border-radius: 5px; font-weight: 600; text-decoration: none; cursor: pointer; font-size: 0.95rem; }
+    .button-primary { background-color: #4299e1; color: white; border-color: #4299e1; }
+    .button-secondary { background-color: #e2e8f0; color: #2d3748; border-color: #cbd5e0; }
+    .button-sm { padding: 6px 12px; font-size: 0.85rem; }
+    .button-success { background-color: #48bb78; color: white; border-color: #48bb78; }
+    .button-danger { background-color: #f56565; color: white; border-color: #f56565; }
+    
+    .alert { padding: 1rem; margin-bottom: 1.5rem; border-radius: 4px; }
+    .alert-success { color: #2f855a; background-color: #c6f6d5; }
+    .alert-error { color: #9b2c2c; background-color: #fed7d7; }
+    .alert-error ul { margin: 0; padding-left: 20px; }
+    
     .ticket-layout { display: flex; flex-wrap: wrap; gap: 2rem; }
-    .ticket-main { flex: 2; min-width: 60%; }
+    .ticket-main { flex: 2; min-width: 400px; }
     .ticket-sidebar { flex: 1; min-width: 300px; }
     
-    /* Card Styling yang Lebih Rapi */
-    .card { 
-        background-color: #ffffff; 
-        border: 1px solid #e2e8f0; 
-        border-radius: 12px; 
-        margin-bottom: 1.5rem; 
-        overflow: hidden;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
-    }
-    .card-header { 
-        padding: 1rem 1.5rem; 
-        background-color: #f8fafc; 
-        border-bottom: 1px solid #e2e8f0; 
-        font-weight: 700; 
-        color: #334155;
-        font-size: 1rem;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    .card-header i { color: #3b82f6; }
-    .card-body { padding: 0; } 
+    .card { background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 1.5rem; }
+    .card-header { padding: 1rem 1.5rem; background-color: #f7fafc; border-bottom: 1px solid #e2e8f0; font-weight: 600; }
+    .card-body { padding: 1.5rem; }
     
-    /* KOTAK-KOTAK DATA (Refined Info Grid) */
-    .data-row {
-        display: flex;
-        border-bottom: 1px solid #f1f5f9;
-    }
+    .info-grid { display: grid; grid-template-columns: 150px 1fr; gap: 1rem; }
+    .info-grid dt { font-weight: 600; color: #4a5568; }
+    .info-grid dd { margin: 0; }
+    
+    .data-row { display: flex; border-bottom: 1px solid #f1f5f9; }
     .data-row:last-child { border-bottom: none; }
-    .data-label {
-        width: 35%;
-        background-color: #fcfcfc;
-        padding: 12px 16px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #64748b;
-        border-right: 1px solid #f1f5f9;
-        display: flex;
-        align-items: center;
-    }
-    .data-value {
-        width: 65%;
-        padding: 12px 16px;
-        font-size: 0.9rem;
-        color: #1e293b;
-        font-weight: 500;
-        line-height: 1.5;
-    }
+    .data-label { width: 35%; background-color: #fcfcfc; padding: 12px 16px; font-size: 0.85rem; font-weight: 600; color: #64748b; border-right: 1px solid #f1f5f9; display: flex; align-items: center; }
+    .data-value { width: 65%; padding: 12px 16px; font-size: 0.9rem; color: #1e293b; font-weight: 500; line-height: 1.5; }
+
+    .image-preview-box { padding: 1.5rem; background-color: #f8fafc; border-top: 1px solid #e2e8f0; text-align: center; margin-top: -1px; }
+    .img-thumbnail-container { display: inline-block; border: 1px solid #e2e8f0; padding: 6px; background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); max-width: 100%; transition: transform 0.2s; margin-bottom: 12px; }
+    .img-thumbnail-container:hover { transform: scale(1.01); }
+    .img-thumbnail-container img { max-width: 100%; height: auto; border-radius: 4px; display: block; max-height: 200px; object-fit: contain; }
     
-    /* Khusus Textarea/Form di dalam Card */
-    .card-form-body { padding: 1.5rem; }
-    .form-group { margin-bottom: 1rem; }
-    .form-group label { display: block; font-weight: 600; margin-bottom: 0.5rem; color: #475569; }
-    .form-group textarea { 
-        width: 100%; 
-        padding: 12px; 
-        border: 1px solid #cbd5e0; 
-        border-radius: 8px; 
-        font-size: 0.95rem; 
-        min-height: 120px; 
-        resize: vertical;
-        transition: border-color 0.2s;
-    }
-    .form-group textarea:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
-
-    /* Image Box Preview KHUSUS (Request Publikasi) */
-    .image-preview-container {
-        padding: 15px;
-        background-color: #f8fafc;
-        border-top: 1px solid #e2e8f0;
-        text-align: center;
-    }
-    .image-thumbnail-wrapper {
-        display: inline-block;
-        padding: 5px;
-        background: #fff;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        margin-bottom: 10px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    }
-    .image-thumbnail-wrapper img {
-        max-width: 100%;
-        height: auto;
-        max-height: 250px;
-        border-radius: 4px;
-        display: block;
-    }
-    .btn-view-image {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        background-color: #fff;
-        border: 1px solid #3b82f6;
-        color: #3b82f6;
-        padding: 6px 12px;
-        border-radius: 6px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        text-decoration: none;
-        transition: all 0.2s;
-    }
-    .btn-view-image:hover {
-        background-color: #eff6ff;
-        color: #2563eb;
-    }
-
-    /* Timeline Style */
-    .timeline { border-left: 2px solid #e2e8f0; margin: 1.5rem 0 1.5rem 1.5rem; padding-left: 2rem; }
-    .timeline-item { position: relative; margin-bottom: 2rem; }
+    .form-group { margin-bottom: 1.5rem; }
+    .form-group label { display: block; font-weight: 600; margin-bottom: 8px; color: #4a5568; }
+    .form-group textarea { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 0.95rem; box-sizing: border-box; min-height: 120px; resize: vertical; }
+    
+    .timeline { border-left: 3px solid #e2e8f0; margin-left: 10px; padding-left: 20px; }
+    .timeline-item { position: relative; margin-bottom: 1.5rem; }
     .timeline-item:last-child { margin-bottom: 0; }
-    .timeline-dot { 
-        position: absolute; 
-        left: -39px; 
-        top: 4px; 
-        width: 14px; 
-        height: 14px; 
-        border-radius: 50%; 
-        border: 2px solid #fff;
-        box-shadow: 0 0 0 2px #e2e8f0;
-        background-color: #cbd5e0;
-    }
-    .timeline-content {
-        background-color: #f8fafc;
-        border: 1px solid #f1f5f9;
-        border-radius: 8px;
-        padding: 1rem;
-        position: relative;
-    }
-    /* Arrow bubble */
-    .timeline-content::before {
-        content: '';
-        position: absolute;
-        left: -6px;
-        top: 10px;
-        width: 10px;
-        height: 10px;
-        background-color: #f8fafc;
-        border-left: 1px solid #f1f5f9;
-        border-bottom: 1px solid #f1f5f9;
-        transform: rotate(45deg);
-    }
-
-    .timeline-header { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.85rem; color: #64748b; }
-    .timeline-user { font-weight: 700; color: #334155; font-size: 0.95rem; }
-    .timeline-body { color: #475569; line-height: 1.5; }
-
-    /* Status Badge Base Style */
-    .status-badge { padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; color: white; text-transform: capitalize; letter-spacing: 0.5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .timeline-dot { position: absolute; left: -31px; top: 5px; width: 15px; height: 15px; border-radius: 50%; background-color: #4299e1; }
+    .timeline-time { font-size: 0.85rem; color: #718096; margin-bottom: 0.25rem; }
+    .timeline-title { font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .timeline-body p { margin: 0; font-size: 0.95rem; }
+    .timeline-body-comment { background-color: #f7fafc; border: 1px solid #e2e8f0; padding: 1rem; border-radius: 6px; }
     
-    /* --- WARNA STATUS BARU --- */
-    /* Abu-abu */
-    .status-diajukan_oleh_pemohon { background-color: #a0aec0; }
+    .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; color: white; text-transform: capitalize; }
+    
+    .status-diajukan_oleh_pemohon { background-color: #a0aec0; } 
+    .status-ditangani_oleh_pic, .status-diselesaikan_oleh_pic { background-color: #f6ad55; } 
+    .status-dinilai_belum_selesai_oleh_pemohon, .status-pemohon_bermasalah { background-color: #f56565; } 
+    .status-dinilai_selesai_oleh_kepala, .status-dinilai_selesai_oleh_pemohon { background-color: #48bb78; } 
 
-    /* Kuning */
-    .status-ditangani_oleh_pic,
-    .status-diselesaikan_oleh_pic { background-color: #f6ad55; }
-
-    /* Merah */
-    .status-dinilai_belum_selesai_oleh_pemohon,
-    .status-pemohon_bermasalah { background-color: #f56565; }
-
-    /* Hijau */
-    .status-dinilai_selesai_oleh_kepala,
-    .status-dinilai_selesai_oleh_pemohon { background-color: #48bb78; }
-    /* ------------------------ */
-
-    /* Role Dot Colors */
-    .dot-super_admin { background-color: #ef4444; box-shadow: 0 0 0 2px #fca5a5; }
-    .dot-mahasiswa { background-color: #3b82f6; box-shadow: 0 0 0 2px #93c5fd; }
-    .dot-kepala_unit { background-color: #8b5cf6; box-shadow: 0 0 0 2px #c4b5fd; }
-    .dot-admin_unit { background-color: #10b981; box-shadow: 0 0 0 2px #6ee7b7; }
-
+    .dot-super_admin { background-color: #e53e3e !important; }
+    .body-super_admin { background-color: #fef2f2 !important; border-color: #fbd7d7 !important; }
+    .dot-mahasiswa { background-color: #4299e1 !important; }
+    .body-mahasiswa { background-color: #ebf8ff !important; border-color: #bee3f8 !important; }
+    .dot-kepala_unit { background-color: #805ad5 !important; }
+    .body-kepala_unit { background-color: #faf5ff !important; border-color: #e9d8fd !important; }
+    .dot-admin_unit { background-color: #38a169 !important; }
+    .body-admin_unit { background-color: #f0fff4 !important; border-color: #c6f6d5 !important; }
 </style>
 
 <div class="container-xxl flex-grow-1 container-p-y">
@@ -243,15 +80,12 @@
 
         <div class="header">
             <div>
-                <h1><span style="color:#94a3b8;">#</span>{{ $tiket->no_tiket }}</h1>
-                <div class="meta-date">
-                    <i class="ti ti-calendar"></i> Dibuat pada: {{ $tiket->created_at->format('d F Y, H:i') }}
-                </div>
+                <h1>Tiket #{{ $tiket->no_tiket }}</h1>
+                <p style="margin:0; color: #718096;">Dibuat pada: {{ $tiket->created_at->format('d M Y, H:i') }}</p>
             </div>
             <div class="header-info">
                 @php
                     $status = $statusSekarang;
-                    // Generate class css: status-diajukan_oleh_pemohon, dll.
                     $statusClass = 'status-' . strtolower($status);
                 @endphp
                 <div style="text-align:right;">
@@ -263,16 +97,58 @@
             </div>
         </div>
 
-        @if(session('success'))
-            <div class="alert alert-success mb-4" style="background-color: #dcfce7; border: 1px solid #86efac; color: #166534; padding: 1rem; border-radius: 8px;">
-                <i class="ti ti-check me-1"></i> {{ session('success') }}
+        @if ($errors->any())
+            <div class="alert alert-error">
+                <strong>Oops! Ada beberapa masalah:</strong>
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
             </div>
+        @endif
+        @if (session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
+        @if (session('error'))
+            <div class="alert alert-error">{{ session('error') }}</div>
         @endif
 
         <div class="ticket-layout">
             <div class="ticket-main">
+                
+                @if($statusSekarang == 'Diselesaikan_oleh_PIC')
+                <div class="card" style="border: 1px solid #4299e1;">
+                    <div class="card-header" style="background-color: #ebf8ff; color: #2c5282;">Konfirmasi Penyelesaian</div>
+                    <div class="card-body pt-4">
+                        <p>PIC telah menandai tiket ini sebagai selesai. Apakah Anda menyetujui hasil pengerjaan ini?</p>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            
+                            {{-- Tombol Selesai --}}
+                            <form action="{{ route('mahasiswa.tiket.updateStatus', $tiket->id) }}" method="POST">
+                                @csrf
+                                @method('PATCH')
+                                <input type="hidden" name="status" value="Dinilai_Selesai_oleh_Pemohon">
+                                <button type="submit" class="button button-success" onclick="return confirm('Apakah Anda yakin ingin menyelesaikan tiket ini?')">
+                                    <i class="ti ti-check"></i> Dinilai Selesai oleh Pemohon
+                                </button>
+                            </form>
 
-                <!-- Form Kirim Balasan -->
+                            {{-- Tombol Belum Selesai --}}
+                            <form action="{{ route('mahasiswa.tiket.updateStatus', $tiket->id) }}" method="POST">
+                                @csrf
+                                @method('PATCH')
+                                <input type="hidden" name="status" value="Dinilai_Belum_Selesai_oleh_Pemohon">
+                                <button type="submit" class="button button-danger" onclick="return confirm('Status tiket akan berubah menjadi Dinilai Belum Selesai oleh Pemohon. Lanjutkan?')">
+                                    <i class="ti ti-x"></i> Dinilai Belum Selesai oleh Pemohon
+                                </button>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+                @endif
+
                 @php
                     $isClosed = in_array($statusSekarang, [
                         'Dinilai_Selesai_oleh_Kepala', 
@@ -282,188 +158,178 @@
 
                 @if(!$isClosed)
                 <div class="card">
-                    <div class="card-header"><i class="ti ti-message-circle-2"></i> Kirim Balasan</div>
-                    <div class="card-body card-form-body">
+                    <div class="card-header">Kirim Balasan</div>
+                    <div class="card-body">
                         <form action="{{ route('mahasiswa.tiket.storeKomentar', $tiket->id) }}" method="POST" enctype="multipart/form-data">
                             @csrf
+                            
                             <div class="form-group">
-                                <label for="komentar">Pesan Anda</label>
-                                <textarea name="komentar" id="komentar" placeholder="Tulis balasan, tambahan informasi, atau pertanyaan..." required></textarea>
+                                <label for="komentar">Tulis Pesan Anda</label>
+                                <textarea name="komentar" id="komentar" placeholder="Tulis balasan atau tambahan informasi..." required></textarea>
                             </div>
-                            <div style="display:flex; justify-content:space-between;">
-                                <button type="submit" class="button button-primary"><i class="ti ti-send me-2"></i> Kirim Balasan</button>
-                                <a href="{{ route('mahasiswa.tiket.index') }}" class="button button-secondary">Kembali</a>
-                            </div>
+
+                            <button type="submit" class="button button-primary">Kirim Balasan</button>
+                            <a href="{{ route('mahasiswa.tiket.index') }}" class="button button-secondary" style="float: right;">Kembali ke Daftar</a>
                         </form>
                     </div>
                 </div>
                 @else
-                <div class="alert" style="background-color: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; border-radius: 8px; padding: 1.5rem; text-align: center;">
-                    <i class="ti ti-lock mb-2" style="font-size: 1.5rem;"></i><br>
-                    <strong>Tiket ini telah ditutup.</strong><br>
-                    Anda tidak dapat mengirim balasan atau mengubah data lagi.
+                <div class="alert alert-success">
+                    <strong>Tiket ini telah ditutup.</strong> Anda tidak dapat mengirim balasan lagi.
                 </div>
                 @endif
 
-                <!-- Riwayat Komentar -->
                 <div class="card">
-                    <div class="card-header"><i class="ti ti-history"></i> Riwayat Diskusi ({{ $tiket->komentar->count() }})</div>
-                    <div class="card-body" style="padding: 0;">
-                        @if($tiket->komentar->count() > 0)
-                            <div class="timeline">
-                                @foreach($tiket->komentar as $komen)
-                                    @php
-                                        $role = $komen->pengirim->role ?? 'unknown';
-                                        $dotClass = 'dot-' . $role;
-                                    @endphp
-                                    <div class="timeline-item">
-                                        <span class="timeline-dot {{ $dotClass }}"></span>
-                                        <div class="timeline-content">
-                                            <div class="timeline-header">
-                                                <span class="timeline-user">
-                                                    {{ $komen->pengirim->name }} 
-                                                    <span style="font-weight:400; color: #94a3b8;">
-                                                        ({{ str_replace('_', ' ', ucwords($role)) }})
-                                                    </span>
-                                                </span>
-                                                <span>{{ $komen->created_at->diffForHumans() }}</span>
-                                            </div>
-                                            <div class="timeline-body">
-                                                {!! nl2br(e($komen->komentar)) !!}
-                                            </div>
-                                        </div>
+                    <div class="card-header">Riwayat Komentar ({{ $tiket->komentar->count() }})</div>
+                    <div class="card-body">
+                        <div class="timeline">
+                            @forelse($tiket->komentar as $komen)
+                                @php
+                                    $role = $komen->pengirim->role ?? 'unknown';
+                                    $dotClass = 'dot-' . $role;
+                                    $bodyClass = 'body-' . $role;
+                                @endphp
+                                <div class="timeline-item">
+                                    <span class="timeline-dot {{ $dotClass }}"></span>
+                                    <div class="timeline-time">{{ $komen->created_at->format('d M Y, H:i') }}</div>
+                                    <div class="timeline-title">
+                                        {{ $komen->pengirim->name }} (<strong style="text-transform: capitalize;">{{ str_replace('_', ' ', $role) }}</strong>)
                                     </div>
-                                @endforeach
-                            </div>
-                        @else
-                            <div style="padding: 2rem; text-align: center; color: #94a3b8;">
-                                <em>Belum ada diskusi pada tiket ini.</em>
-                            </div>
-                        @endif
+                                    <div class="timeline-body timeline-body-comment {{ $bodyClass }}">
+                                        <p>{!! nl2br(e($komen->komentar)) !!}</p>
+                                    </div>
+                                </div>
+                            @empty
+                                <p>Belum ada komentar.</p>
+                            @endforelse
+                        </div>
                     </div>
                 </div>
 
             </div>
 
             <div class="ticket-sidebar">
-                <!-- Info Pemohon -->
                 <div class="card">
-                    <div class="card-header"><i class="ti ti-user"></i> Informasi Pemohon</div>
+                    <div class="card-header">Informasi Pemohon</div>
                     <div class="card-body">
-                        <div class="data-row">
-                            <div class="data-label">Nama</div>
-                            <div class="data-value">{{ $tiket->pemohon->name ?? 'N/A' }}</div>
-                        </div>
-                        <div class="data-row">
-                            <div class="data-label">NIM</div>
-                            <div class="data-value">{{ $tiket->pemohon->mahasiswa->nim ?? 'N/A' }}</div>
-                        </div>
-                        <div class="data-row">
-                            <div class="data-label">Prodi</div>
-                            <div class="data-value">{{ $tiket->pemohon->mahasiswa->programStudi->program_studi ?? 'N/A' }}</div>
-                        </div>
+                        <dl class="info-grid">
+                            <dt>Nama</dt> <dd>{{ $tiket->pemohon->name ?? 'N/A' }}</dd>
+                            <dt>Email</dt> <dd>{{ $tiket->pemohon->email ?? 'N/A' }}</dd>
+                            <dt>NIM</dt> <dd>{{ $tiket->pemohon->mahasiswa->nim ?? 'N/A' }}</dd>
+                            <dt>Jurusan</dt> <dd>{{ $tiket->pemohon->mahasiswa->programStudi->jurusan->nama_jurusan ?? 'N/A' }}</dd>
+                            <dt>Prodi</dt> <dd>{{ $tiket->pemohon->mahasiswa->programStudi->program_studi ?? 'N/A' }}</dd>
+                        </dl>
                     </div>
                 </div>
 
-                <!-- Detail Layanan / Informasi Tiket -->
                 <div class="card">
-                    <div class="card-header"><i class="ti ti-file-description"></i> Detail Permohonan</div>
+                    <div class="card-header">Informasi Tiket</div>
                     <div class="card-body">
-                        <div class="data-row">
-                            <div class="data-label">Layanan</div>
-                            <div class="data-value">{{ $tiket->layanan->nama ?? 'N/A' }}</div>
-                        </div>
-                        <div class="data-row">
-                            <div class="data-label">Unit</div>
-                            <div class="data-value">{{ $tiket->layanan->unit->nama_unit ?? 'N/A' }}</div>
-                        </div>
-                        <div class="data-row">
-                            <div class="data-label">Deskripsi</div>
-                            <div class="data-value">{!! nl2br(e($tiket->deskripsi)) !!}</div>
-                        </div>
-
-                        <!-- Lampiran Umum -->
-                        @if($tiket->lampiran)
-                        <div class="data-row">
-                            <div class="data-label">Lampiran</div>
-                            <div class="data-value">
-                                <a href="{{ asset('storage/' . $tiket->lampiran) }}" target="_blank" class="text-primary" style="text-decoration: underline; display: flex; align-items: center; gap: 5px;">
-                                    <i class="ti ti-paperclip"></i> Unduh File
-                                </a>
-                            </div>
-                        </div>
-                        @endif
-
-                        <!-- DETAIL KHUSUS BERDASARKAN TIPE LAYANAN -->
-                        @if ($detail)
-                            
-                            <!-- Surat Keterangan Aktif -->
-                            @if (Str::contains($tiket->layanan->nama, 'Surat Keterangan Aktif Kuliah'))
-                                <div class="data-row"><div class="data-label">Keperluan</div><div class="data-value">{{ $detail->keperluan }}</div></div>
-                                <div class="data-row"><div class="data-label">Tahun Ajar</div><div class="data-value">{{ $detail->tahun_ajaran }}</div></div>
-                                <div class="data-row"><div class="data-label">Semester</div><div class="data-value">{{ $detail->semester }}</div></div>
-                                @if($detail->keperluan_lainnya)
-                                <div class="data-row"><div class="data-label">Ket. Lain</div><div class="data-value">{{ $detail->keperluan_lainnya }}</div></div>
-                                @endif
-
-                            <!-- Reset Akun -->
-                            @elseif(Str::contains($tiket->layanan->nama, 'Reset Akun'))
-                                <div class="data-row"><div class="data-label">Aplikasi</div><div class="data-value">{{ $detail->aplikasi }}</div></div>
-                                <div class="data-row"><div class="data-label">Masalah</div><div class="data-value">{{ $detail->deskripsi }}</div></div>
-
-                            <!-- Ubah Data -->
-                            @elseif(Str::contains($tiket->layanan->nama, 'Ubah Data Mahasiswa'))
-                                <div class="data-row"><div class="data-label">Nama Baru</div><div class="data-value">{{ $detail->data_nama_lengkap ?? '-' }}</div></div>
-                                <div class="data-row"><div class="data-label">Tmp Lahir</div><div class="data-value">{{ $detail->data_tmp_lahir ?? '-' }}</div></div>
-                                <div class="data-row"><div class="data-label">Tgl Lahir</div><div class="data-value">{{ $detail->data_tgl_lhr ?? '-' }}</div></div>
-
-                            <!-- Request Publikasi -->
-                            @elseif(Str::contains($tiket->layanan->nama, 'Publikasi'))
-                                <div class="data-row"><div class="data-label">Judul</div><div class="data-value">{{ $detail->judul }}</div></div>
-                                <div class="data-row"><div class="data-label">Kategori</div><div class="data-value">{{ $detail->kategori }}</div></div>
+                        <dl class="info-grid">
+                            <dt>Layanan</dt> <dd>{{ $tiket->layanan->nama ?? 'N/A' }}</dd>
+                            <dt>Unit</dt> <dd>{{ $tiket->layanan->unit->nama_unit ?? 'N/A' }}</dd>
+                            <dt>Deskripsi</dt> <dd>{!! nl2br(e($tiket->deskripsi)) !!}</dd>
+                            @if($tiket->lampiran)
+                                <dt>Lampiran</dt>
+                                <dd><a href="{{ asset('storage/' . $tiket->lampiran) }}" target="_blank" class="text-primary">Lihat File</a></dd>
                             @endif
-
-                        @endif
+                        </dl>
                     </div>
-
-                    <!-- TAMPILAN KHUSUS GAMBAR PUBLIKASI (Kotak Preview & Button) -->
-                    @if ($detail && Str::contains($tiket->layanan->nama, 'Publikasi') && $detail->gambar)
-                    <div class="image-preview-container">
-                        <h6 style="color:#475569; margin-bottom:8px; font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">
-                            Lampiran Gambar
-                        </h6>
-                        
-                        <!-- Thumbnail Box -->
-                        <div class="image-thumbnail-wrapper">
-                            <a href="{{ asset('storage/' . $detail->gambar) }}" target="_blank" title="Klik untuk memperbesar">
-                                <img src="{{ asset('storage/' . $detail->gambar) }}" alt="Gambar Publikasi">
-                            </a>
-                        </div>
-
-                        <!-- Tombol Lihat Gambar -->
-                        <div>
-                            <a href="{{ asset('storage/' . $detail->gambar) }}" target="_blank" class="btn-view-image">
-                                <i class="ti ti-photo"></i> Lihat Gambar
-                            </a>
-                        </div>
-                    </div>
-                    @endif
-                    <!-- Akhir Tampilan Gambar -->
-
                 </div>
 
+                @if ($detail)
                 <div class="card">
-                    <div class="card-header"><i class="ti ti-activity"></i> Riwayat Status</div>
+                    <div class="card-header">Detail Permohonan</div>
                     <div class="card-body">
-                        <div class="timeline" style="margin: 1.5rem;">
+                        <dl class="info-grid">
+                            @if (Str::contains($tiket->layanan->nama, 'Surat Keterangan Aktif Kuliah'))
+                                <dt>Keperluan</dt> <dd>{{ $detail->keperluan }}</dd>
+                                <dt>Thn Ajaran</dt> <dd>{{ $detail->tahun_ajaran }}</dd>
+                                <dt>Semester</dt> <dd>{{ $detail->semester }}</dd>
+                            @elseif(Str::contains($tiket->layanan->nama, 'Reset Akun'))
+                                <dt>Aplikasi</dt> <dd>{{ $detail->aplikasi }}</dd>
+                                <dt>Masalah</dt> <dd>{{ $detail->deskripsi }}</dd>
+                            @elseif(Str::contains($tiket->layanan->nama, 'Ubah Data Mahasiswa'))
+                                <dt>Nama Baru</dt> <dd>{{ $detail->data_nama_lengkap ?? '-' }}</dd>
+                                <dt>Tmp Lahir</dt> <dd>{{ $detail->data_tmp_lahir ?? '-' }}</dd>
+                                <dt>Tgl Lahir</dt> <dd>{{ $detail->data_tgl_lhr ?? '-' }}</dd>
+                            @elseif(Str::contains($tiket->layanan->nama, 'Publikasi'))
+                                <dt>Judul</dt> <dd>{{ $detail->judul }}</dd>
+                                <dt>Kategori</dt> <dd>{{ $detail->kategori }}</dd>
+                                @if ($detail->gambar)
+                                    <dt>Lampiran</dt>
+                                    @php
+                                        $path = storage_path('app/public/' . $detail->gambar);
+                                        $imageData = null;
+                                        $mimeType = 'image/jpeg'; 
+
+                                        if (file_exists($path)) {
+                                            $imageData = base64_encode(file_get_contents($path));
+                                            $extension = pathinfo($path, PATHINFO_EXTENSION);
+                                            if($extension == 'png') $mimeType = 'image/png';
+                                            elseif($extension == 'jpg' || $extension == 'jpeg') $mimeType = 'image/jpeg';
+                                        }
+                                    @endphp
+
+                                    @if($imageData)
+                                    <dd>
+                                        <a href="data:{{ $mimeType }};base64,{{ $imageData }}" target="_blank" class="btn-view-image">
+                                            <i class="ti ti-photo"></i> Lihat Gambar
+                                        </a>
+                                    </dd>
+                                    @endif
+                                @endif
+                            @endif
+                        </dl>
+                    </div>
+                </div>
+                @endif
+
+                <div class="card">
+                    <div class="card-header">Riwayat Status</div>
+                    <div class="card-body">
+                        <div class="timeline">
                             @foreach ($tiket->riwayatStatus as $riwayat)
-                                <div style="position: relative; padding-left: 1.5rem; margin-bottom: 1.5rem; border-left: 2px dashed #e2e8f0;">
-                                    <div style="position: absolute; left: -6px; top: 0; width: 10px; height: 10px; border-radius: 50%; background: #94a3b8;"></div>
-                                    <div style="font-weight: 600; color: #334155;">{{ str_replace('_', ' ', $riwayat->status) }}</div>
-                                    <div style="font-size: 0.8rem; color: #64748b;">
-                                        {{ $riwayat->created_at->format('d M Y, H:i') }} 
-                                        <span style="color: #cbd5e0;">•</span> 
-                                        Oleh: {{ $riwayat->user->name ?? 'Sistem' }}
+                                @php
+                                    $dotColor = '#718096'; // Default Gray
+                                    $statusLower = strtolower($riwayat->status);
+
+                                    if (str_contains($statusLower, 'diajukan')) {
+                                        $dotColor = '#a0aec0'; // Gray
+                                    } elseif (str_contains($statusLower, 'ditangani') || str_contains($statusLower, 'diselesaikan')) {
+                                        $dotColor = '#f6ad55'; // Orange
+                                    } elseif ($riwayat->status == 'Dinilai_Belum_Selesai_oleh_Pemohon' || $riwayat->status == 'Pemohon_Bermasalah') {
+                                        $dotColor = '#f56565'; // Red
+                                    } elseif ($riwayat->status == 'Dinilai_Selesai_oleh_Kepala' || $riwayat->status == 'Dinilai_Selesai_oleh_Pemohon') {
+                                        $dotColor = '#48bb78'; // Green
+                                    }
+                                @endphp
+                                <div class="timeline-item">
+                                    <span class="timeline-dot" style="background-color: {{ $dotColor }};"></span>
+                                    <div class="timeline-time">{{ $riwayat->created_at->format('d M Y, H:i') }}</div>
+                                    
+                                    <div class="timeline-title">
+                                        Status: 
+                                        <span style="
+                                            display: inline-flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            background-color: {{ $dotColor }};
+                                            color: white;
+                                            padding: 4px 12px;
+                                            border-radius: 12px;
+                                            font-size: 0.75rem;
+                                            font-weight: 700;
+                                            line-height: 1.2;
+                                            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                                            text-transform: capitalize;
+                                        ">
+                                            {{ str_replace('_', ' ', $riwayat->status) }}
+                                        </span>
+                                    </div>
+
+                                    <div class="timeline-body">
+                                        <p>Oleh: {{ $riwayat->user->name ?? 'Sistem' }}</p>
                                     </div>
                                 </div>
                             @endforeach
