@@ -1,0 +1,107 @@
+[33me0e902c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m add:icon-category
+[33mff90740[m done:-feature-forgot-password
+[33m304deb7[m add-icon:reload
+[33m4aa2cfa[m add-icon:back
+[33m32c9e6f[m messageDalit
+[33m43dcad1[m add-ResetPassword
+[33m9d8e331[m service:feature
+[33m19feaf2[m tiket mahasiswa
+[33ma1209ae[m loading-before-fetching-data
+[33mb7d767b[m ModifAPI-Mobile
+[33m5f6427d[m rename URL
+[33mbee1c30[m modif-URL LampiranReqPublikasi
+[33m654020d[m tiket req publikasi
+[33m8339764[m tiket mahasiswa
+[33md167f9d[m add-lampiranReqPublikasi
+[33m67e5f4f[m Merge branch 'main' of https://github.com/MaRVi401/helpdesk-polindra
+[33m02b3bcd[m modified-DestroyTiketSUA
+[33m4e9641b[m terimakasih rochman
+[33mdaf03da[m mdofiedRiwayatStatusTiket
+[33me51c58b[m fix:set-security
+[33ma3b766a[m modif-priorityCreateLayanan
+[33m5b66f1e[m Merge branch 'main' of https://github.com/MaRVi401/helpdesk-polindra
+[33m7ed270c[m display detail-Tiket
+[33m3531a2f[m fix-validation
+[33m8b86dcc[m add TiketSeeder
+[33mbea8698[m fix-article-category
+[33m4dca2bb[m modif MorphTo-in Tiket
+[33me345aaf[m modif database seeder
+[33m249b384[m Merge branch 'main' of https://github.com/MaRVi401/helpdesk-polindra
+[33m9750077[m seeder dan detail
+[33m62a7a31[m add-PriorityToLayanan
+[33m7153b57[m seeder dan detail
+[33ma046322[m Modif-addUPT-BahasatoSeeder
+[33mac9cb4f[m modif-UnitSeeder
+[33mfae418b[m setting:seeder
+[33m4aa0579[m fix:unit
+[33mea7e0af[m setting:security(password)
+[33ma5ceee0[m setting-3:user-profile
+[33ma86c577[m setting-2:user-profile
+[33m6163b1e[m setting:user-profile
+[33m8d70cd1[m done:user-profile
+[33m2530ff0[m Detail tiket masih belum sesuai yassin
+[33mc86d080[m progress:resolve
+[33m4d0614c[m add-deleteToTiket-SUA
+[33m1064f17[m fix-bug-Layanansssss
+[33mc49c82f[m reColor-dot-riwayatKomentar
+[33m38b5219[m progress:resolve
+[33m1728510[m done:complete-profile
+[33m6bfb6d8[m edit-2:complete-profile-for-students
+[33m30f9dfe[m edit:complete-profile-for-students
+[33mbcca2b5[m add:complete-profile-for-students
+[33mfde5905[m modif-BE-Layanan
+[33mea8a179[m modive-tiket-RoleSUA
+[33m6fa5d52[m add:unit-features
+[33mc89d5a3[m add:major&study-program
+[33m4814a1a[m add:major&study-program
+[33me45d306[m modif-env.example
+[33m68b7615[m Add-API-forFlutter
+[33m501872b[m Add-TiketSeeder
+[33m644f7bd[m add-modifikasi-model-mahasiswa
+[33m1705cbf[m crud:staff
+[33md76fdb9[m progress
+[33m6fe9298[m add-kategoriArtikel
+[33m8242ca7[m add-feature-delete:student
+[33mf2438ba[m dalit-renameBaihaqi
+[33ma36cd9c[m dalit
+[33ma8d4838[m get-data:students
+[33mbc7624a[m update:article
+[33m6bbe15b[m fully functioning kepala unit & admin unit
+[33m5761d21[m done:article-features
+[33m0f6b0f1[m add:article-features
+[33m6ab670f[m add:article-features
+[33m1fd32ea[m add:edit/update & show (FAQ)
+[33ma8b6cac[m Add-KelolaPIC
+[33mdd226aa[m Admin-KelolaTiketSemuaUnit
+[33mcdaf37d[m edit profil mahasiswa
+[33m2b6a8a1[m Merge branch 'main' of https://github.com/MaRVi401/helpdesk-polindra
+[33m43afbe0[m add:generate-profile (initial)
+[33md147e86[m Merge branch 'main' of https://github.com/MaRVi401/helpdesk-polindra
+[33m16a904d[m WebDalit
+[33m57d8979[m update: middleware-user
+[33m003c4ce[m update:auth-google
+[33m54dd631[m fix tiketing mahasiswa error STR
+[33m9acd986[m update:management-faq
+[33m1dacf91[m update:url-fix
+[33m48dbbca[m progress:manage-faq
+[33mc2ef2ac[m add:toast error (auth) and remember-me
+[33m22bea08[m budarsih
+[33md0586c7[m add-Export to KelolaArtikel
+[33mf20e25d[m add-KelolaArtikel
+[33m6849511[m add-KelolaKategori
+[33m346c642[m get-faq
+[33m085973a[m add-console
+[33m7dea9b3[m add-Export to KelolaUnit
+[33m59288b2[m add-KelolaUnit
+[33mad323e6[m add-export to KelolaJurusan
+[33mb419115[m add-KelolaJurusan n Prodi
+[33m530a683[m Merge branch 'main' of https://github.com/MaRVi401/helpdesk-polindra
+[33m3fe2550[m add-KelolaJurusan n Prodi
+[33mc49c377[m README.md
+[33m50c9d17[m README.md
+[33mf8a39d4[m README.md
+[33mc14c50f[m README.md
+[33maa70a13[m README.md
+[33m65b44f0[m README.md
+[33maf86aab[m Update README.md
+[33m18d92ff[m frontend-v.1-13/25
