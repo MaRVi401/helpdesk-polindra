@@ -8,16 +8,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Exception;
-use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Facades\Hash;
-
-
 
 class AuthController extends Controller
 {
-    /**
-     * Handle authentication requests.
-     */
     public function login(Request $request)
     {
         try {
@@ -81,51 +74,5 @@ class AuthController extends Controller
                 'message' => 'Terjadi kesalahan saat logout, tetapi Kamu telah dikeluarkan dari sistem.'
             ]);
         }
-    }
-
-    public function showForgotForm()
-    {
-        return view('content.auth.forgot-password');
-    }
-
-    public function sendResetLink(Request $request)
-    {
-        $request->validate(['email' => 'required|email']);
-
-        $status = Password::sendResetLink($request->only('email'));
-
-        return $status === Password::RESET_LINK_SENT
-            ? back()->with('success', __($status))
-            : back()->withErrors(['email' => __($status)]);
-    }
-
-    public function showResetForm(Request $request, $token)
-    {
-        return view('content.auth.reset-password', [
-            'token'   => $token,       
-            'email'   => $request->email, 
-            'request' => $request, 
-        ]);
-    }
-
-    public function resetPassword(Request $request)
-    {
-        $request->validate([
-            'token' => 'required',
-            'email' => 'required|email',
-            'password' => 'required|confirmed|min:8',
-        ]);
-
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user, $password) {
-                $user->password = Hash::make($password);
-                $user->save();
-            }
-        );
-
-        return $status === Password::PASSWORD_RESET
-            ? redirect()->route('login')->with('success', 'Password berhasil direset. Silakan login.')
-            : back()->withErrors(['email' => __($status)]);
     }
 }

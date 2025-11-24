@@ -15,8 +15,8 @@ document.addEventListener('DOMContentLoaded', function (e) {
               message: 'Password baru wajib diisi'
             },
             stringLength: {
-              min: 8,
-              message: 'Password minimal 8 karakter'
+              min: 6,
+              message: 'Password minimal 6 karakter'
             }
           }
         },
@@ -32,8 +32,8 @@ document.addEventListener('DOMContentLoaded', function (e) {
               message: 'Konfirmasi password tidak cocok'
             },
             stringLength: {
-              min: 8,
-              message: 'Password minimal 8 karakter'
+              min: 6,
+              message: 'Password minimal 6 karakter'
             }
           }
         }
@@ -47,8 +47,8 @@ document.addEventListener('DOMContentLoaded', function (e) {
               message: 'Password saat ini wajib diisi'
             },
             stringLength: {
-              min: 8,
-              message: 'Password minimal 8 karakter'
+              min: 6,
+              message: 'Password minimal 6 karakter'
             }
           }
         };

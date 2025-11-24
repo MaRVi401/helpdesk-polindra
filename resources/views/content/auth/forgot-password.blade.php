@@ -1,49 +1,89 @@
 @extends('layouts.blankLayout')
 
+@section('title', 'Lupa Password Service Desk')
+
+@section('vendor-style')
+  @vite(['resources/assets/vendor/libs/@form-validation/form-validation.scss'])
+@endsection
+
+@section('page-style')
+  @vite(['resources/assets/vendor/scss/pages/page-auth.scss'])
+@endsection
+
+@section('vendor-script')
+  @vite(['resources/assets/vendor/libs/@form-validation/popular.js', 'resources/assets/vendor/libs/@form-validation/bootstrap5.js', 'resources/assets/vendor/libs/@form-validation/auto-focus.js'])
+@endsection
+
+@section('page-script')
+  @vite(['resources/assets/js/management/auth.js'])
+@endsection
+
 @section('content')
-<div class="authentication-wrapper authentication-cover">
-    <div class="authentication-inner row m-0">
-
-        <div class="d-flex col-12 col-lg-5 col-xl-4 align-items-center authentication-bg p-sm-5 p-4">
-            <div class="w-px-400 mx-auto">
-                <h4 class="mb-2">Lupa Kata Sandi? 🔒</h4>
-                <p class="mb-4">Masukkan email Anda, dan kami akan mengirimkan link untuk mereset kata sandi Anda.</p>
-
-                @if (session('status'))
-                    <div class="alert alert-success" role="alert">
-                        {{ session('status') }}
-                    </div>
-                @endif
-                
-                <form id="formAuthentication" class="mb-3" action="{{ route('password.email') }}" method="POST">
-                    @csrf
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email Institusi</label>
-                        <input type="email" 
-                               class="form-control @error('email') is-invalid @enderror" 
-                               id="email" name="email" 
-                               placeholder="Masukkan email institusi Anda" 
-                               value="{{ old('email') }}" required autofocus>
-
-                        @error('email')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
-                        @enderror
-                    </div>
-
-                    <button class="btn btn-primary d-grid w-100" type="submit">Kirim Link Reset</button>
-                </form>
-
-                <div class="text-center">
-                    <a href="{{ route('login') }}" class="d-flex align-items-center justify-content-center">
-                        <i class="ti ti-chevron-left scaleX-n1-rtl"></i>
-                        Kembali ke halaman login
-                    </a>
-                </div>
+  <div class="container-xxl">
+    <div class="authentication-wrapper authentication-basic container">
+      <div class="authentication-inner">
+        {{-- LUPA PASSWORD --}}
+        @if (session('success'))
+          <div class="bs-toast toast fade show w-100 mb-3" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+              <i class="icon-base ti tabler-square-check-filled icon-xs me-2 text-success"></i>
+              <div class="me-auto fw-medium">Berhasil</div>
+              <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
+            <div class="toast-body">{{ session('success') }}</div>
+          </div>
+        @endif
+        @if ($errors->any())
+          <div class="bs-toast toast fade show w-100 mb-3" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+              <i class="icon-base ti tabler-bell icon-xs me-2 text-primary"></i>
+              <div class="me-auto fw-medium">Gagal</div>
+              <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+              @foreach ($errors->all() as $error)
+                <div>{{ $error }}</div>
+              @endforeach
+            </div>
+          </div>
+        @endif
+        <div class="card">
+          <div class="card-body">
+            {{-- LOGO --}}
+            <div class="app-brand justify-content-center mb-6">
+              <a href="{{ url('/') }}" class="app-brand-link">
+                <img class="wpx-200" src="{{ asset('assets/img/logo/service_desk.svg') }}" alt="Service Desk">
+              </a>
+            </div>
+            <p class="mb-6 fs-7">Silakan masukkan alamat email Kamu. Kami akan mengirimkan link reset password melalui
+              email.</p>
+            {{-- LUPA PASSWORD FORM --}}
+            <form id="formAuthentication" class="mb-4" action="{{ route('password.email') }}" method="POST">
+              @csrf
+              <div class="mb-6 form-control-validation">
+                <label for="email" class="form-label">Email</label>
+                <input type="text" class="form-control" id="email" name="email" required
+                  placeholder="Masukkan alamat email" value="{{ old('email') }}" autofocus />
+              </div>
+              @error('email')
+                <div class="invalid-feedback">{{ $message }}</div>
+              @enderror
+              <div class="my-5">
+                <div class="d-flex justify-content-between">
+                  <div class="d-flex justify-content-between">
+                    <a href="{{ route('login') }}">
+                      <small>Kembali ke halaman Login</small>
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div class="mb-5">
+                <button class="btn btn-primary d-grid w-100" type="submit">Kirim Email</button>
+              </div>
+            </form>
+          </div>
         </div>
-
+      </div>
     </div>
-</div>
+  </div>
 @endsection

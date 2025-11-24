@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\StudyProgramController;
 use App\Http\Controllers\Admin\UnitController;
 use App\Http\Controllers\Admin\UnitControllerOld;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\CompleteProfileController;
 use App\Http\Controllers\UserProfileController;
 use Illuminate\Http\Request;
@@ -60,23 +61,23 @@ Route::middleware('guest')->group(function () {
 
     Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
 
-    // Forgot Password Form
-    Route::get('/forgot-password', [AuthController::class, 'showForgotForm'])
+    // FORGOT PASSWORD
+    Route::get('/forgot-password', [ForgotPasswordController::class, 'showForgotForm'])
         ->middleware('guest')
         ->name('password.request');
 
     // Send Reset Link Email
-    Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink'])
         ->middleware('guest')
         ->name('password.email');
 
     // Reset Password Form
-    Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])
+    Route::get('/reset-password/{token}', [ForgotPasswordController::class, 'showResetForm'])
         ->middleware('guest')
         ->name('password.reset');
 
     // Submit New Password
-    Route::post('/reset-password', [AuthController::class, 'resetPassword'])
+    Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword'])
         ->middleware('guest')
         ->name('password.update');
 });
