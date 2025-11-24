@@ -106,6 +106,7 @@
                 Simpan Perubahan
               </button>
               <a href="{{ route('user-profile.index') }}" class="btn btn-outline-secondary">
+                <i class="icon-base ti tabler-arrow-left me-1"></i>
                 Kembali
               </a>
             </div>
