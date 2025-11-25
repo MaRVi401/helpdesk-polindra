@@ -71,7 +71,7 @@
                     <span class="badge bg-label-success">Aktif</span>
                   @endif
                 </td>
-                <td data-id="{{ $layanan->id }}"></td>
+                <td data-id="{{ $layanan->id }}" data-slug="{{ $slug ?? $layanan->unit->slug }}"></td>
               </tr>
             @endforeach
           </tbody>

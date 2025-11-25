@@ -1,7 +1,5 @@
 @extends('layouts/layoutMaster')
-
 @section('title', 'Detail Layanan')
-
 @section('content')
   <div class="card">
     <h5 class="card-header">Detail Layanan</h5>
@@ -75,8 +73,8 @@
           {{ $data_layanan->updated_at->format('d M Y H:i') }}
         </p>
       </div>
-      <a href="{{ route('service.unit.' . $unit_slug) }}" class="btn btn-outline-secondary"> <i
-          class="icon-base ti tabler-arrow-left me-1"></i>Kembali</a>
+      <a href="{{ route('service.unit', ['slug' => $slug]) }}" class="btn btn-label-secondary">
+        <i class="icon-base ti tabler-arrow-left me-1"></i> Kembali
       </a>
     </div>
   </div>

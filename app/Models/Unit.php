@@ -8,6 +8,7 @@ class Unit extends Model
 {
     protected $table = 'units';
     protected $guarded = ['id'];
+    protected $fillable = ['nama_unit', 'slug'];
 
     public function staff()
     {

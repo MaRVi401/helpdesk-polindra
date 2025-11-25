@@ -251,21 +251,28 @@ document.addEventListener('DOMContentLoaded', function (e) {
             className: 'text-center',
             render: function (data, type, full, meta) {
               const row = dt_service_table.querySelectorAll('tbody tr')[meta.row];
-              const id = row.querySelector('td:last-child').dataset.id;
-
+              const td = row.querySelector('td:last-child');
+              const id = td.dataset.id;
+              const slug = td.dataset.slug;
               return `
-                <div class="d-inline-block text-nowrap">
-                  <button class="btn btn-text-secondary rounded-pill waves-effect btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                    <i class="icon-base ti tabler-dots-vertical icon-22px"></i>
-                  </button>
-                  <div class="dropdown-menu dropdown-menu-end m-0">
-                      <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center view-service" data-id="${id}"><i class="icon-base ti tabler-details me-2"></i> Detail</a>
-                      <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center edit-service" data-id="${id}"><i class="icon-base ti tabler-pencil me-2"></i> Edit</a>
-                      <div class="dropdown-divider"></div>
-                      <a href="javascript:void(0);" class="dropdown-item text-danger d-flex align-items-center delete-service" data-id="${id}"><i class="icon-base ti tabler-trash me-2"></i> Hapus</a>
-                  </div>
-                </div>
-              `;
+              <div class="d-inline-block text-nowrap">
+              <button class="btn btn-text-secondary rounded-pill waves-effect btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                <i class="icon-base ti tabler-dots-vertical icon-22px"></i>
+              </button>
+              <div class="dropdown-menu dropdown-menu-end m-0">
+                  <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center view-service" data-id="${id}" data-slug="${slug}">
+                    <i class="icon-base ti tabler-details me-2"></i> Detail
+                  </a>
+                  <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center edit-service" data-id="${id}" data-slug="${slug}">
+                    <i class="icon-base ti tabler-pencil me-2"></i> Edit
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <a href="javascript:void(0);" class="dropdown-item text-danger d-flex align-items-center delete-service" data-id="${id}">
+                    <i class="icon-base ti tabler-trash me-2"></i> Hapus
+                  </a>
+              </div>
+            </div>
+    `;
             }
           }
         ],
@@ -431,16 +438,18 @@ document.addEventListener('DOMContentLoaded', function (e) {
     // View Service
     if (e.target.closest('.view-service')) {
       const id = e.target.closest('.view-service').dataset.id;
-      window.location.href = baseUrl + 'service/' + id;
+      const slug = e.target.closest('.view-service').dataset.slug;
+      window.location.href = baseUrl + 'service/' + slug + '/' + id;
     }
 
     // Edit Service
     if (e.target.closest('.edit-service')) {
       const id = e.target.closest('.edit-service').dataset.id;
-      window.location.href = baseUrl + 'service/' + id + '/edit';
+      const slug = e.target.closest('.edit-service').dataset.slug;
+      window.location.href = baseUrl + 'service/' + slug + '/' + id + '/edit';
     }
 
-    // Delete Service
+    // Delete Service - tetap sama
     if (e.target.closest('.delete-service')) {
       e.preventDefault();
       const id = e.target.closest('.delete-service').dataset.id;

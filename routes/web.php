@@ -115,11 +115,12 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
     Route::resource('faq', FaqController::class)->middleware('role:super_admin');
 
     // SERVICE MANAGEMENT (SUPER ADMIN)
-    Route::get('/service/upatik', [ServiceController::class, 'filterByUnit'])->name('service.unit.upatik')->defaults('slug', 'upatik');
-    Route::get('/service/upt-bahasa', [ServiceController::class, 'filterByUnit'])->name('service.unit.upt-bahasa')->defaults('slug', 'upt.bahasa');
-    Route::get('/service/academy', [ServiceController::class, 'filterByUnit'])->name('service.unit.academy')->defaults('slug', 'academy');
-    Route::get('/service/student-affairs', [ServiceController::class, 'filterByUnit'])->name('service.unit.student-affairs')->defaults('slug', 'student-affairs');
-    Route::resource('service', ServiceController::class);
+    Route::prefix('service')->name('service.')->group(function () {
+        Route::get('/{slug}', [ServiceController::class, 'filterByUnit'])->name('unit');
+        Route::get('/{slug}/{id}', [ServiceController::class, 'show'])->name('show');
+        Route::get('/{slug}/{id}/edit', [ServiceController::class, 'edit'])->name('edit');
+    });
+    Route::resource('service', ServiceController::class)->only(['store', 'update', 'destroy']);
 
     // ARTICLE MANAGEMENT (SUPER ADMIN)
     Route::resource('article', ArticleController::class)->middleware('role:super_admin');

@@ -29,9 +29,9 @@ class MasterDataSeeder extends Seeder
         Jabatan::create(['nama_jabatan' => 'Staff Layanan']);
 
         // Membuat data Unit sesuai permintaan
-        Unit::create(['nama_unit' => 'UPA TIK']);
-        Unit::create(['nama_unit' => 'Akademik']);
-        Unit::create(['nama_unit' => 'Kemahasiswaan']);
+        Unit::create(['nama_unit' => 'UPA TIK', 'slug' => 'upatik']);
+        Unit::create(['nama_unit' => 'Akademik', 'slug' => 'akademik']);
+        Unit::create(['nama_unit' => 'Kemahasiswaan', 'slug' => 'kemahasiswaan']);
 
         $jurusanTeknikInformatika = Jurusan::create(['nama_jurusan' => 'Teknik Informatika']);
         $jurusanTeknik = Jurusan::create(['nama_jurusan' => 'Teknik']);

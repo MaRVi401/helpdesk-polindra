@@ -4,7 +4,7 @@ $configData = Helper::appClasses();
 
 @extends('layouts/layoutMaster')
 
-@section('title', 'Landing - Front Pages')
+@section('title', 'Service Desk')
 
 <!-- Vendor Styles -->
 @section('vendor-style')

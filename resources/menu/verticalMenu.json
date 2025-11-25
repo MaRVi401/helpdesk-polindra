@@ -52,7 +52,12 @@
         {
           "url": "/service/upatik",
           "name": "UPA TIK",
-          "slug": "service.unit.upatik",
+          "slug": [
+            "service.unit",
+            "service.show",
+            "service.edit"
+          ],
+          "slug_param": "upatik",
           "roles": [
             "super_admin",
             "kepala_unit",
@@ -60,9 +65,14 @@
           ]
         },
         {
-          "url": "/service/academy",
+          "url": "/service/akademik",
           "name": "Akademik",
-          "slug": "service.unit.academy",
+          "slug": [
+            "service.unit",
+            "service.show",
+            "service.edit"
+          ],
+          "slug_param": "akademik",
           "roles": [
             "super_admin",
             "kepala_unit",
@@ -70,9 +80,14 @@
           ]
         },
         {
-          "url": "/service/student-affairs",
+          "url": "/service/kemahasiswaan",
           "name": "Kemahasiswaan",
-          "slug": "service.unit.student-affairs",
+          "slug": [
+            "service.unit",
+            "service.show",
+            "service.edit"
+          ],
+          "slug_param": "kemahasiswaan",
           "roles": [
             "super_admin",
             "kepala_unit",
@@ -82,7 +97,12 @@
         {
           "url": "/service/upt-bahasa",
           "name": "UPT Bahasa",
-          "slug": "service.unit.upt-bahasa",
+          "slug": [
+            "service.unit",
+            "service.show",
+            "service.edit"
+          ],
+          "slug_param": "upt-bahasa",
           "roles": [
             "super_admin",
             "kepala_unit",

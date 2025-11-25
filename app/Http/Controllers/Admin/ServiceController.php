@@ -10,33 +10,24 @@ use Illuminate\Validation\Rule;
 
 class ServiceController extends Controller
 {
-  public function filterByUnit(Request $request, $slug = null)
+  public function filterByUnit($slug = null)
   {
-    $unitMapping = [
-      'upatik' => 'UPA TIK',
-      'academy' => 'Akademik',
-      'student-affairs' => 'Kemahasiswaan',
-      'upt.bahasa' => 'UPT. Bahasa',
-    ];
-
     $query = Layanan::with(['unit', 'penanggungJawab.user'])
       ->orderBy('created_at', 'asc');
 
-    if ($slug && isset($unitMapping[$slug])) {
-      $query->whereHas('unit', function ($q) use ($unitMapping, $slug) {
-        $q->where('nama_unit', $unitMapping[$slug]);
-      });
-
-      // Group hanya 1 unit
-      $data_layanan = collect([$unitMapping[$slug] => $query->get()]);
+    if ($slug) {
+      $unit = Unit::where('slug', $slug)->firstOrFail();
+      $query->where('unit_id', $unit->id);
+      $data_layanan = collect([$unit->nama_unit => $query->get()]);
     } else {
-      // Tampilkan semua unit
       $data_layanan = $query->get()->groupBy(function ($item) {
         return $item->unit->nama_unit ?? 'Lainnya';
       });
     }
+
     $data_unit = Unit::orderBy('nama_unit')->get();
     $data_staf = Staff::with('user')->get();
+
     return view('content.apps.admin.service.list', compact('data_layanan', 'slug', 'data_unit', 'data_staf'));
   }
 
@@ -92,25 +83,36 @@ class ServiceController extends Controller
     return $unitMapping[$nama_unit] ?? null;
   }
 
-  public function show($id)
+  public function show($slug, $id)
   {
     $data_layanan = Layanan::with([
       'unit',
       'penanggungJawab.user',
     ])->findOrFail($id);
-    $unit_slug = $this->getUnitSlug($data_layanan->unit->nama_unit);
-    return view('content.apps.admin.service.show', compact('data_layanan', 'unit_slug'));
+
+    // Validasi apakah layanan sesuai dengan slug unit
+    $unit = Unit::where('slug', $slug)->firstOrFail();
+    if ($data_layanan->unit_id !== $unit->id) {
+      abort(404);
+    }
+
+    return view('content.apps.admin.service.show', compact('data_layanan', 'slug'));
   }
 
-  public function edit($id)
+  public function edit($slug, $id)
   {
     $data_layanan = Layanan::with(['unit', 'penanggungJawab'])->findOrFail($id);
+
+    // Validasi apakah layanan sesuai dengan slug unit
+    $unit = Unit::where('slug', $slug)->firstOrFail();
+    if ($data_layanan->unit_id !== $unit->id) {
+      abort(404);
+    }
+
     $data_unit = Unit::orderBy('nama_unit')->get();
     $data_staf = Staff::with('user')->get();
 
-    // Tambahkan unit slug untuk back button
-    $unit_slug = $this->getUnitSlug($data_layanan->unit->nama_unit);
-    return view('content.apps.admin.service.edit', compact('data_layanan', 'data_unit', 'data_staf', 'unit_slug'));
+    return view('content.apps.admin.service.edit', compact('data_layanan', 'data_unit', 'data_staf', 'slug'));
   }
 
   public function update(Request $request, $id)
@@ -181,18 +183,15 @@ class ServiceController extends Controller
 
   private function redirectToUnitRoute($nama_unit, $successMessage)
   {
-    $unitMapping = [
-      'UPA TIK' => 'upatik',
-      'UPT. Bahasa' => 'upt-bahasa',
-      'Akademik' => 'academy',
-      'Kemahasiswaan' => 'student-affairs'
-    ];
+    $unit = Unit::where('nama_unit', $nama_unit)->first();
 
-    $slug = $unitMapping[$nama_unit] ?? null;
-    if ($slug) {
-      return redirect()->route('service.unit.' . $slug)
+    if ($unit && $unit->slug) {
+      return redirect()->route('service.unit', ['slug' => $unit->slug])
         ->with('success', $successMessage);
     }
+
+    return redirect()->back()
+      ->with('success', $successMessage);
   }
 
 }

@@ -18,9 +18,25 @@ class UnitSeeder extends Seeder
         Unit::truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        Unit::create(['nama_unit' => 'UPA TIK']);
-        Unit::create(['nama_unit' => 'Akademik']);
-        Unit::create(['nama_unit' => 'Kemahasiswaan']);
-        Unit::create(['nama_unit' => 'UPT. Bahasa']);
+        // Contoh di seeder
+        Unit::create([
+            'nama_unit' => 'UPA TIK',
+            'slug' => 'upatik'
+        ]);
+
+        Unit::create([
+            'nama_unit' => 'UPT. Bahasa',
+            'slug' => 'upt-bahasa'
+        ]);
+
+        Unit::create([
+            'nama_unit' => 'Akademik',
+            'slug' => 'akademik'
+        ]);
+
+        Unit::create([
+            'nama_unit' => 'Kemahasiswaan',
+            'slug' => 'kemahasiswaan'
+        ]);
     }
 }
