@@ -212,7 +212,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
                       text: `<span class="d-flex align-items-center"><i class="icon-base ti tabler-file-text me-1"></i>Pdf</span>`,
                       className: 'dropdown-item',
                       exportOptions: {
-                        columns: [2, 3]
+                        columns: [2, 3, 4]
                       }
                     },
                     {
