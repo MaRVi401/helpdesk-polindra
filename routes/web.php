@@ -204,16 +204,7 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
             Route::get('/kelola-pic/{layanan}/edit', [KelolaPicController::class, 'edit'])->name('pic.edit');
             Route::put('/kelola-pic/{layanan}', [KelolaPicController::class, 'update'])->name('pic.update');
         });
-        Route::prefix('service')->name('service.unit.')->group(function() {
-            Route::get('/{slug}', [KepalaLayananController::class, 'index'])->name('index');
-            Route::post('/{slug}', [KepalaLayananController::class, 'store'])->name('store');
-            Route::put('/{slug}/{layanan}', [KepalaLayananController::class, 'update'])->name('update');
-            Route::prefix('service')->name('service.unit.')->group(function() {
-            Route::get('/{slug}', [KepalaLayananController::class, 'index'])->name('index');
-            Route::post('/{slug}', [KepalaLayananController::class, 'store'])->name('store');
-            Route::get('/{slug}/{layanan}/edit', [KepalaLayananController::class, 'edit'])->name('edit');
-            Route::put('/{slug}/{layanan}', [KepalaLayananController::class, 'update'])->name('update');
-        });
+
     });
     // Admin Unit
     Route::middleware('role:admin_unit')->prefix('admin-unit')->name('admin_unit.')->group(function () {
@@ -223,6 +214,5 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
         Route::put('/tiket/{id}', [AdminUnitTiketController::class, 'update'])->name('tiket.update');
         Route::post('/tiket/{id_tiket}/komentar', [AdminUnitTiketController::class, 'storeKomentar'])->name('tiket.storeKomentar');
         Route::resource('layanan', AdminUnitLayananController::class);
-    });
     });
 });

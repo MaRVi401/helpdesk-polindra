@@ -73,7 +73,7 @@
           {{ $data_layanan->updated_at->format('d M Y H:i') }}
         </p>
       </div>
-      <a href="{{ route('service.unit', ['slug' => $slug]) }}" class="btn btn-label-secondary">
+      <a href="{{ route('service.unit', ['slug' => $slug]) }}" class="btn btn-outline-secondary">
         <i class="icon-base ti tabler-arrow-left me-1"></i> Kembali
       </a>
     </div>
