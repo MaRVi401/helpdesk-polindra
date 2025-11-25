@@ -203,6 +203,9 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
             Route::get('/kelola-pic', [KelolaPicController::class, 'index'])->name('pic.index');
             Route::get('/kelola-pic/{layanan}/edit', [KelolaPicController::class, 'edit'])->name('pic.edit');
             Route::put('/kelola-pic/{layanan}', [KelolaPicController::class, 'update'])->name('pic.update');
+            Route::get('/monitoring-tiket/{tiket}/edit', [MonitoringTiketController::class, 'edit'])->name('monitoring.edit');
+            Route::put('/monitoring-tiket/{tiket}', [MonitoringTiketController::class, 'update'])->name('monitoring.update');
+            Route::post('/monitoring-tiket/{tiket}/komentar', [MonitoringTiketController::class, 'storeKomentar'])->name('monitoring.komentar');
         });
 
     });

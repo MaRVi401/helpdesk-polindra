@@ -57,7 +57,10 @@ class TiketController extends Controller
 
     public function create()
     {
-        $layanans = Layanan::with('unit')->get(); 
+        $layanans = Layanan::with('unit')
+                    ->where('status_arsip', 0) 
+                    ->orderBy('nama', 'asc')
+                    ->get();
         return view('mahasiswa.tiket.create', compact('layanans'));
     }
 
