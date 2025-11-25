@@ -5,12 +5,14 @@ namespace App\Http\Controllers\KepalaUnit;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use App\Models\Tiket;
 use App\Models\Staff;
 use App\Models\Unit;
 use App\Models\RiwayatStatusTiket;
 use App\Models\KomentarTiket;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class MonitoringTiketController extends Controller
 {
@@ -72,6 +74,10 @@ class MonitoringTiketController extends Controller
         ])->findOrFail($id);
         
         $this->authorizeAccess($tiket);
+        $this->checkAndProcessTimer($tiket);
+
+        $cacheKey = 'tiket_timer_' . $tiket->id;
+        $tiket->cached_deadline = Cache::get($cacheKey);
         
         $detailLayanan = null;
         $namaLayanan = $tiket->layanan->nama;
@@ -139,5 +145,68 @@ class MonitoringTiketController extends Controller
         if (!$isHead && !$isPic) {
             abort(403, 'Akses Ditolak.');
         }
+    }
+
+    private function checkAndProcessTimer($tiket)
+    {
+        if ($tiket->statusTerbaru->status === 'Diselesaikan_oleh_PIC') {
+            
+            $cacheKey = 'tiket_timer_' . $tiket->id;
+            $deadline = Cache::get($cacheKey);
+            if (!$deadline) {
+                $baseTime = $tiket->updated_at;
+                $defaultDeadline = $baseTime->copy()->addDays(7);
+
+                if (Carbon::now()->greaterThan($defaultDeadline)) {
+                    $this->autoCloseTicket($tiket);
+                } else {
+                    Cache::put($cacheKey, $defaultDeadline, now()->addYear()); 
+                }
+            }
+            else {
+                $deadlineDate = Carbon::parse($deadline);
+                if (Carbon::now()->greaterThan($deadlineDate)) {
+                    Cache::forget($cacheKey); 
+                    $this->autoCloseTicket($tiket);
+                }
+            }
+        } else {
+            Cache::forget('tiket_timer_' . $tiket->id);
+        }
+    }
+    private function autoCloseTicket($tiket) {
+        if ($tiket->statusTerbaru->status !== 'Dinilai_Selesai_oleh_Pemohon') {
+            RiwayatStatusTiket::create([
+                'tiket_id' => $tiket->id,
+                'user_id' => Auth::id(),
+                'status' => 'Dinilai_Selesai_oleh_Pemohon',
+            ]);
+            $tiket->touch(); 
+        }
+    }
+    public function updateTimer(Request $request, $id)
+    {
+        $tiket = Tiket::findOrFail($id);
+        $this->authorizeAccess($tiket);
+        $request->validate([
+            'amount' => 'required|integer|min:1',
+            'unit' => 'required|in:seconds,minutes,hours,days',
+        ]);
+
+        $cacheKey = 'tiket_timer_' . $tiket->id;
+        $amount = (int) $request->amount; 
+        $unit = $request->unit;
+        $tiket->touch(); 
+        $newDeadline = Carbon::now();
+        
+        switch ($unit) {
+            case 'seconds': $newDeadline->addSeconds($amount); break;
+            case 'minutes': $newDeadline->addMinutes($amount); break;
+            case 'hours':   $newDeadline->addHours($amount); break;
+            case 'days':    $newDeadline->addDays($amount); break;
+        }
+        Cache::put($cacheKey, $newDeadline, now()->addYear());
+
+        return back()->with('success', "Timer berhasil di-reset menjadi $amount " . ucfirst($unit));
     }
 }

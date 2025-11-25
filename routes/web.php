@@ -206,6 +206,7 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
             Route::get('/monitoring-tiket/{tiket}/edit', [MonitoringTiketController::class, 'edit'])->name('monitoring.edit');
             Route::put('/monitoring-tiket/{tiket}', [MonitoringTiketController::class, 'update'])->name('monitoring.update');
             Route::post('/monitoring-tiket/{tiket}/komentar', [MonitoringTiketController::class, 'storeKomentar'])->name('monitoring.komentar');
+            Route::put('/monitoring-tiket/{id}/update-timer', [MonitoringTiketController::class, 'updateTimer'])->name('monitoring.update-timer');
         });
 
     });

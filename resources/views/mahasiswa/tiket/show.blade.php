@@ -118,6 +118,57 @@
             <div class="ticket-main">
                 
                 @if($statusSekarang == 'Diselesaikan_oleh_PIC')
+                
+                {{-- ================================================= --}}
+                {{--             TAMBAHAN FITUR TIMER START            --}}
+                {{-- ================================================= --}}
+                @php
+                    // Ambil data timer langsung dari Cache
+                    $deadlineMhs = \Illuminate\Support\Facades\Cache::get('tiket_timer_' . $tiket->id);
+                @endphp
+
+                @if($deadlineMhs)
+                <div class="card mb-4" style="background-color: #fffbeb; border: 1px solid #fcd34d;">
+                    <div class="card-body text-center py-3">
+                        <h5 style="color: #b45309; font-weight: bold; margin-bottom: 8px;">⏳ Konfirmasi Otomatis</h5>
+                        <p style="color: #b45309; font-size: 0.9rem; margin-bottom: 5px;">Tiket ini akan otomatis ditutup jika tidak ada respon dalam:</p>
+                        
+                        <div id="student-countdown" style="font-size: 1.5rem; font-weight: 800; color: #d97706; margin: 10px 0;">
+                            Memuat Waktu...
+                        </div>
+                        
+                        <small style="color: #92400e;">Batas Waktu: {{ \Carbon\Carbon::parse($deadlineMhs)->format('d M Y, H:i:s') }}</small>
+                    </div>
+                </div>
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var deadline = new Date("{{ \Carbon\Carbon::parse($deadlineMhs)->format('Y-m-d H:i:s') }}").getTime();
+                        var x = setInterval(function() {
+                            var now = new Date().getTime();
+                            var distance = deadline - now;
+                            
+                            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                            
+                            document.getElementById("student-countdown").innerHTML = 
+                                days + " Hari " + hours + " Jam " + minutes + " Menit " + seconds + " Detik";
+                                
+                            if (distance < 0) {
+                                clearInterval(x);
+                                document.getElementById("student-countdown").innerHTML = "WAKTU HABIS - Sedang Memproses...";
+                                location.reload();
+                            }
+                        }, 1000);
+                    });
+                </script>
+                @endif
+                {{-- ================================================= --}}
+                {{--             TAMBAHAN FITUR TIMER END              --}}
+                {{-- ================================================= --}}
+
                 <div class="card" style="border: 1px solid #4299e1;">
                     <div class="card-header" style="background-color: #ebf8ff; color: #2c5282;">Konfirmasi Penyelesaian</div>
                     <div class="card-body pt-4">
@@ -336,8 +387,8 @@
                         </div>
                     </div>
                 </div>
-
             </div>
+
         </div>
     </div>
 </div>

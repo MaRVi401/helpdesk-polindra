@@ -30,8 +30,6 @@
     .chat-message-right .chat-message-content { background-color: #e7f3ff; color: #333; }
 
     .timeline { border-left: 3px solid #e2e8f0; margin-left: 10px; padding-left: 20px; }
-    .timeline-item { position: relative; margin-bottom: 1.5rem; }
-    .timeline-item:last-child { margin-bottom: 0; }
     .timeline-dot { position: absolute; left: -31px; top: 5px; width: 15px; height: 15px; border-radius: 50%; background-color: #4299e1; }
     .timeline-time { font-size: 0.85rem; color: #718096; margin-bottom: 0.25rem; }
     .timeline-title { font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
@@ -61,10 +59,8 @@
     </h4>
 
     <div class="row">
-        <!-- KOLOM KIRI: Form Aksi & Riwayat -->
         <div class="col-md-8">
             
-            <!-- 1. KARTU AKSI: Update Status (Dengan Validasi Pemohon_Bermasalah) -->
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Tindak Lanjut</h5>
@@ -111,13 +107,11 @@
                 </div>
             </div>
 
-            <!-- 2. KARTU KOMENTAR: Form Tambah Komentar & List Komentar -->
             <div class="card mb-4">
                 <div class="card-header border-bottom">
                     <h5 class="mb-0">Diskusi & Komentar</h5>
                 </div>
                 <div class="card-body pt-4">
-                    <!-- Form Tambah Komentar (Selalu Aktif agar bisa diskusi) -->
                     <form action="{{ route('kepala-unit.monitoring.komentar', $tiket->id) }}" method="POST" class="mb-4">
                         @csrf
                         <div class="mb-3">
@@ -133,7 +127,6 @@
 
                     <hr class="my-4">
 
-                    <!-- List Riwayat Komentar -->
                     <div class="card">
                     <div class="card-header">Riwayat Komentar ({{ $tiket->komentar->count() }})</div>
                     <div class="card-body">
@@ -161,8 +154,7 @@
                     </div>
                 </div>
 
-            <!-- 3. KARTU LOG STATUS (Terpisah di Bawah) -->
-            <div class="card">
+            <div class="card mt-4">
                     <div class="card-header">Riwayat Status</div>
                     <div class="card-body">
                         <div class="timeline">
@@ -213,9 +205,94 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
 
-        <!-- KOLOM KANAN: Info Tiket (Sidebar) -->
         <div class="col-md-4">
+            
+            {{-- ================================================= --}}
+            {{--             TAMBAHAN FITUR TIMER START            --}}
+            {{-- ================================================= --}}
+            @php
+                $cacheKey = 'tiket_timer_' . $tiket->id;
+                $deadline = \Illuminate\Support\Facades\Cache::get($cacheKey);
+            @endphp
+
+            @if($tiket->statusTerbaru->status === 'Diselesaikan_oleh_PIC' && $deadline)
+                <div class="card mb-4 border border-warning shadow-sm">
+                    <div class="card-header bg-warning text-white d-flex justify-content-between align-items-center py-2">
+                        <h6 class="mb-0 text-white fw-bold"><i class='bx bx-timer'></i> Timer (Realtime)</h6>
+                    </div>
+                    <div class="card-body pt-3 text-center">
+                        <p class="mb-1 text-muted small">Otomatis selesai pada:</p>
+                        <h6 class="fw-bold text-dark mb-2">
+                            {{ \Carbon\Carbon::parse($deadline)->format('d M Y, H:i:s') }}
+                        </h6>
+                        
+                        <div id="admin-countdown" class="alert alert-warning p-2 mb-3 fw-bold" style="font-size: 1.2rem;">
+                            Memuat...
+                        </div>
+
+                        <hr class="my-2">
+                        
+                        <button class="btn btn-sm btn-outline-primary w-100 mb-2" type="button" data-bs-toggle="collapse" data-bs-target="#settingTimer">
+                            <i class='bx bx-cog'></i> Atur Ulang Timer
+                        </button>
+
+                        <div class="collapse" id="settingTimer">
+                            <form action="{{ route('kepala-unit.monitoring.update-timer', $tiket->id) }}" method="POST" class="bg-light p-2 rounded border">
+                                @csrf
+                                @method('PUT')
+                                <label class="form-label small text-start w-100 fw-bold">Set Durasi Baru</label>
+                                <div class="input-group input-group-sm">
+                                    <input type="number" name="amount" class="form-control" placeholder="Angka" min="1" required>
+                                    
+                                    <select name="unit" class="form-select" style="max-width: 100px;">
+                                        <option value="days">Hari</option>
+                                        <option value="hours">Jam</option>
+                                        <option value="minutes">Menit</option>
+                                        <option value="seconds">Detik</option>
+                                    </select>
+                                    
+                                    <button class="btn btn-primary" type="submit">Set</button>
+                                </div>
+                                <div class="form-text text-start text-muted" style="font-size: 0.7rem;">
+                                    Timer di-reset mulai dari SEKARANG.
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var countDownDate = new Date("{{ \Carbon\Carbon::parse($deadline)->format('Y-m-d H:i:s') }}").getTime();
+
+                        var x = setInterval(function() {
+                            var now = new Date().getTime();
+                            var distance = countDownDate - now;
+
+                            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                            document.getElementById("admin-countdown").innerHTML = 
+                                days + "d " + hours + "h " + minutes + "m " + seconds + "s";
+
+                            if (distance < 0) {
+                                clearInterval(x);
+                                document.getElementById("admin-countdown").innerHTML = "WAKTU HABIS...";
+                                location.reload();
+                            }
+                        }, 1000);
+                    });
+                </script>
+            @endif
+            {{-- ================================================= --}}
+            {{--             TAMBAHAN FITUR TIMER END              --}}
+            {{-- ================================================= --}}
+
             <div class="card mb-4">
                 <div class="card-header bg-label-secondary text-dark fw-bold">Informasi Tiket</div>
                 <div class="card-body pt-4">
@@ -262,7 +339,6 @@
                         </dd>
                     </dl>
 
-                    <!-- Detail Data Spesifik -->
                     @if(isset($detailLayanan))
                         <hr>
                         <h6 class="fw-bold small">Data Tambahan</h6>
@@ -279,7 +355,6 @@
                 </div>
             </div>
 
-            <!-- Info Pemohon -->
             <div class="card">
                 <div class="card-header">Data Pemohon</div>
                 <div class="card-body text-center">
