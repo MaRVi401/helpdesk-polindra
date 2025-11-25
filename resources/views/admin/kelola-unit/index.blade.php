@@ -59,6 +59,7 @@
                     <th style="width: 1%;"><input type="checkbox" id="select-all"></th>
                     <th>No</th>
                     <th>Nama Unit</th>
+                    <th>Slug</th>
                     <th>Kepala Unit</th>
                     <th style="width: 20%;">Aksi</th>
                 </tr>
@@ -69,6 +70,7 @@
                     <td><input type="checkbox" class="row-checkbox" value="{{ $unit->id }}"></td>
                     <td>{{ $loop->iteration + $units->firstItem() - 1 }}</td>
                     <td>{{ $unit->nama_unit }}</td>
+                    <td>{{ $unit->slug }}</td>
                     <td>{{ $unit->kepalaUnit->user->name ?? 'Belum Ditentukan' }}</td>
                     <td class="action-buttons">
                         <a href="{{ route('admin.unit.edit', $unit) }}">Edit</a>

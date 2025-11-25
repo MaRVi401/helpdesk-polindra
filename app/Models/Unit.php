@@ -4,24 +4,36 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Unit extends Model
+
 {
+    use HasFactory;
     protected $table = 'units';
     protected $guarded = ['id'];
-    protected $fillable = ['nama_unit', 'slug'];
+    protected $fillable = ['nama_unit', 'slug', 'kepala_id'];
 
     protected static function boot()
     {
         parent::boot();
 
         static::creating(function ($unit) {
-            $unit->slug = $unit->createSlug($unit->nama_unit);
+
+            if (empty($unit->slug)) {
+                $unit->slug = $unit->createSlug($unit->nama_unit);
+            } else {
+                $unit->slug = $unit->createSlug($unit->slug);
+            }
         });
 
         static::updating(function ($unit) {
-            if ($unit->isDirty('nama_unit')) {
+
+            if (empty($unit->slug)) {
                 $unit->slug = $unit->createSlug($unit->nama_unit);
+            }
+            elseif ($unit->isDirty('slug')) {
+                $unit->slug = $unit->createSlug($unit->slug);
             }
         });
     }

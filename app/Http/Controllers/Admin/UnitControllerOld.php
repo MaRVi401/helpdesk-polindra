@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Exports\UnitExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
 
 class UnitControllerOld extends Controller
 {
@@ -46,11 +47,14 @@ class UnitControllerOld extends Controller
      */
     public function store(Request $request)
     {
+        // Validasi untuk operasi CREATE
         $request->validate([
             'nama_unit' => 'required|string|max:255|unique:units,nama_unit',
             'kepala_id' => 'nullable|exists:staff,id',
+            'slug' => 'nullable|string|max:255|unique:units,slug',
         ], [
             'nama_unit.unique' => 'Nama unit ini sudah ada.',
+            'slug.unique' => 'Slug ini sudah digunakan oleh unit lain.',
         ]);
 
         Unit::create($request->all());
@@ -81,7 +85,7 @@ class UnitControllerOld extends Controller
      */
     public function update(Request $request, Unit $unit)
     {
-        $request->validate([
+        $validated = $request->validate([
             'nama_unit' => [
                 'required',
                 'string',
@@ -89,11 +93,21 @@ class UnitControllerOld extends Controller
                 Rule::unique('units', 'nama_unit')->ignore($unit->id),
             ],
             'kepala_id' => 'nullable|exists:staff,id',
+            'slug' => [
+                'nullable',
+                'string',
+                'max:255',
+                Rule::unique('units', 'slug')->ignore($unit->id),
+            ],
         ], [
             'nama_unit.unique' => 'Nama unit ini sudah digunakan.',
+            'slug.unique' => 'Slug ini sudah digunakan oleh unit lain.',
         ]);
+        if (isset($validated['slug']) && empty($validated['slug'])) {
+            unset($validated['slug']);
+        }
 
-        $unit->update($request->all());
+        $unit->update($validated);
 
         return redirect()->route('admin.unit.index')->with('success', 'Unit berhasil diperbarui.');
     }
@@ -103,7 +117,6 @@ class UnitControllerOld extends Controller
      */
     public function destroy(Unit $unit)
     {
-        // Cek apakah ada staff yang masih terhubung dengan unit ini
         if ($unit->staff()->count() > 0) {
             return redirect()->route('admin.unit.index')->with('error', 'Gagal menghapus! Unit ini masih memiliki staff terdaftar.');
         }
