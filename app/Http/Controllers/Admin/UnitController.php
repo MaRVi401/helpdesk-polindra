@@ -27,8 +27,10 @@ class UnitController extends Controller
         $request->validate([
             'nama_unit' => 'required|string|max:255|unique:units,nama_unit',
             'kepala_id' => 'nullable|exists:staff,id',
+            'slug' => 'nullable|string|max:255|unique:units,slug',
         ], [
             'nama_unit.unique' => 'Nama unit ini sudah ada.',
+            'slug.unique' => 'Slug ini sudah digunakan oleh unit lain.',
         ]);
 
         Unit::create($request->all());
@@ -51,7 +53,8 @@ class UnitController extends Controller
     public function update(Request $request, $id)
     {
         $data_unit = Unit::findOrFail($id);
-        $request->validate([
+
+        $validated = $request->validate([
             'nama_unit' => [
                 'required',
                 'string',
@@ -59,14 +62,22 @@ class UnitController extends Controller
                 Rule::unique('units', 'nama_unit')->ignore($data_unit->id),
             ],
             'kepala_id' => 'nullable|exists:staff,id',
+            'slug' => [
+                'nullable',
+                'string',
+                'max:255',
+                Rule::unique('units', 'slug')->ignore($data_unit->id),
+            ],
         ], [
             'nama_unit.unique' => 'Nama unit ini sudah digunakan.',
+            'slug.unique' => 'Slug ini sudah digunakan oleh unit lain.',
         ]);
 
-        $data_unit->update([
-            'nama_unit' => $request->nama_unit,
-            'kepala_id' => $request->kepala_id,
-        ]);
+        if (isset($validated['slug']) && empty($validated['slug'])) {
+            unset($validated['slug']);
+        }
+
+        $data_unit->update($validated);
 
         return redirect()->route('unit.index')->with('success', 'Unit berhasil diperbarui.');
     }

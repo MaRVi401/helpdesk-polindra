@@ -27,6 +27,7 @@
             <th></th>
             <th></th>
             <th>Nama Unit</th>
+            <th>Slug</th>
             <th>Kepala Unit</th>
             <th>Aksi</th>
           </tr>
@@ -37,6 +38,7 @@
               <td></td>
               <td></td>
               <td>{{ $unit->nama_unit }}</td>
+              <td>{{ $unit->slug }}</td>
               <td>{{ $unit->kepalaUnit->user->name ?? 'Belum Ditentukan' }}</td>
               <td data-id="{{ $unit->id }}"></td>
             </tr>

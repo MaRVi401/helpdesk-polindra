@@ -79,6 +79,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
         { data: 'id' },
         { data: 'id', orderable: false, render: DataTable.render.select() },
         { data: 'nama_unit' },
+        { data: 'slug' },
         { data: 'kepalaUnit' },
         { data: 'id' }
       ],
@@ -115,11 +116,17 @@ document.addEventListener('DOMContentLoaded', function (e) {
         {
           targets: 3,
           render: function (data, type, full, meta) {
-            return `<span>${data}</span>`;
+            return `<span class="fw-medium">${data}</span>`; // Tampilkan slug
           }
         },
         {
           targets: 4,
+          render: function (data, type, full, meta) {
+            return `<span>${data}</span>`;
+          }
+        },
+        {
+          targets: 5,
           title: 'Aksi',
           searchable: false,
           orderable: false,
@@ -181,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
                       text: `<span class="d-flex align-items-center"><i class="icon-base ti tabler-printer me-1"></i>Print</span>`,
                       className: 'dropdown-item',
                       exportOptions: {
-                        columns: [2, 3]
+                        columns: [2, 3, 4]
                       }
                     },
                     {
@@ -189,7 +196,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
                       text: `<span class="d-flex align-items-center"><i class="icon-base ti tabler-file me-1"></i>Csv</span>`,
                       className: 'dropdown-item',
                       exportOptions: {
-                        columns: [2, 3]
+                        columns: [2, 3, 4]
                       }
                     },
                     {
@@ -197,7 +204,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
                       text: `<span class="d-flex align-items-center"><i class="icon-base ti tabler-upload me-1"></i>Excel</span>`,
                       className: 'dropdown-item',
                       exportOptions: {
-                        columns: [2, 3]
+                        columns: [2, 3, 4]
                       }
                     },
                     {
@@ -213,7 +220,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
                       text: `<i class="icon-base ti tabler-copy me-1"></i>Copy`,
                       className: 'dropdown-item',
                       exportOptions: {
-                        columns: [2, 3]
+                        columns: [2, 3, 4]
                       }
                     }
                   ]
