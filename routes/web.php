@@ -221,6 +221,5 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
     Route::put('/tiket/{id}', [AdminUnitTiketController::class, 'update'])->name('tiket.update');
     Route::post('/tiket/{id}/komentar', [AdminUnitTiketController::class, 'storeKomentar'])->name('tiket.komentar');
     Route::put('/tiket/{id}/update-timer', [AdminUnitTiketController::class, 'updateTimer'])->name('tiket.updateTimer');
-    Route::resource('layanan', AdminUnitLayananController::class);
     });
 });
