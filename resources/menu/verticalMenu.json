@@ -54,8 +54,7 @@
       "slug": "service",
       "roles": [
         "super_admin",
-        "kepala_unit",
-        "admin_unit"
+        "kepala_unit"
       ],
       "submenu": [
         {
@@ -69,8 +68,7 @@
           "slug_param": "upatik",
           "roles": [
             "super_admin",
-            "kepala_unit",
-            "admin_unit"
+            "kepala_unit"
           ]
         },
         {
@@ -84,8 +82,7 @@
           "slug_param": "akademik",
           "roles": [
             "super_admin",
-            "kepala_unit",
-            "admin_unit"
+            "kepala_unit"
           ]
         },
         {
@@ -99,8 +96,7 @@
           "slug_param": "kemahasiswaan",
           "roles": [
             "super_admin",
-            "kepala_unit",
-            "admin_unit"
+            "kepala_unit"
           ]
         },
         {
@@ -114,8 +110,7 @@
           "slug_param": "upt-bahasa",
           "roles": [
             "super_admin",
-            "kepala_unit",
-            "admin_unit"
+            "kepala_unit"
           ]
         }
       ]
