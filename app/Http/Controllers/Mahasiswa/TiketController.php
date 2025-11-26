@@ -218,7 +218,8 @@ class TiketController extends Controller
         $riwayatTerbaru = $tiket->riwayatStatus->sortByDesc('created_at')->first();
         $statusSekarang = $riwayatTerbaru ? $riwayatTerbaru->status : 'Diajukan_oleh_Pemohon'; 
 
-        return view('mahasiswa.tiket.show', compact('tiket', 'detail', 'statusSekarang'));
+        return view('mahasiswa.tiket.show', compact('tiket', 'detail', 'statusSekarang'))
+                ->with('detailLayanan', $detail);
     }
 
     public function storeKomentar(Request $request, $id)

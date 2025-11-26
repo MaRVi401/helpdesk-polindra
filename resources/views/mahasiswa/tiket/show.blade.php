@@ -288,25 +288,58 @@
                     </div>
                 </div>
 
-                @if ($detail)
-                <div class="card">
-                    <div class="card-header">Detail Permohonan</div>
-                    <div class="card-body">
-                        <dl class="info-grid">
-                            @if (Str::contains($tiket->layanan->nama, 'Surat Keterangan Aktif Kuliah'))
-                                <dt>Keperluan</dt> <dd>{{ $detail->keperluan }}</dd>
-                                <dt>Thn Ajaran</dt> <dd>{{ $detail->tahun_ajaran }}</dd>
-                                <dt>Semester</dt> <dd>{{ $detail->semester }}</dd>
-                            @elseif(Str::contains($tiket->layanan->nama, 'Reset Akun'))
-                                <dt>Aplikasi</dt> <dd>{{ $detail->aplikasi }}</dd>
-                                <dt>Masalah</dt> <dd>{{ $detail->deskripsi }}</dd>
-                            @elseif(Str::contains($tiket->layanan->nama, 'Ubah Data Mahasiswa'))
-                                <dt>Nama Baru</dt> <dd>{{ $detail->data_nama_lengkap ?? '-' }}</dd>
-                                <dt>Tmp Lahir</dt> <dd>{{ $detail->data_tmp_lahir ?? '-' }}</dd>
-                                <dt>Tgl Lahir</dt> <dd>{{ $detail->data_tgl_lhr ?? '-' }}</dd>
-                            @elseif(Str::contains($tiket->layanan->nama, 'Publikasi'))
-                                <dt>Judul</dt> <dd>{{ $detail->judul }}</dd>
-                                <dt>Kategori</dt> <dd>{{ $detail->kategori }}</dd>
+                {{-- Bagian Detail Layanan di View --}}
+                @if ($detailLayanan)
+                    <div class="card">
+                        <div class="card-header">Detail Layanan: {{ $tiket->layanan->nama }}</div>
+                        <div class="card-body">
+                            <dl class="info-grid">
+                                {{-- 1. Surat Keterangan Aktif Kuliah --}}
+                                @if (Str::contains($tiket->layanan->nama, 'Surat Keterangan Aktif Kuliah'))
+                                    <dt>Keperluan</dt>
+                                    <dd>{{ $detailLayanan->keperluan }}</dd>
+
+                                    <dt>Tahun Ajaran</dt>
+                                    <dd>{{ $detailLayanan->tahun_ajaran }}</dd>
+
+                                    <dt>Semester</dt>
+                                    <dd>{{ $detailLayanan->semester }}</dd>
+
+                                    @if ($detailLayanan->keperluan_lainnya)
+                                        <dt>Keperluan Lainnya</dt>
+                                        <dd>{{ $detailLayanan->keperluan_lainnya }}</dd>
+                                    @endif
+
+                                    {{-- 2. Reset Akun --}}
+                                @elseif(Str::contains($tiket->layanan->nama, 'Reset Akun'))
+                                    <dt>Aplikasi</dt>
+                                    <dd>{{ $detailLayanan->aplikasi }}</dd>
+
+                                    <dt>Deskripsi Masalah</dt>
+                                    <dd>{{ $detailLayanan->deskripsi }}</dd>
+
+                                    {{-- 3. Ubah Data Mahasiswa --}}
+                                @elseif(Str::contains($tiket->layanan->nama, 'Ubah Data Mahasiswa'))
+                                    <dt>Data Nama Lengkap</dt>
+                                    <dd>{{ $detailLayanan->data_nama_lengkap ?? '-' }}</dd>
+
+                                    <dt>Tempat Lahir Baru</dt>
+                                    <dd>{{ $detailLayanan->data_tmp_lahir ?? '-' }}</dd>
+
+                                    <dt>Tanggal Lahir Baru</dt>
+                                    <dd>{{ $detailLayanan->data_tgl_lhr ?? '-' }}</dd>
+
+                                    {{-- 4. Request Publikasi --}}
+                                @elseif(Str::contains($tiket->layanan->nama, 'Request Publikasi') || Str::contains($tiket->layanan->nama, 'Publikasi'))
+                                    <dt>Judul / Topik</dt>
+                                    <dd>{{ $detailLayanan->judul }}</dd>
+
+                                    <dt>Kategori</dt>
+                                    <dd>{{ $detailLayanan->kategori }}</dd>
+
+                                    <dt>Konten / Isi</dt>
+                                    <dd>{!! nl2br(e($detailLayanan->konten)) !!}</dd>
+                                    
                                 @if ($detail->gambar)
                                     <dt>Lampiran</dt>
                                     @php
