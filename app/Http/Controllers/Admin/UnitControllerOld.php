@@ -37,8 +37,8 @@ class UnitControllerOld extends Controller
      */
     public function create()
     {
-        $staffs = Staff::whereHas('jabatan', function ($query) {
-            $query->whereRaw('REPLACE(LOWER(nama_jabatan), " ", "_") = ?', ['kepala_unit']);
+        $staffs = Staff::whereHas('user', function ($query) {
+            $query->where('role', 'kepala_unit');
         })->with('user')->get();
 
         return view('admin.kelola-unit.create', compact('staffs'));
@@ -81,8 +81,8 @@ class UnitControllerOld extends Controller
      */
     public function edit(Unit $unit)
     {
-        $staffs = Staff::whereHas('jabatan', function ($query) {
-            $query->whereRaw('REPLACE(LOWER(nama_jabatan), " ", "_") = ?', ['kepala_unit']);
+        $staffs = Staff::whereHas('user', function ($query) {
+            $query->where('role', 'kepala_unit');
         })->with('user')->get();
 
         return view('admin.kelola-unit.edit', compact('unit', 'staffs'));

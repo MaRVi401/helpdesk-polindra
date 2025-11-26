@@ -18,8 +18,8 @@ class UnitController extends Controller
 
     public function create()
     {
-        $data_staf = Staff::whereHas('jabatan', function ($query) {
-            $query->whereRaw('REPLACE(LOWER(nama_jabatan), " ", "_") = ?', ['kepala_unit']);
+        $data_staf = Staff::whereHas('user', function ($query) {
+            $query->where('role', 'kepala_unit');
         })->with('user')->get();
         return view('content.apps.admin.unit.create', compact('data_staf'));
     }
@@ -48,8 +48,8 @@ class UnitController extends Controller
     public function edit($id)
     {
         $data_unit = Unit::findOrFail($id);
-        $data_staf = Staff::whereHas('jabatan', function ($query) {
-            $query->whereRaw('REPLACE(LOWER(nama_jabatan), " ", "_") = ?', ['kepala_unit']);
+        $data_staf = Staff::whereHas('user', function ($query) {
+            $query->where('role', 'kepala_unit');
         })->with('user')->get();
         return view('content.apps.admin.unit.edit', compact('data_unit', 'data_staf'));
     }
@@ -77,7 +77,7 @@ class UnitController extends Controller
             'slug.unique' => 'Slug ini sudah digunakan oleh unit lain.',
         ]);
 
-        
+
         $data_unit->update($validated);
 
         return redirect()->route('unit.index')->with('success', 'Unit berhasil diperbarui.');
