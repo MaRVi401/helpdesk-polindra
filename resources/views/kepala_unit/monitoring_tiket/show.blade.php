@@ -38,11 +38,6 @@
     
     .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; color: white; text-transform: capitalize; }
     
-    .status-diajukan_oleh_pemohon { background-color: #a0aec0; } 
-    .status-ditangani_oleh_pic, .status-diselesaikan_oleh_pic { background-color: #f6ad55; } 
-    .status-dinilai_belum_selesai_oleh_pemohon, .status-pemohon_bermasalah { background-color: #f56565; } 
-    .status-dinilai_selesai_oleh_kepala, .status-dinilai_selesai_oleh_pemohon { background-color: #48bb78; } 
-
     .dot-super_admin { background-color: #e53e3e !important; }
     .body-super_admin { background-color: #fef2f2 !important; border-color: #fbd7d7 !important; }
     .dot-mahasiswa { background-color: #4299e1 !important; }
@@ -59,6 +54,7 @@
     </h4>
 
     <div class="row">
+        {{-- KOLOM KIRI (Tindak Lanjut, Komentar, Riwayat) --}}
         <div class="col-md-8">
             
             <div class="card mb-4">
@@ -68,8 +64,7 @@
                 </div>
                 <div class="card-body">
                     @php
-                        $currentStatus = $tiket->statusTerbaru->status ?? '';
-                        // VALIDASI VIEW: Menu hanya aktif jika status == 'Pemohon_Bermasalah'
+                        $currentStatus = $tiket->statusTerbaru?->status ?? '';
                         $canEdit = ($currentStatus === 'Pemohon_Bermasalah');
                     @endphp
 
@@ -77,7 +72,7 @@
                         <div class="alert alert-warning d-flex align-items-center mb-4" role="alert">
                             <i class="bx bx-lock-alt me-2"></i>
                             <div>
-                                <strong>Menu Terkunci:</strong> Anda hanya dapat mengubah status jika tiket saat ini berstatus <strong>"Pemohon Bermasalah"</strong>. Saat ini status adalah: <em>{{ str_replace('_', ' ', $currentStatus) }}</em>.
+                                <strong>Menu Terkunci:</strong> Anda hanya dapat mengubah status jika tiket saat ini berstatus <strong>"Pemohon Bermasalah"</strong>. Saat ini status adalah: <em>{{ str_replace('_', ' ', $currentStatus ?: 'Baru') }}</em>.
                             </div>
                         </div>
                     @endif
@@ -208,17 +203,103 @@
             </div>
         </div>
 
+        {{-- KOLOM KANAN (Sidebar) --}}
         <div class="col-md-4">
             
-            {{-- ================================================= --}}
-            {{--             TAMBAHAN FITUR TIMER START            --}}
-            {{-- ================================================= --}}
+            {{-- 1. INFORMASI TIKET (POSISI PALING ATAS) --}}
+            <div class="card mb-4">
+                <div class="card-header bg-label-secondary text-dark fw-bold">
+                    <i class="bx bx-info-circle me-1"></i> Informasi Tiket
+                </div>
+                <div class="card-body pt-4">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">No Tiket</dt>
+                        <dd class="col-sm-8 text-end fw-bold">#{{ $tiket->no_tiket }}</dd>
+
+                        <dt class="col-sm-4">Layanan</dt>
+                        <dd class="col-sm-8 text-end">{{ $tiket->layanan->nama }}</dd>
+
+                        <dt class="col-sm-4">Status</dt>
+                        <dd class="col-sm-8 text-end">
+                            @php
+                                $st = $tiket->statusTerbaru?->status ?? 'Baru';
+                                $cls = 'status-' . strtolower($st);
+                            @endphp
+                            <span class="status-badge {{ $cls }}">{{ str_replace('_', ' ', $st) }}</span>
+                        </dd>
+
+                        <dt class="col-sm-4 mt-2">Prioritas</dt>
+                        <dd class="col-sm-8 mt-2 text-end">
+                            @php
+                                $prioVal = $tiket->layanan->prioritas ?? 2;
+                                $prioLabelShow = 'Normal';
+                                $prioClassShow = 'bg-secondary';
+
+                                if ($prioVal == 3) { 
+                                    $prioLabelShow = 'Tinggi'; $prioClassShow = 'prioritas-tinggi'; 
+                                } elseif ($prioVal == 2) { 
+                                    $prioLabelShow = 'Sedang'; $prioClassShow = 'prioritas-sedang'; 
+                                } elseif ($prioVal == 1) { 
+                                    $prioLabelShow = 'Rendah'; $prioClassShow = 'prioritas-rendah'; 
+                                }
+                            @endphp
+                            <span class="badge {{ $prioClassShow }}">{{ $prioLabelShow }}</span>
+                        </dd>
+                        
+                        <hr class="my-3">
+                        
+                        <dt class="col-sm-12 mb-1">Deskripsi Awal:</dt>
+                        <dd class="col-sm-12 bg-lighter p-2 rounded text-break">
+                            {{ $tiket->deskripsi }}
+                        </dd>
+                    </dl>
+
+                    @if(isset($detailLayanan))
+                        <hr>
+                        <h6 class="fw-bold small">Data Tambahan</h6>
+                        <ul class="ps-3 mb-0 small text-muted">
+                            @if(\Illuminate\Support\Str::contains($tiket->layanan->nama, 'Surat Keterangan'))
+                                <li>Keperluan: {{ $detailLayanan->keperluan }}</li>
+                            @elseif(\Illuminate\Support\Str::contains($tiket->layanan->nama, 'Reset Akun'))
+                                <li>Aplikasi: {{ $detailLayanan->aplikasi }}</li>
+                            @elseif(\Illuminate\Support\Str::contains($tiket->layanan->nama, 'Ubah Data'))
+                                <li>Nama Baru: {{ $detailLayanan->data_nama_lengkap }}</li>
+                            
+                            {{-- =============================================== --}}
+                            {{--       PREVIEW GAMBAR (KEPALA UNIT)             --}}
+                            {{-- =============================================== --}}
+                            @elseif(\Illuminate\Support\Str::contains($tiket->layanan->nama, 'Publikasi') && isset($detailLayanan->gambar))
+                                @if($detailLayanan->gambar)
+                                    <li class="mt-2">
+                                        <span class="d-block fw-bold mb-1">Lampiran Gambar:</span>
+                                        
+                                        {{-- PREVIEW START --}}
+                                        <div class="mb-2 text-center border rounded p-1 bg-light">
+                                            <img src="{{ asset('storage/' . $detailLayanan->gambar) }}" alt="Preview" class="img-fluid rounded" style="max-height: 150px;">
+                                        </div>
+                                        {{-- PREVIEW END --}}
+                                        
+                                        <a href="{{ asset('storage/' . $detailLayanan->gambar) }}" target="_blank" class="btn btn-xs btn-primary w-100">
+                                            <i class='bx bx-image me-1'></i> Lihat Gambar Penuh
+                                        </a>
+                                    </li>
+                                @endif
+                            @endif
+                            {{-- =============================================== --}}
+                            
+                        </ul>
+                    @endif
+                </div>
+            </div>
+
+            {{-- 2. FITUR TIMER (DIPINDAH KE BAWAH INFORMASI TIKET) --}}
             @php
                 $cacheKey = 'tiket_timer_' . $tiket->id;
                 $deadline = \Illuminate\Support\Facades\Cache::get($cacheKey);
+                $isTimerActive = ($tiket->statusTerbaru?->status === 'Diselesaikan_oleh_PIC' && $deadline);
             @endphp
 
-            @if($tiket->statusTerbaru->status === 'Diselesaikan_oleh_PIC' && $deadline)
+            @if($isTimerActive)
                 <div class="card mb-4 border border-warning shadow-sm">
                     <div class="card-header bg-warning text-white d-flex justify-content-between align-items-center py-2">
                         <h6 class="mb-0 text-white fw-bold"><i class='bx bx-timer'></i> Timer (Realtime)</h6>
@@ -266,7 +347,8 @@
 
                 <script>
                     document.addEventListener('DOMContentLoaded', function () {
-                        var countDownDate = new Date("{{ \Carbon\Carbon::parse($deadline)->format('Y-m-d H:i:s') }}").getTime();
+                        var deadlineStr = "{{ \Carbon\Carbon::parse($deadline)->format('Y-m-d H:i:s') }}";
+                        var countDownDate = new Date(deadlineStr).getTime();
 
                         var x = setInterval(function() {
                             var now = new Date().getTime();
@@ -282,79 +364,20 @@
 
                             if (distance < 0) {
                                 clearInterval(x);
-                                document.getElementById("admin-countdown").innerHTML = "WAKTU HABIS...";
-                                location.reload();
+                                document.getElementById("admin-countdown").innerHTML = "Memproses status...";
+                                document.getElementById("admin-countdown").classList.remove('alert-warning');
+                                document.getElementById("admin-countdown").classList.add('alert-success');
+                                
+                                setTimeout(function() {
+                                    window.location.reload();
+                                }, 3000);
                             }
                         }, 1000);
                     });
                 </script>
             @endif
-            {{-- ================================================= --}}
-            {{--             TAMBAHAN FITUR TIMER END              --}}
-            {{-- ================================================= --}}
 
-            <div class="card mb-4">
-                <div class="card-header bg-label-secondary text-dark fw-bold">Informasi Tiket</div>
-                <div class="card-body pt-4">
-                    <dl class="row mb-0">
-                        <dt class="col-sm-4">No Tiket</dt>
-                        <dd class="col-sm-8 text-end fw-bold">#{{ $tiket->no_tiket }}</dd>
-
-                        <dt class="col-sm-4">Layanan</dt>
-                        <dd class="col-sm-8 text-end">{{ $tiket->layanan->nama }}</dd>
-
-                        <dt class="col-sm-4">Status</dt>
-                        <dd class="col-sm-8 text-end">
-                            @php
-                                $st = $tiket->statusTerbaru->status ?? 'Baru';
-                                $cls = 'status-' . strtolower($st);
-                            @endphp
-                            <span class="status-badge {{ $cls }}">{{ str_replace('_', ' ', $st) }}</span>
-                        </dd>
-
-                        <dt class="col-sm-4 mt-2">Prioritas</dt>
-                        <dd class="col-sm-8 mt-2 text-end">
-                            @php
-                                // Prioritas diambil dari Layanan (Read-only di sini karena tidak bisa diedit)
-                                $prioVal = $tiket->layanan->prioritas ?? 2;
-                                $prioLabelShow = 'Normal';
-                                $prioClassShow = 'bg-secondary';
-
-                                if ($prioVal == 3) { 
-                                    $prioLabelShow = 'Tinggi'; $prioClassShow = 'prioritas-tinggi'; 
-                                } elseif ($prioVal == 2) { 
-                                    $prioLabelShow = 'Sedang'; $prioClassShow = 'prioritas-sedang'; 
-                                } elseif ($prioVal == 1) { 
-                                    $prioLabelShow = 'Rendah'; $prioClassShow = 'prioritas-rendah'; 
-                                }
-                            @endphp
-                            <span class="badge {{ $prioClassShow }}">{{ $prioLabelShow }}</span>
-                        </dd>
-                        
-                        <hr class="my-3">
-                        
-                        <dt class="col-sm-12 mb-1">Deskripsi Awal:</dt>
-                        <dd class="col-sm-12 bg-lighter p-2 rounded text-break">
-                            {{ $tiket->deskripsi }}
-                        </dd>
-                    </dl>
-
-                    @if(isset($detailLayanan))
-                        <hr>
-                        <h6 class="fw-bold small">Data Tambahan</h6>
-                        <ul class="ps-3 mb-0 small text-muted">
-                            @if(\Illuminate\Support\Str::contains($tiket->layanan->nama, 'Surat Keterangan'))
-                                <li>Keperluan: {{ $detailLayanan->keperluan }}</li>
-                            @elseif(\Illuminate\Support\Str::contains($tiket->layanan->nama, 'Reset Akun'))
-                                <li>Aplikasi: {{ $detailLayanan->aplikasi }}</li>
-                            @elseif(\Illuminate\Support\Str::contains($tiket->layanan->nama, 'Ubah Data'))
-                                <li>Nama Baru: {{ $detailLayanan->data_nama_lengkap }}</li>
-                            @endif
-                        </ul>
-                    @endif
-                </div>
-            </div>
-
+            {{-- 3. DATA PEMOHON --}}
             <div class="card">
                 <div class="card-header">Data Pemohon</div>
                 <div class="card-body text-center">

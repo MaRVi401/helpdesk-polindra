@@ -25,17 +25,23 @@ class MonitoringTiketController extends Controller
         $user = Auth::user();
         $staff = Staff::where('user_id', $user->id)->firstOrFail();
         
-        $unitDipimpin = Unit::where('kepala_id', $staff->id)->first();
-        $unitId = $unitDipimpin ? $unitDipimpin->id : null;
+        // Ambil SEMUA unit yang dipimpin
+        $unitsDipimpin = Unit::where('kepala_id', $staff->id)->get();
+        
+        // Buat array ID unit
+        $unitIds = $unitsDipimpin->isNotEmpty() ? $unitsDipimpin->pluck('id')->toArray() : [];
+        
         $picLayananIds = $staff->layanan()->pluck('layanan.id')->toArray();
 
         $query = Tiket::with(['pemohon.mahasiswa.programStudi', 'layanan.unit', 'statusTerbaru'])
-            ->where(function($mainQuery) use ($unitId, $picLayananIds) {
-                if ($unitId) {
-                    $mainQuery->whereHas('layanan', function ($q) use ($unitId) {
-                        $q->where('unit_id', $unitId);
+            ->where(function($mainQuery) use ($unitIds, $picLayananIds) {
+                // Logika OR: Jika dia Kepala Unit (cek array unitIds) ATAU dia PIC
+                if (!empty($unitIds)) {
+                    $mainQuery->whereHas('layanan', function ($q) use ($unitIds) {
+                        $q->whereIn('unit_id', $unitIds);
                     });
                 }
+                
                 if (!empty($picLayananIds)) {
                     $mainQuery->orWhereIn('layanan_id', $picLayananIds);
                 }
@@ -60,7 +66,8 @@ class MonitoringTiketController extends Controller
         }
 
         $tikets = $query->paginate(10)->withQueryString();
-        return view('kepala_unit.monitoring_tiket.index', compact('tikets', 'unitDipimpin'));
+        
+        return view('kepala_unit.monitoring_tiket.index', compact('tikets', 'unitsDipimpin'));
     }
 
     public function show($id)
@@ -92,11 +99,15 @@ class MonitoringTiketController extends Controller
     public function edit($id) {
         return $this->show($id);
     }
+
     public function update(Request $request, $id)
     {
         $tiket = Tiket::findOrFail($id);
         $this->authorizeAccess($tiket);
-        $statusSaatIni = $tiket->statusTerbaru->status ?? null;
+
+        // PERBAIKAN: Gunakan null safe operator (?->)
+        $statusSaatIni = $tiket->statusTerbaru?->status;
+
         if ($statusSaatIni !== 'Pemohon_Bermasalah') {
              return back()->with('error', 'Akses Ditolak: Anda hanya dapat memvalidasi tiket jika Admin/PIC telah mengubah status menjadi "Pemohon Bermasalah".');
         }
@@ -137,9 +148,13 @@ class MonitoringTiketController extends Controller
     {
         $user = Auth::user();
         $staff = Staff::where('user_id', $user->id)->first();
-        $unitDipimpin = Unit::where('kepala_id', $staff->id)->first();
         
-        $isHead = $unitDipimpin && ($tiket->layanan->unit_id === $unitDipimpin->id);
+        $unitsDipimpin = Unit::where('kepala_id', $staff->id)->get();
+        
+        // Cek apakah tiket berasal dari SALAH SATU unit yang dipimpin
+        $isHead = $unitsDipimpin->contains('id', $tiket->layanan->unit_id);
+        
+        // Cek PIC
         $isPic = $staff->layanan()->where('layanan.id', $tiket->layanan_id)->exists();
 
         if (!$isHead && !$isPic) {
@@ -149,7 +164,8 @@ class MonitoringTiketController extends Controller
 
     private function checkAndProcessTimer($tiket)
     {
-        if ($tiket->statusTerbaru->status === 'Diselesaikan_oleh_PIC') {
+        // PERBAIKAN: Gunakan null safe operator (?->) untuk mencegah error jika statusTerbaru null
+        if ($tiket->statusTerbaru?->status === 'Diselesaikan_oleh_PIC') {
             
             $cacheKey = 'tiket_timer_' . $tiket->id;
             $deadline = Cache::get($cacheKey);
@@ -174,8 +190,10 @@ class MonitoringTiketController extends Controller
             Cache::forget('tiket_timer_' . $tiket->id);
         }
     }
+    
     private function autoCloseTicket($tiket) {
-        if ($tiket->statusTerbaru->status !== 'Dinilai_Selesai_oleh_Pemohon') {
+        // PERBAIKAN: Gunakan null safe operator (?->)
+        if ($tiket->statusTerbaru?->status !== 'Dinilai_Selesai_oleh_Pemohon') {
             RiwayatStatusTiket::create([
                 'tiket_id' => $tiket->id,
                 'user_id' => Auth::id(),
@@ -184,6 +202,7 @@ class MonitoringTiketController extends Controller
             $tiket->touch(); 
         }
     }
+
     public function updateTimer(Request $request, $id)
     {
         $tiket = Tiket::findOrFail($id);

@@ -14,50 +14,61 @@ use Illuminate\Validation\Rule;
 class KelolaPicController extends Controller
 {
     /**
-     * Menampilkan daftar layanan di unit yang dipimpin.
+     * Menampilkan daftar layanan di SEMUA unit yang dipimpin.
      */
     public function index()
     {
         $user = Auth::user();
         $staff = Staff::where('user_id', $user->id)->firstOrFail();
-        $unit = Unit::where('kepala_id', $staff->id)->firstOrFail();
+        
+        // UBAH: Ambil semua unit (get), bukan satu (first)
+        $units = Unit::where('kepala_id', $staff->id)->get();
 
-        // Ambil layanan milik unit ini
+        // Ambil ID semua unit untuk query layanan
+        $unitIds = $units->pluck('id')->toArray();
+
+        // Ambil layanan milik SEMUA unit tersebut
         $layanans = Layanan::with(['penanggungJawab.user'])
-                    ->where('unit_id', $unit->id)
+                    ->whereIn('unit_id', $unitIds) // Pakai whereIn
                     ->orderBy('prioritas', 'asc')
                     ->get();
 
-        return view('kepala_unit.kelola_pic.index', compact('unit', 'layanans'));
+        // Kirim variabel $units (jamak) ke view
+        return view('kepala_unit.kelola_pic.index', compact('units', 'layanans'));
     }
 
     /**
-     * Menampilkan halaman edit untuk layanan tertentu (Info Dasar + PIC).
+     * Menampilkan halaman edit untuk layanan tertentu.
      */
     public function edit($id)
     {
         $user = Auth::user();
         $staff = Staff::where('user_id', $user->id)->firstOrFail();
-        $unit = Unit::where('kepala_id', $staff->id)->firstOrFail();
+        
+        // Ambil semua unit user untuk validasi
+        $units = Unit::where('kepala_id', $staff->id)->get();
+        $myUnitIds = $units->pluck('id')->toArray();
 
         $layanan = Layanan::with(['penanggungJawab.user', 'unit'])->findOrFail($id);
 
-        // Security: Pastikan layanan milik unit ini
-        if ($layanan->unit_id !== $unit->id) {
-            abort(403, 'Layanan ini bukan milik unit Anda.');
+        // Security: Cek apakah layanan milik SALAH SATU unit user
+        if (!in_array($layanan->unit_id, $myUnitIds)) {
+            abort(403, 'Layanan ini bukan milik unit yang Anda pimpin.');
         }
 
         // Ambil staff yang SUDAH jadi PIC
         $currentPICS = $layanan->penanggungJawab;
         $currentPicIds = $currentPICS->pluck('id')->toArray();
 
-        // Ambil SEMUA Staff Available (Lintas Unit) untuk dropdown tambah PIC
-        // Exclude diri sendiri & yang sudah jadi PIC
+        // Ambil SEMUA Staff Available (Lintas Unit)
         $availableStaff = Staff::with(['user', 'unit', 'jabatan'])
             ->where('id', '!=', $staff->id) 
             ->whereNotIn('id', $currentPicIds)
             ->whereHas('user', fn($q) => $q->where('role', '!=', 'super_admin'))
             ->get();
+
+        // Kirim $unit spesifik milik layanan ini untuk breadcrumb/info di view edit
+        $unit = $layanan->unit;
 
         return view('kepala_unit.kelola_pic.edit', compact('layanan', 'availableStaff', 'currentPICS', 'unit'));
     }
@@ -69,15 +80,19 @@ class KelolaPicController extends Controller
     {
         $user = Auth::user();
         $staff = Staff::where('user_id', $user->id)->first();
-        $unit = Unit::where('kepala_id', $staff->id)->first();
+        
+        // Validasi multi unit
+        $units = Unit::where('kepala_id', $staff->id)->get();
+        $myUnitIds = $units->pluck('id')->toArray();
+
         $layanan = Layanan::findOrFail($id);
 
-        if($layanan->unit_id !== $unit->id) {
+        if(!in_array($layanan->unit_id, $myUnitIds)) {
             abort(403, 'Akses Ditolak.');
         }
 
         try {
-            return DB::transaction(function () use ($request, $layanan, $unit) {
+            return DB::transaction(function () use ($request, $layanan) {
 
                 // 1. HAPUS PIC
                 if ($request->filled('pic_id_to_remove')) {
@@ -97,13 +112,13 @@ class KelolaPicController extends Controller
                         ->with('success', 'PIC berhasil ditambahkan.');
                 }
 
-                // 3. UPDATE INFO LAYANAN (Nama, Prioritas, Status)
-                // Validasi hanya jika field nama ada (menandakan form update info yang disubmit)
+                // 3. UPDATE INFO LAYANAN
                 if ($request->has('nama')) {
                     $request->validate([
                         'nama' => [
                             'required', 'string', 'max:255',
-                            Rule::unique('layanan', 'nama')->ignore($layanan->id)->where('unit_id', $unit->id)
+                            // Validasi unique scope unit_id layanan
+                            Rule::unique('layanan', 'nama')->ignore($layanan->id)->where('unit_id', $layanan->unit_id)
                         ],
                         'prioritas' => 'required|integer|in:1,2,3',
                         'status_arsip' => 'required|in:0,1',

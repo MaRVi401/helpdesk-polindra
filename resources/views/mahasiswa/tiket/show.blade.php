@@ -324,6 +324,12 @@
 
                                     @if($imageData)
                                     <dd>
+                                        {{-- PREVIEW GAMBAR (MAHASISWA) --}}
+                                        <div style="margin-bottom: 10px; border: 1px solid #e2e8f0; padding: 5px; border-radius: 5px; background: #f7fafc; text-align: center;">
+                                            <img src="data:{{ $mimeType }};base64,{{ $imageData }}" alt="Preview Lampiran" style="max-width: 100%; max-height: 150px; border-radius: 4px;">
+                                        </div>
+                                        {{-- END PREVIEW --}}
+
                                         <a href="data:{{ $mimeType }};base64,{{ $imageData }}" target="_blank" class="btn-view-image">
                                             <i class="ti ti-photo"></i> Lihat Gambar
                                         </a>
@@ -388,7 +394,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
