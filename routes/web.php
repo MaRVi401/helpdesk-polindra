@@ -40,7 +40,7 @@ use App\Http\Controllers\KepalaUnit\KelolaPicController;
 use App\Http\Controllers\Mahasiswa\TiketController as MahasiswaTiketController;
 use App\Http\Controllers\KepalaUnit\TiketController as KepalaUnitTiketController;
 use App\Http\Controllers\AdminUnit\TiketController as AdminUnitTiketController;
-
+use App\Http\Controllers\Admin\PositionController;
 
 // FOR TESTING BLADE
 Route::get('/test', [TestPage::class, 'home'])->name('home.page');
@@ -172,6 +172,10 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
 
         // Kelola PIC Layanan
         Route::resource('layanan', LayananController::class);
+
+        // Kelola Jabatan/Posisi Staff
+        Route::resource('position', PositionController::class)->names('position');
+
     });
 
 
