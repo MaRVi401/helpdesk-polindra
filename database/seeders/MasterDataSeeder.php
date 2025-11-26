@@ -23,10 +23,8 @@ class MasterDataSeeder extends Seeder
         ProgramStudi::truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        // Membuat data Jabatan
+        // Membuat data Jabatan Super Administrator
         Jabatan::create(['nama_jabatan' => 'Super Administrator']);
-        Jabatan::create(['nama_jabatan' => 'Kepala Unit']);
-        Jabatan::create(['nama_jabatan' => 'Staff Layanan']);
 
         // Membuat data Unit sesuai permintaan
         Unit::create(['nama_unit' => 'UPA TIK', 'slug' => 'upatik']);
