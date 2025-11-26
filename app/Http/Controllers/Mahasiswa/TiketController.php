@@ -91,14 +91,19 @@ class TiketController extends Controller
         $layanan = Layanan::findOrFail($request->layanan_id);
         
         DB::transaction(function () use ($request, $layanan) {
-            $words = explode(' ', $layanan->nama);
-            $acronym = '';
-            foreach ($words as $w) {
-                if (ctype_alpha($w[0] ?? '')) {
-                    $acronym .= mb_substr($w, 0, 1);
-                }
+            $namaLayanan = $layanan->nama ?? '';
+
+            if (str_contains($namaLayanan, 'Surat Keterangan Aktif')) {
+                $prefix = 'SKA';
+            } elseif (str_contains($namaLayanan, 'Reset Akun')) {
+                $prefix = 'RAM';
+            } elseif (str_contains($namaLayanan, 'Ubah Data Mahasiswa')) {
+                $prefix = 'UDM';
+            } elseif (str_contains($namaLayanan, 'Request Publikasi')) {
+                $prefix = 'RPK';
+            } else {
+                $prefix = 'TKT';
             }
-            $prefix = strtoupper($acronym);
             
             $date = now()->format('Ymd'); 
             $lastTiket = Tiket::where('no_tiket', 'like', $prefix . '-' . $date . '-%')
