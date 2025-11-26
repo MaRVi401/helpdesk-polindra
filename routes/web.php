@@ -40,7 +40,6 @@ use App\Http\Controllers\KepalaUnit\KelolaPicController;
 use App\Http\Controllers\Mahasiswa\TiketController as MahasiswaTiketController;
 use App\Http\Controllers\KepalaUnit\TiketController as KepalaUnitTiketController;
 use App\Http\Controllers\AdminUnit\TiketController as AdminUnitTiketController;
-use App\Http\Controllers\AdminUnit\LayananController as AdminUnitLayananController;
 
 
 // FOR TESTING BLADE
@@ -211,12 +210,13 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
 
     });
     // Admin Unit
-    Route::middleware('role:admin_unit')->prefix('admin-unit')->name('admin_unit.')->group(function () {
-        Route::get('/dashboard', [AdminUnitTiketController::class, 'index'])->name('dashboard');
-        Route::get('/tiket', [AdminUnitTiketController::class, 'index'])->name('tiket.index');
-        Route::get('/tiket/{id}', [AdminUnitTiketController::class, 'show'])->name('tiket.show');
-        Route::put('/tiket/{id}', [AdminUnitTiketController::class, 'update'])->name('tiket.update');
-        Route::post('/tiket/{id_tiket}/komentar', [AdminUnitTiketController::class, 'storeKomentar'])->name('tiket.storeKomentar');
-        Route::resource('layanan', AdminUnitLayananController::class);
+    Route::middleware(['auth', 'role:admin_unit'])->prefix('admin-unit')->name('admin_unit.')->group(function () {
+    Route::get('/dashboard', [AdminUnitTiketController::class, 'index'])->name('dashboard');
+    Route::get('/tiket', [AdminUnitTiketController::class, 'index'])->name('tiket.index');
+    Route::get('/tiket/{id}', [AdminUnitTiketController::class, 'show'])->name('tiket.show');
+    Route::put('/tiket/{id}', [AdminUnitTiketController::class, 'update'])->name('tiket.update');
+    Route::post('/tiket/{id}/komentar', [AdminUnitTiketController::class, 'storeKomentar'])->name('tiket.komentar');
+    Route::put('/tiket/{id}/update-timer', [AdminUnitTiketController::class, 'updateTimer'])->name('tiket.updateTimer');
+    Route::resource('layanan', AdminUnitLayananController::class);
     });
 });

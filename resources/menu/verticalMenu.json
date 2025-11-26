@@ -40,6 +40,15 @@
       ]
     },
     {
+      "url": "admin-unit/tiket",
+      "name": "Tiket Masuk",
+      "icon": "menu-icon tf-icons bx bx-envelope",
+      "slug": "admin-unit-tiket",
+      "roles": [
+        "admin_unit"
+      ]
+    },
+    {
       "name": "Layanan",
       "icon": "menu-icon icon-base ti tabler-layout-grid-add",
       "slug": "service",
