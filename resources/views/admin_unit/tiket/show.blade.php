@@ -1,4 +1,6 @@
+@use('Illuminate\Support\Str')
 @extends('layouts/contentNavbarLayout')
+
 
 @section('title', 'Detail Tiket #' . $tiket->no_tiket)
 
@@ -236,12 +238,55 @@
 
                     {{-- Detail Layanan Spesifik --}}
                     @if(isset($detailLayanan))
-                        <hr>
-                        <h6 class="fw-bold small">Data Tambahan</h6>
-                        <ul class="ps-3 mb-0 small text-muted">
-                             @if(isset($detailLayanan->keperluan)) <li>Keperluan: {{ $detailLayanan->keperluan }}</li> @endif
-                             @if(isset($detailLayanan->aplikasi)) <li>Aplikasi: {{ $detailLayanan->aplikasi }}</li> @endif
-                             @if(isset($detailLayanan->data_nama_lengkap)) <li>Nama Baru: {{ $detailLayanan->data_nama_lengkap }}</li> @endif
+                        <div class="card">
+                        <div class="card-header">Detail Layanan: {{ $tiket->layanan->nama }}</div>
+                        <div class="card-body">
+                            <dl class="info-grid">
+                                {{-- 1. Surat Keterangan Aktif Kuliah --}}
+                                @if (Str::contains($tiket->layanan->nama, 'Surat Keterangan Aktif Kuliah'))
+                                    <dt>Keperluan</dt>
+                                    <dd>{{ $detailLayanan->keperluan }}</dd>
+
+                                    <dt>Tahun Ajaran</dt>
+                                    <dd>{{ $detailLayanan->tahun_ajaran }}</dd>
+
+                                    <dt>Semester</dt>
+                                    <dd>{{ $detailLayanan->semester }}</dd>
+
+                                    @if ($detailLayanan->keperluan_lainnya)
+                                        <dt>Keperluan Lainnya</dt>
+                                        <dd>{{ $detailLayanan->keperluan_lainnya }}</dd>
+                                    @endif
+
+                                    {{-- 2. Reset Akun --}}
+                                @elseif(Str::contains($tiket->layanan->nama, 'Reset Akun'))
+                                    <dt>Aplikasi</dt>
+                                    <dd>{{ $detailLayanan->aplikasi }}</dd>
+
+                                    <dt>Deskripsi Masalah</dt>
+                                    <dd>{{ $detailLayanan->deskripsi }}</dd>
+
+                                    {{-- 3. Ubah Data Mahasiswa --}}
+                                @elseif(Str::contains($tiket->layanan->nama, 'Ubah Data Mahasiswa'))
+                                    <dt>Data Nama Lengkap</dt>
+                                    <dd>{{ $detailLayanan->data_nama_lengkap ?? '-' }}</dd>
+
+                                    <dt>Tempat Lahir Baru</dt>
+                                    <dd>{{ $detailLayanan->data_tmp_lahir ?? '-' }}</dd>
+
+                                    <dt>Tanggal Lahir Baru</dt>
+                                    <dd>{{ $detailLayanan->data_tgl_lhr ?? '-' }}</dd>
+
+                                    {{-- 4. Request Publikasi --}}
+                                @elseif(Str::contains($tiket->layanan->nama, 'Request Publikasi') || Str::contains($tiket->layanan->nama, 'Publikasi'))
+                                    <dt>Judul / Topik</dt>
+                                    <dd>{{ $detailLayanan->judul }}</dd>
+
+                                    <dt>Kategori</dt>
+                                    <dd>{{ $detailLayanan->kategori }}</dd>
+
+                                    <dt>Konten / Isi</dt>
+                                    <dd>{!! nl2br(e($detailLayanan->konten)) !!}</dd>
                              
                              @if(isset($detailLayanan->gambar) && $detailLayanan->gambar)
                                 <li class="mt-2">
@@ -353,4 +398,5 @@
         </div>
     </div>
 </div>
+@endif
 @endsection

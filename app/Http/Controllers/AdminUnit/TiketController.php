@@ -92,14 +92,14 @@ class TiketController extends Controller
             case 'Diajukan_oleh_Pemohon':
                 // Alur 1: Baru masuk -> Ditangani atau Tolak
                 $nextOptions = [
-                    'Ditangani_oleh_PIC' => '🛠️ Mulai Tangani Tiket',
+                    'Ditangani_oleh_PIC' => 'Ditangani Oleh PIC',
                 ];
                 break;
 
             case 'Ditangani_oleh_PIC':
                 // Alur 2: Sedang dikerjakan -> Selesaikan
                 $nextOptions = [
-                    'Diselesaikan_oleh_PIC' => '✅ Selesaikan (Kirim ke Pemohon)'
+                    'Diselesaikan_oleh_PIC' => 'Diselesaikan Oleh PIC',
                 ];
                 break;
 
@@ -114,17 +114,17 @@ class TiketController extends Controller
                 $statusMessage = "Pemohon menilai tiket belum selesai (Penolakan ke-".($rejectionCount).").";
                 
                 // Opsi default: Tangani Lagi
-                $nextOptions['Ditangani_oleh_PIC'] = '🛠️ Tangani Kembali (Revisi)';
+                $nextOptions['Ditangani_oleh_PIC'] = 'Ditangani oleh PIC';
 
                 // Alur 8: Jika sudah lebih dari 2 kali (artinya ini yang ke-3 atau lebih), munculkan opsi Bermasalah
                 if ($rejectionCount > 2) {
-                    $nextOptions['Pemohon_Bermasalah'] = '⚠️ Tandai Pemohon Bermasalah';
+                    $nextOptions['Pemohon_Bermasalah'] = 'Pemohon Bermasalah';
                 }
                 break;
             
             case 'Pemohon_Bermasalah':
                 // Admin bisa memutuskan untuk menangani lagi atau membiarkan
-                $nextOptions['Ditangani_oleh_PIC'] = '🛠️ Coba Tangani Lagi';
+                $nextOptions['Ditangani_oleh_PIC'] = 'Ditangani oleh PIC';
                 break;
 
             case 'Dinilai_Selesai_oleh_Pemohon':
