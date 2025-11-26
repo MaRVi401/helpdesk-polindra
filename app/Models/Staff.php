@@ -34,7 +34,7 @@ class Staff extends Model
     // RELASI: Staff memiliki satu Jabatan
     public function jabatan()
     {
-        return $this->belongsTo(Jabatan::class);
+        return $this->belongsTo(Jabatan::class, 'jabatan_id');
     }
 
     // RELASI: Staff bisa menjadi penanggung jawab banyak Layanan (Many-to-Many)

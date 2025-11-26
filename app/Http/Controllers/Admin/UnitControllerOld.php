@@ -37,8 +37,10 @@ class UnitControllerOld extends Controller
      */
     public function create()
     {
-        // Ambil semua staff yang memiliki user untuk ditampilkan di dropdown
-        $staffs = Staff::with('user')->whereHas('user')->get();
+        $staffs = Staff::whereHas('jabatan', function ($query) {
+            $query->whereRaw('REPLACE(LOWER(nama_jabatan), " ", "_") = ?', ['kepala_unit']);
+        })->with('user')->get();
+
         return view('admin.kelola-unit.create', compact('staffs'));
     }
 
@@ -47,8 +49,7 @@ class UnitControllerOld extends Controller
      */
     public function store(Request $request)
     {
-        // Validasi untuk operasi CREATE
-        $request->validate([
+        $validatedData = $request->validate([
             'nama_unit' => 'required|string|max:255|unique:units,nama_unit',
             'kepala_id' => 'nullable|exists:staff,id',
             'slug' => 'nullable|string|max:255|unique:units,slug',
@@ -57,7 +58,11 @@ class UnitControllerOld extends Controller
             'slug.unique' => 'Slug ini sudah digunakan oleh unit lain.',
         ]);
 
-        Unit::create($request->all());
+        if (empty($validatedData['slug'])) {
+            $validatedData['slug'] = Str::slug($validatedData['nama_unit']);
+        }
+
+        Unit::create($validatedData);
 
         return redirect()->route('admin.unit.index')->with('success', 'Unit berhasil ditambahkan.');
     }
@@ -76,7 +81,10 @@ class UnitControllerOld extends Controller
      */
     public function edit(Unit $unit)
     {
-        $staffs = Staff::with('user')->whereHas('user')->get();
+        $staffs = Staff::whereHas('jabatan', function ($query) {
+            $query->whereRaw('REPLACE(LOWER(nama_jabatan), " ", "_") = ?', ['kepala_unit']);
+        })->with('user')->get();
+
         return view('admin.kelola-unit.edit', compact('unit', 'staffs'));
     }
 
@@ -103,8 +111,13 @@ class UnitControllerOld extends Controller
             'nama_unit.unique' => 'Nama unit ini sudah digunakan.',
             'slug.unique' => 'Slug ini sudah digunakan oleh unit lain.',
         ]);
+
         if (isset($validated['slug']) && empty($validated['slug'])) {
-            unset($validated['slug']);
+            $validated['slug'] = Str::slug($validated['nama_unit']);
+            $existingSlug = Unit::where('slug', $validated['slug'])->where('id', '!=', $unit->id)->first();
+            if ($existingSlug) {
+                $validated['slug'] = Str::slug($validated['nama_unit']) . '-' . time();
+            }
         }
 
         $unit->update($validated);

@@ -62,7 +62,7 @@ class UserRoleSeeder extends Seeder
             //  ===============================*/
             $adminAkademik = User::firstOrCreate(
                 ['email' => 'fachrizal@email.com'],
-                ['name' => 'Fachrizal Bachar', 'password' => bcrypt('12345678'), 'role' => 'admin_unit']
+                ['name' => 'Fachrizal Bachar', 'password' => bcrypt('12345678'), 'role' => 'kepala_unit']
             );
 
             $adminAkademik->staff()->updateOrCreate(
