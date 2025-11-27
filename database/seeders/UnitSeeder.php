@@ -18,7 +18,7 @@ class UnitSeeder extends Seeder
         Unit::truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        // Contoh di seeder
+        // Tambah data unit
         Unit::create([
             'nama_unit' => 'UPA TIK',
             'slug' => 'upatik'

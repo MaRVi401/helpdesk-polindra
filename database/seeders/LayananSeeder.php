@@ -55,6 +55,5 @@ class LayananSeeder extends Seeder
             Layanan::create($layanan);
         }
 
-        // $this->command->info('LayananSeeder berhasil dijalankan.');
     }
 }

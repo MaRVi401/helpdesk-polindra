@@ -54,13 +54,7 @@ class StudentWithoutNimSeeder extends Seeder
                     'password' => bcrypt($user_data['password']),
                     'role' => 'mahasiswa',
                 ]);
-
-                // JANGAN buat data Mahasiswa -> biarkan kosong untuk testing
-
-                // $this->command->info("Student without NIM created: {$user_data['email']}");
-             } //else {
-            //     $this->command->warn("User {$user_data['email']} already exists.");
-            // }
+             }
         }
     }
 }

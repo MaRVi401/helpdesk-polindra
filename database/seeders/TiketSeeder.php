@@ -13,9 +13,8 @@ class TiketSeeder extends Seeder
     {
         DB::transaction(function () {
             
-            // Tentukan Tanggal Hari Ini (YYYYMMDD) dan Nomor Urut Awal
-            $date = now()->format('Ymd'); // Contoh: 20251119
-            $sequence = 1; // Mulai nomor urut dari 1
+            $date = now()->format('Ymd'); 
+            $sequence = 1;
 
             // ===============================
             // 1. Tiket Surat Keterangan Aktif (SKA)

@@ -13,7 +13,8 @@ class UserRoleSeeder extends Seeder
     public function run(): void
     {
         try {
-            // Ambil ID Jabatan baru
+            // Ambil ID Jabatan
+            $jabatanSUA = Jabatan::where('nama_jabatan', 'Super Administrator')->firstOrFail()->id;
             $jabatanKBU = Jabatan::where('nama_jabatan', 'Kepala Bagian Umum')->firstOrFail()->id;
             $jabatanKBA = Jabatan::where('nama_jabatan', 'Kepala Bagian Akademik')->firstOrFail()->id;
             $jabatanPK = Jabatan::where('nama_jabatan', 'Ahli Pertama Pranata Komputer')->firstOrFail()->id;
@@ -29,15 +30,15 @@ class UserRoleSeeder extends Seeder
              * 1. SUPER ADMIN → UPA TIK
             ============================*/
             $superAdmin = User::firstOrCreate(
-                ['email' => 'ahmadyassin@email.com'],
-                ['name' => 'Ahmad Yassin', 'password' => bcrypt('12345678'), 'role' => 'super_admin']
+                ['email' => 'superadmin@email.com'],
+                ['name' => 'Super Administrator', 'password' => bcrypt('12345678'), 'role' => 'super_admin']
             );
 
             $superAdmin->staff()->updateOrCreate(
                 ['user_id' => $superAdmin->id],
                 [
                     'unit_id' => $unitTikId,
-                    'jabatan_id' => $jabatanKBU,
+                    'jabatan_id' => $jabatanSUA,
                     'nik' => '3201010101000001'
                 ]
             );

@@ -16,7 +16,7 @@ class MasterDataSeeder extends Seeder
      */
     public function run(): void
     {
-        // Mengosongkan tabel dengan aman sebelum mengisi data
+        // Matikan foreign key check untuk truncate
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         Jabatan::truncate();
         Unit::truncate();
@@ -26,11 +26,7 @@ class MasterDataSeeder extends Seeder
         // Membuat data Jabatan Super Administrator
         Jabatan::create(['nama_jabatan' => 'Super Administrator']);
 
-        // Membuat data Unit sesuai permintaan
-        Unit::create(['nama_unit' => 'UPA TIK', 'slug' => 'upatik']);
-        Unit::create(['nama_unit' => 'Akademik', 'slug' => 'akademik']);
-        Unit::create(['nama_unit' => 'Kemahasiswaan', 'slug' => 'kemahasiswaan']);
-
+        // Membuat data Jurusan
         $jurusanTeknikInformatika = Jurusan::create(['nama_jurusan' => 'Teknik Informatika']);
         $jurusanTeknik = Jurusan::create(['nama_jurusan' => 'Teknik']);
         $jurusanKesehatan = Jurusan::create(['nama_jurusan' => 'Kesehatan']);
