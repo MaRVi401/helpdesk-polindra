@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http; 
-use Illuminate\Support\Facades\Hash; // Tambahkan ini
+use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Facades\Socialite;
 
 class GoogleLoginController extends Controller
@@ -31,7 +31,7 @@ class GoogleLoginController extends Controller
     public function handleGoogleCallback()
     {
         try {
-            DB::beginTransaction(); // Mulai transaksi untuk memastikan konsistensi data
+            DB::beginTransaction();
             
             $googleUser = Socialite::driver('google')->user();
             $userEmail = $googleUser->getEmail();
