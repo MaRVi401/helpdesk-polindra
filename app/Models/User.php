@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
-use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -37,6 +37,43 @@ class User extends Authenticatable
     'password',
     'remember_token',
   ];
+
+  protected static function boot()
+  {
+    parent::boot();
+
+    static::deleting(function ($user) {
+      if ($user->avatar) {
+        // Path di storage/app/public/avatar/
+        $fullPath = 'avatar/' . $user->avatar;
+
+        // Cek dan hapus file
+        if (Storage::disk('public')->exists($fullPath)) {
+          Storage::disk('public')->delete($fullPath);
+        }
+      }
+    });
+  }
+
+  public function getAvatarUrlAttribute()
+  {
+    if ($this->avatar) {
+      return asset('storage/avatar/' . $this->avatar);
+    }
+
+    $name = $this->name ?? 'Guest';
+    $colors = ['7367f0', '28c76f', 'ea5455', 'ff9f43', '00cfe8'];
+    $index = ord(strtolower($name[0])) % count($colors);
+    $background = $colors[$index];
+    
+    return "https://ui-avatars.com/api/?name=" . urlencode($name) .
+    "&background={$background}&color=fff&size=128&bold=true";
+  }
+  
+  public function getProfilePhotoUrlAttribute()
+  {
+    return $this->getAvatarUrlAttribute();
+  }
 
   /**
    * Get the attributes that should be cast.
@@ -85,22 +122,6 @@ class User extends Authenticatable
     return $this->hasMany(Artikel::class, 'user_id', 'id');
   }
 
-  public function getProfilePhotoUrlAttribute()
-  {
-    // Jika ada foto profile dari storage
-    if ($this->profile_photo_path) {
-      return asset('storage/' . $this->profile_photo_path);
-    }
-
-    // Jika tidak ada, generate dari nama
-    $name = $this->name ?? 'Guest';
-    $colors = ['7367f0', '28c76f', 'ea5455', 'ff9f43', '00cfe8'];
-    $index = ord(strtolower($name[0])) % count($colors);
-    $background = $colors[$index];
-
-    return "https://ui-avatars.com/api/?name=" . urlencode($name) .
-      "&background={$background}&color=fff&size=128&bold=true";
-  }
 
   public function getInitialsAttribute()
   {
@@ -112,5 +133,4 @@ class User extends Authenticatable
 
     return strtoupper(substr($this->name, 0, 2));
   }
-  
 }
