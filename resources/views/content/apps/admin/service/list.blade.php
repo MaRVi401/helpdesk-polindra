@@ -78,6 +78,10 @@
         </table>
       </div>
     </div>
+
+
+
+    
   @endforeach
   {{-- MODAL TAMBAH LAYANAN --}}
   <div class="offcanvas offcanvas-end" id="add-new-record">

@@ -27,7 +27,7 @@ class UserRoleSeeder extends Seeder
 
             /* ===========================
              * 1. SUPER ADMIN → UPA TIK
-             ============================*/
+            ============================*/
             $superAdmin = User::firstOrCreate(
                 ['email' => 'ahmadyassin@email.com'],
                 ['name' => 'Ahmad Yassin', 'password' => bcrypt('12345678'), 'role' => 'super_admin']
@@ -37,7 +37,7 @@ class UserRoleSeeder extends Seeder
                 ['user_id' => $superAdmin->id],
                 [
                     'unit_id' => $unitTikId,
-                    'jabatan_id' => $jabatanKBU, 
+                    'jabatan_id' => $jabatanKBU,
                     'nik' => '3201010101000001'
                 ]
             );
@@ -45,7 +45,7 @@ class UserRoleSeeder extends Seeder
 
             /* ===========================
              * 2. KEPALA UNIT → UPA TIK
-             ============================*/
+            ============================*/
             $kepalaUnitUser = User::firstOrCreate(
                 ['email' => 'adisuheryadi@email.com'],
                 ['name' => 'Adi Suheryadi', 'password' => bcrypt('12345678'), 'role' => 'kepala_unit']
@@ -55,7 +55,7 @@ class UserRoleSeeder extends Seeder
                 ['user_id' => $kepalaUnitUser->id],
                 [
                     'unit_id' => $unitTikId,
-                    'jabatan_id' => $jabatanKBA, 
+                    'jabatan_id' => $jabatanKBA,
                     'nik' => '3201010202000002'
                 ]
             );
@@ -65,7 +65,7 @@ class UserRoleSeeder extends Seeder
 
             /* ===========================
              * 3. ADMIN AKADEMIK
-             ============================*/
+            ============================*/
             $adminAkademik = User::firstOrCreate(
                 ['email' => 'fachrizal@email.com'],
                 ['name' => 'Fachrizal Bachar', 'password' => bcrypt('12345678'), 'role' => 'admin_unit']
@@ -75,7 +75,7 @@ class UserRoleSeeder extends Seeder
                 ['user_id' => $adminAkademik->id],
                 [
                     'unit_id' => $unitAkademikId,
-                    'jabatan_id' => $jabatanPK, 
+                    'jabatan_id' => $jabatanPK,
                     'nik' => '3201010303000003'
                 ]
             );
@@ -83,7 +83,7 @@ class UserRoleSeeder extends Seeder
 
             /* ===========================
              * 4. ADMIN KEMAHASISWAAN
-             ============================*/
+            ============================*/
             $kemahasiswaanUser = User::firstOrCreate(
                 ['email' => 'citra@email.com'],
                 ['name' => 'Bunga Citra Lestari', 'password' => bcrypt('12345678'), 'role' => 'admin_unit']
@@ -93,7 +93,7 @@ class UserRoleSeeder extends Seeder
                 ['user_id' => $kemahasiswaanUser->id],
                 [
                     'unit_id' => $unitKemahasiswaanId,
-                    'jabatan_id' => $jabatanHumas, 
+                    'jabatan_id' => $jabatanHumas,
                     'nik' => '3201010808000008'
                 ]
             );
@@ -101,7 +101,7 @@ class UserRoleSeeder extends Seeder
 
             /* ===========================
              * 5. ADMIN UPT BAHASA
-             ============================*/
+            ============================*/
             $febri = User::firstOrCreate(
                 ['email' => 'febri@example.com'],
                 ['name' => 'Febri Mulyadi', 'password' => bcrypt('12345678'), 'role' => 'admin_unit']
@@ -111,7 +111,7 @@ class UserRoleSeeder extends Seeder
                 ['user_id' => $febri->id],
                 [
                     'unit_id' => $unitUptBahasaId,
-                    'jabatan_id' => $jabatanHumas, 
+                    'jabatan_id' => $jabatanHumas,
                     'nik' => '3201010909000009'
                 ]
             );

@@ -20,15 +20,20 @@
       <hr>
       <div class="mb-3">
         <label class="form-label fw-semibold">Prioritas</label>
+        @php
+          $prioritas_label = [
+              1 => 'Rendah',
+              2 => 'Sedang',
+              3 => 'Tinggi',
+          ];
+          $prioritas_color = [
+              1 => 'bg-label-info',
+              2 => 'bg-label-warning',
+              3 => 'bg-label-danger',
+          ];
+        @endphp
         <p class="text-muted mb-0">
-          @php
-            $prioritas_label = [
-                1 => 'Tinggi',
-                2 => 'Sedang',
-                3 => 'Rendah',
-            ];
-          @endphp
-          <span class="badge bg-label-info">
+          <span class="badge {{ $prioritas_color[$data_layanan->prioritas] ?? 'bg-label-secondary' }}">
             {{ $prioritas_label[$data_layanan->prioritas] ?? '-' }}
           </span>
         </p>
@@ -38,7 +43,7 @@
         <label class="form-label fw-semibold">Status Arsip</label>
         <p class="text-muted mb-0">
           @if ($data_layanan->status_arsip == 1)
-            <span class="badge bg-label-danger">Diarsipkan</span>
+            <span class="badge bg-label-secondary">Diarsipkan</span>
           @else
             <span class="badge bg-label-success">Aktif</span>
           @endif
