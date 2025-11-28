@@ -12,20 +12,20 @@ use App\Http\Controllers\Admin\StudyProgramController;
 use App\Http\Controllers\Admin\UnitController;
 use App\Http\Controllers\Admin\UnitControllerOld;
 use App\Http\Controllers\Auth\ForgotPasswordController;
-use App\Http\Controllers\CompleteProfileController;
-use App\Http\Controllers\UserProfileController;
+use App\Http\Controllers\Auth\CompleteProfileController;
+use App\Http\Controllers\Pages\LandingController;
+use App\Http\Controllers\Profile\UserProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\apps\FaqList;
 use App\Http\Controllers\Pages\AuthPage;
-use App\Http\Controllers\Pages\TestPage;
+use App\Http\Controllers\TestPage;
 use App\Http\Controllers\Pages\LandingPage;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\GoogleLoginController;
+use App\Http\Controllers\Pages\DashboardController;
+use App\Http\Controllers\Auth\GoogleLoginController;
 use App\Http\Controllers\Admin\ArtikelController;
 use App\Http\Controllers\Admin\JurusanController;
 use App\Http\Controllers\Admin\LayananController;
@@ -43,23 +43,19 @@ use App\Http\Controllers\AdminUnit\TiketController as AdminUnitTiketController;
 use App\Http\Controllers\Admin\PositionController;
 
 // FOR TESTING BLADE
-Route::get('/test', [TestPage::class, 'home'])->name('home.page');
+Route::get('/test', [TestPage::class, 'index'])->name('page.index');
 
 // --- ROUTE FOR USERS WHO HAVE NOT LOGGED IN (GUEST) ---
 Route::middleware('guest')->group(function () {
 
-    Route::get('/', [LandingPage::class, 'landingPage'])->name('landing.page');
+    Route::get('/', [LandingController::class, 'landingPage'])->name('landing.page');
 
-    Route::get('/login', [AuthPage::class, 'authPage'])->name('auth.page');
-    // Login Users
+    Route::get('/login', [AuthController::class, 'authPage'])->name('auth.page');
     Route::post('/login', [AuthController::class, 'login'])->name('login');
 
     // Google Authentication Route
     Route::get('auth/google', [GoogleLoginController::class, 'redirectToGoogle'])->name('google.login');
     Route::get('auth/google/callback', [GoogleLoginController::class, 'handleGoogleCallback']);
-
-
-    Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
 
     // FORGOT PASSWORD
     Route::get('/forgot-password', [ForgotPasswordController::class, 'showForgotForm'])
@@ -187,8 +183,8 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
         Route::post('/tiket', [MahasiswaTiketController::class, 'store'])->name('tiket.store');
         Route::get('/tiket/{id}', [MahasiswaTiketController::class, 'show'])->name('tiket.show');
         Route::post('tiket/{tiket}/komentar', [TiketController::class, 'storeKomentar'])->name('tiket.komentar.store');
-        Route::get('/profil', [ProfileController::class, 'edit'])->name('profil.edit');
-        Route::patch('/profil', [ProfileController::class, 'update'])->name('profil.update');
+        // Route::get('/profil', [ProfileController::class, 'edit'])->name('profil.edit');
+        // Route::patch('/profil', [ProfileController::class, 'update'])->name('profil.update');
         Route::get('buat-tiket', [MahasiswaTiketController::class, 'showCreateForm'])->name('tiket.show-create-form');
         Route::resource('tiket', MahasiswaTiketController::class);
         Route::post('tiket/{id}/komentar', [MahasiswaTiketController::class, 'storeKomentar'])->name('tiket.komentar.store');
@@ -215,11 +211,11 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
     });
     // Admin Unit
     Route::middleware(['auth', 'role:admin_unit'])->prefix('admin-unit')->name('admin_unit.')->group(function () {
-    Route::get('/dashboard', [AdminUnitTiketController::class, 'index'])->name('dashboard');
-    Route::get('/tiket', [AdminUnitTiketController::class, 'index'])->name('tiket.index');
-    Route::get('/tiket/{id}', [AdminUnitTiketController::class, 'show'])->name('tiket.show');
-    Route::put('/tiket/{id}', [AdminUnitTiketController::class, 'update'])->name('tiket.update');
-    Route::post('/tiket/{id}/komentar', [AdminUnitTiketController::class, 'storeKomentar'])->name('tiket.komentar');
-    Route::put('/tiket/{id}/update-timer', [AdminUnitTiketController::class, 'updateTimer'])->name('tiket.updateTimer');
+        Route::get('/dashboard', [AdminUnitTiketController::class, 'index'])->name('dashboard');
+        Route::get('/tiket', [AdminUnitTiketController::class, 'index'])->name('tiket.index');
+        Route::get('/tiket/{id}', [AdminUnitTiketController::class, 'show'])->name('tiket.show');
+        Route::put('/tiket/{id}', [AdminUnitTiketController::class, 'update'])->name('tiket.update');
+        Route::post('/tiket/{id}/komentar', [AdminUnitTiketController::class, 'storeKomentar'])->name('tiket.komentar');
+        Route::put('/tiket/{id}/update-timer', [AdminUnitTiketController::class, 'updateTimer'])->name('tiket.updateTimer');
     });
 });

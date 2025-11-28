@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Pages;
 use App\Http\Controllers\Controller;
 
-class LandingPage extends Controller
+class LandingController extends Controller
 {
   public function landingPage()
   {

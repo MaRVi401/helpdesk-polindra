@@ -7,8 +7,12 @@
 @if (isset($navbarFull))
   <div class="navbar-brand app-brand demo d-none d-xl-flex py-0 me-4 ms-0">
     <a href="{{ url('/') }}" class="app-brand-link">
-      <span class="app-brand-logo demo">@include('_partials.macros')</span>
-      <span class="app-brand-text demo menu-text fw-bold">{{ config('variables.templateName') }}</span>
+      <span class="app-brand-logo demo">
+        <img class="wpx-40" src="{{ asset('assets/img/logo/polindra.svg') }}" alt="Logo ServiceDesk">
+      </span>
+      <span class="app-brand-text demo menu-text fw-bold ms-3">
+        <img class="w-px-100" src="{{ asset('assets/img/logo/servicedesk.svg') }}" alt="Logo ServiceDesk">
+      </span>
     </a>
     @if (isset($menuHorizontal))
       <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-xl-none">
@@ -113,7 +117,7 @@
         <li>
           <a class="dropdown-item"
             href="{{ Route::has('user-profile.index') ? route('user-profile.index') : 'javascript:void(0);' }}">
-            <i class="icon-base ti tabler-user me-3 icon-md"></i><span class="align-middle">Profil saya</span>
+            <i class="icon-base ti tabler-user me-3 icon-md"></i><span class="align-middle">Profil Saya</span>
           </a>
         </li>
         <li>

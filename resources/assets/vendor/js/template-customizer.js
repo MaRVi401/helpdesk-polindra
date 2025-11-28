@@ -1599,9 +1599,9 @@ TemplateCustomizer.DIRECTIONS = [
 
 // Theme setting language
 TemplateCustomizer.LANGUAGES = {
-  en: {
+  id: {
     panel_header: 'Template Customizer',
-    panel_sub_header: 'Customize and preview in real time',
+    panel_sub_header: 'Sesuaikan dan pratinjau secara real time',
     theming_header: 'Theming',
     color_label: 'Primary Color',
     theme_label: 'Theme',

@@ -11,6 +11,12 @@ use Exception;
 
 class AuthController extends Controller
 {
+    public function authPage()
+    {
+        $pageConfigs = ['myLayout' => 'blank'];
+        return view('content.auth.login', ['pageConfigs' => $pageConfigs]);
+    }
+
     public function login(Request $request)
     {
         try {

@@ -1,37 +1,46 @@
 {
   "menu": [
     {
-      "url": "/",
-      "name": "Home",
+      "url": "/dashboard",
+      "name": "Dashboard",
       "icon": "menu-icon icon-base ti tabler-smart-home",
-      "slug": "pages-home"
+      "slug": "dashboard"
     },
     {
-      "url": "/page-2",
-      "icon": "menu-icon icon-base ti tabler-file",
-      "name": "Page 2",
-      "slug": "pages-page-2"
+      "name": "Layanan",
+      "url": "/mahasiswa/tiket/create",
+      "icon": "menu-icon icon-base ti tabler-layout",
+      "slug": "mahasiswa.tiket.create"
     },
     {
-      "url": "/pages/misc-error",
-      "name": "Error",
-      "icon": "menu-icon icon-base ti tabler-alert-triangle",
-      "slug": "pages-misc-error",
-      "target": "_blank"
+      "url": "/mahasiswa/tiket",
+      "name": "Layanan Saya",
+      "icon": "menu-icon icon-base ti tabler-layout-2",
+      "slug": "mahasiswa.tiket.index"
     },
     {
-      "url": "/auth/login-basic",
-      "name": "Login",
-      "icon": "menu-icon icon-base ti tabler-login",
-      "slug": "auth-login-basic",
-      "target": "_blank"
+      "url": "/dashboard",
+      "name": "Tentang Kami",
+      "icon": "menu-icon icon-base ti tabler-building-cottage",
+      "slug": ""
     },
     {
-      "url": "/auth/register-basic",
-      "name": "Register",
-      "icon": "menu-icon icon-base ti tabler-user",
-      "slug": "auth-register-basic",
-      "target": "_blank"
+      "url": "/",
+      "name": "Dokumentasi",
+      "icon": "menu-icon icon-base ti tabler-file-description",
+      "slug": ""
+    },
+    {
+      "url": "/dashboard",
+      "name": "Artikel",
+      "icon": "menu-icon icon-base ti tabler-book",
+      "slug": ""
+    },
+    {
+      "url": "/dashboard",
+      "name": "FAQ",
+      "icon": "menu-icon icon-base ti tabler-bubble-text",
+      "slug": ""
     }
   ]
 }

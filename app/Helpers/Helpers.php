@@ -14,6 +14,18 @@ class Helpers
    * @param bool $semiDarkEnabled Whether semi-dark mode is enabled
    * @return array HTML attributes for the menu element
    */
+
+  public static function getLayoutByRole($role)
+  {
+    $layout = match ($role) {
+      'mahasiswa' => 'horizontal',
+      'dosen', 'staff', 'kepala_unit' => 'vertical',
+      'super_admin' => 'vertical',
+      default => 'vertical'
+    };
+
+    return ['myLayout' => $layout];
+  }
   public static function getMenuAttributes($semiDarkEnabled)
   {
     $attributes = [];

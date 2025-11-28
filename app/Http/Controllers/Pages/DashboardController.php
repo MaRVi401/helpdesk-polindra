@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Pages;
 
+use App\Http\Controllers\Controller;
 use App\Models\Staff;
 use App\Models\Jabatan;
 use App\Models\Tiket;
@@ -13,6 +14,6 @@ class DashboardController extends Controller
     public function index()
     {
         $user = auth()->user();
-        return view('content.pages.dashboard', compact('user'));
+        return view('content.pages.dashboard', compact('user'),['pageConfigs' => $this->pageConfigs]);
     }
 }

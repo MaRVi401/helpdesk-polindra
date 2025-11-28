@@ -86,11 +86,8 @@
                 @enderror
               </div>
             </div>
-            <h6 class="text-body">Saran Password:</h6>
             <ul class="ps-4 mb-0">
-              <li class="mb-4">Minimal 6 karakter - semakin banyak semakin baik</li>
-              <li class="mb-4">Setidaknya satu karakter huruf kecil</li>
-              <li>Setidaknya satu angka, simbol, atau karakter spasi</li>
+              <li class="mb-3 text-warning">Minimal 6 karakter - semakin banyak semakin baik</li>
             </ul>
             <div class="mt-6">
               <button type="submit"

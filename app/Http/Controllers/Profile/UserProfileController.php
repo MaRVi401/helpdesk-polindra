@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Profile;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -13,13 +14,13 @@ class UserProfileController extends Controller
     public function userProfile()
     {
         $user = Auth::user();
-        return view('content.user-profile.profile', compact('user'));
+        return view('content.user-profile.profile', compact('user'), ['pageConfigs' => $this->pageConfigs]);
     }
 
     public function setProfile()
     {
         $user = Auth::user();
-        return view('content.user-profile.set-profile', compact('user'));
+        return view('content.user-profile.set-profile', compact('user'), ['pageConfigs' => $this->pageConfigs]);
     }
 
     public function userProfileUpdate(Request $request)
@@ -66,7 +67,7 @@ class UserProfileController extends Controller
     public function setSecurity()
     {
         $user = Auth::user();
-        return view('content.user-profile.set-security', compact('user'));
+        return view('content.user-profile.set-security', compact('user'), ['pageConfigs' => $this->pageConfigs]);
     }
 
     public function userPasswordUpdate(Request $request)
