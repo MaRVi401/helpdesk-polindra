@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use App\Notifications\ResetPasswordNotification;
 
 class User extends Authenticatable
 {
@@ -65,11 +66,11 @@ class User extends Authenticatable
     $colors = ['7367f0', '28c76f', 'ea5455', 'ff9f43', '00cfe8'];
     $index = ord(strtolower($name[0])) % count($colors);
     $background = $colors[$index];
-    
+
     return "https://ui-avatars.com/api/?name=" . urlencode($name) .
-    "&background={$background}&color=fff&size=128&bold=true";
+      "&background={$background}&color=fff&size=128&bold=true";
   }
-  
+
   public function getProfilePhotoUrlAttribute()
   {
     return $this->getAvatarUrlAttribute();
@@ -132,5 +133,12 @@ class User extends Authenticatable
     }
 
     return strtoupper(substr($this->name, 0, 2));
+  }
+
+
+
+  public function sendPasswordResetNotification($token)
+  {
+    $this->notify(new ResetPasswordNotification($token));
   }
 }
