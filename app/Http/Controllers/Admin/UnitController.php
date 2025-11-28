@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-
+use App\Helpers\Helpers;
 use App\Http\Controllers\Controller;
 use App\Models\Unit;
 use App\Models\Staff;
@@ -36,6 +36,9 @@ class UnitController extends Controller
         ]);
 
         Unit::create($request->all());
+
+        // Clear cache menu setelah unit baru dibuat
+        Helpers::clearServiceMenuCache();
         return redirect()->route('unit.index')->with('success', 'Unit berhasil ditambahkan.');
     }
 
@@ -77,9 +80,10 @@ class UnitController extends Controller
             'slug.unique' => 'Slug ini sudah digunakan oleh unit lain.',
         ]);
 
-
         $data_unit->update($validated);
 
+        // Clear cache menu setelah unit diupdate
+        Helpers::clearServiceMenuCache();
         return redirect()->route('unit.index')->with('success', 'Unit berhasil diperbarui.');
     }
 
@@ -92,6 +96,9 @@ class UnitController extends Controller
 
         try {
             $data_unit->delete();
+
+            // Clear cache menu setelah unit dihapus
+            Helpers::clearServiceMenuCache();
             return redirect()->route('unit.index')->with('success', 'Unit berhasil dihapus.');
         } catch (\Exception $e) {
             return redirect()->route('unit.index')->with('error', 'Terjadi kesalahan saat menghapus data.');

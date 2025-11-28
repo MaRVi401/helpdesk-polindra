@@ -55,7 +55,7 @@
           <label class="form-label">Status Arsip</label>
           <select class="form-select @error('status_arsip') is-invalid @enderror" name="status_arsip" required>
             <option value="0" {{ $data_layanan->status_arsip == 0 ? 'selected' : '' }}>Aktif</option>
-            <option value="1" {{ $data_layanan->status_arsip == 1 ? 'selected' : '' }}>Arsip</option>
+            <option value="1" {{ $data_layanan->status_arsip == 1 ? 'selected' : '' }}>Diarsipkan</option>
           </select>
           @error('status_arsip')
             <div class="invalid-feedback">{{ $message }}</div>

@@ -3,9 +3,17 @@
   use Illuminate\Support\Facades\Route;
   $configData = Helper::appClasses();
 
+  // Ambil menu data (statis + dinamis) - untuk menu Layanan berdasarkan Unit
+  $menuData = Helper::getVerticalMenuData();
+
   // Filter Menu berdasarkan Role user
   $userRole = auth()->user()->role ?? 'mahasiswa';
-  $filteredMenu = Helper::filterMenuByRole($menuData[0]->menu, $userRole);
+
+  if (is_object($menuData)) {
+      $filteredMenu = Helper::filterMenuByRole($menuData->menu ?? [], $userRole);
+  } else {
+      $filteredMenu = Helper::filterMenuByRole($menuData['menu'] ?? [], $userRole);
+  }
 @endphp
 
 <aside id="layout-menu" class="layout-menu menu-vertical menu"
@@ -29,9 +37,7 @@
       </a>
     </div>
   @endif
-
   <div class="menu-inner-shadow"></div>
-
   <ul class="menu-inner py-1">
     @foreach ($filteredMenu as $menu)
       {{-- adding active and open class if child is active --}}

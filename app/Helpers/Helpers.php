@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Helpers;
-
+use App\Models\Unit;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 
@@ -31,13 +32,75 @@ class Helpers
    * @param string $userRole Current user's role
    * @return array Filtered menu items
    */
+
+  /**
+   * Get vertical menu with dynamic service submenu
+   *
+   * @return array Complete menu data (static + dynamic)
+   */
+  public static function getVerticalMenuData()
+  {
+    // Ambil menu statis dari JSON
+    $menuJson = file_get_contents(base_path('resources/menu/verticalMenu.json'));
+    $menuData = json_decode($menuJson);
+
+    // Cari menu "Layanan" dan inject submenu dinamis
+    foreach ($menuData->menu as $key => $menu) {
+      if (isset($menu->slug) && $menu->slug === 'service') {
+        // Generate submenu dinamis dari database dengan cache
+        $menuData->menu[$key]->submenu = Cache::remember('service_submenu', 3600, function () {
+          return self::generateServiceSubmenu();
+        });
+        break;
+      }
+    }
+
+    return $menuData;
+  }
+
+  /**
+   * Generate dynamic service submenu from units
+   *
+   * @return array Service submenu items
+   */
+  private static function generateServiceSubmenu()
+  {
+    $submenu = [];
+    $units = Unit::orderBy('nama_unit')->get();
+
+    foreach ($units as $unit) {
+      $submenu[] = (object) [
+        'url' => '/service/' . $unit->slug,
+        'name' => $unit->nama_unit,
+        'slug' => [
+          'service.unit',
+          'service.show',
+          'service.edit'
+        ],
+        'slug_param' => $unit->slug,
+        'roles' => ['super_admin', 'kepala_unit']
+      ];
+    }
+
+    return $submenu;
+  }
+
+  /**
+   * Clear service menu cache
+   * Call this method when units are created/updated/deleted
+   */
+  public static function clearServiceMenuCache()
+  {
+    Cache::forget('service_submenu');
+  }
+
   public static function filterMenuByRole($menuData, $userRole)
   {
     $filteredMenu = [];
 
     foreach ($menuData as $menuItem) {
       // Convert object to array for easier manipulation
-      $item = is_object($menuItem) ? clone $menuItem : (object)$menuItem;
+      $item = is_object($menuItem) ? clone $menuItem : (object) $menuItem;
 
       // Skip if menu has roles restriction and user doesn't have access
       if (isset($item->roles) && is_array($item->roles)) {
@@ -51,7 +114,7 @@ class Helpers
         $filteredSubmenu = [];
 
         foreach ($item->submenu as $subItem) {
-          $subItemObj = is_object($subItem) ? clone $subItem : (object)$subItem;
+          $subItemObj = is_object($subItem) ? clone $subItem : (object) $subItem;
 
           // Check if submenu item has role restriction
           if (isset($subItemObj->roles) && is_array($subItemObj->roles)) {
@@ -92,7 +155,7 @@ class Helpers
   public static function hasMenuAccess($slug, $userRole, $menuData)
   {
     foreach ($menuData as $menuItem) {
-      $item = is_object($menuItem) ? $menuItem : (object)$menuItem;
+      $item = is_object($menuItem) ? $menuItem : (object) $menuItem;
 
       // Check main menu item
       if (isset($item->slug) && $item->slug === $slug) {
@@ -105,7 +168,7 @@ class Helpers
       // Check submenu items
       if (isset($item->submenu) && is_array($item->submenu)) {
         foreach ($item->submenu as $subItem) {
-          $subItemObj = is_object($subItem) ? $subItem : (object)$subItem;
+          $subItemObj = is_object($subItem) ? $subItem : (object) $subItem;
 
           if (isset($subItemObj->slug) && $subItemObj->slug === $slug) {
             if (isset($subItemObj->roles) && is_array($subItemObj->roles)) {
@@ -254,7 +317,7 @@ class Helpers
       // Ensure we have a proper boolean conversion
       $semiDarkEnabled = $semiDarkFromCookie !== null ?
         filter_var($semiDarkFromCookie, FILTER_VALIDATE_BOOLEAN) :
-        (bool)$data['hasSemiDark'];
+        (bool) $data['hasSemiDark'];
     } else {
       // For front-end layouts, use defaults
       $skinName = 'default';
@@ -377,14 +440,16 @@ class Helpers
    */
   public static function generatePrimaryColorCSS($color)
   {
-    if (!$color) return '';
+    if (!$color)
+      return '';
 
     // Check if the color actually came from a cookie or explicit configuration
     // Don't generate CSS if there's no specific need for a custom color
     $configColor = config('custom.custom.primaryColor', null);
     $isFromCookie = isset($_COOKIE['admin-primaryColor']) || isset($_COOKIE['front-primaryColor']);
 
-    if (!$configColor && !$isFromCookie) return '';
+    if (!$configColor && !$isFromCookie)
+      return '';
 
     $r = hexdec(substr($color, 1, 2));
     $g = hexdec(substr($color, 3, 2));

@@ -56,64 +56,7 @@
         "super_admin",
         "kepala_unit"
       ],
-      "submenu": [
-        {
-          "url": "/service/upatik",
-          "name": "UPA TIK",
-          "slug": [
-            "service.unit",
-            "service.show",
-            "service.edit"
-          ],
-          "slug_param": "upatik",
-          "roles": [
-            "super_admin",
-            "kepala_unit"
-          ]
-        },
-        {
-          "url": "/service/akademik",
-          "name": "Akademik",
-          "slug": [
-            "service.unit",
-            "service.show",
-            "service.edit"
-          ],
-          "slug_param": "akademik",
-          "roles": [
-            "super_admin",
-            "kepala_unit"
-          ]
-        },
-        {
-          "url": "/service/kemahasiswaan",
-          "name": "Kemahasiswaan",
-          "slug": [
-            "service.unit",
-            "service.show",
-            "service.edit"
-          ],
-          "slug_param": "kemahasiswaan",
-          "roles": [
-            "super_admin",
-            "kepala_unit"
-          ]
-        },
-        {
-          "url": "/service/upt-bahasa",
-          "name": "UPT Bahasa",
-          "slug": [
-            "service.unit",
-            "service.show",
-            "service.edit"
-          ],
-          "slug_param": "upt-bahasa",
-          "roles": [
-            "super_admin",
-            "kepala_unit"
-          ]
-        }
-      ]
+      "submenu": [] 
     },
     {
       "name": "Monitoring",
@@ -121,7 +64,7 @@
       "slug": "monitoring",
       "submenu": [
         {
-          "url": "kepala-unit/monitoring-tiket", 
+          "url": "kepala-unit/monitoring-tiket",
           "name": "Tiket Masuk",
           "slug": "monitoring-tiket"
         },
