@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Tiket extends Model
 {
@@ -18,12 +17,12 @@ class Tiket extends Model
         'layanan_id',
         'deskripsi',
         'jawaban_id',
-        'id_unit', 
-        'judul', 
-        'status', 
-        'prioritas', 
-        'lampiran', 
-        'detail_id', 
+        'id_unit',
+        'judul',
+        'status',
+        'prioritas',
+        'lampiran',
+        'detail_id',
         'detail_type',
     ];
 
@@ -73,6 +72,13 @@ class Tiket extends Model
         // Selalu urutkan dari yang terbaru
         return $this->hasMany(RiwayatStatusTiket::class)->orderBy('created_at', 'desc');
     }
+
+    // di model Tiket
+    public function statusAkhir()
+    {
+        return $this->hasOne(RiwayatStatusTiket::class, 'tiket_id')->latestOfMany();
+    }
+
 
     /**
      * Relasi HANYA ke status TERBARU.

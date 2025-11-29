@@ -8,15 +8,15 @@
     },
     {
       "name": "Layanan",
-      "url": "/mahasiswa/tiket/create",
+      "url": "/service-ticket/create",
       "icon": "menu-icon icon-base ti tabler-layout",
-      "slug": "mahasiswa.tiket.create"
+      "slug": "service-ticket.create"
     },
     {
-      "url": "/mahasiswa/tiket",
-      "name": "Layanan Saya",
+      "url": "/service-ticket",
+      "name": "Permohonan Layanan Saya",
       "icon": "menu-icon icon-base ti tabler-layout-2",
-      "slug": "mahasiswa.tiket.index"
+      "slug": "service-ticket.index"
     },
     {
       "url": "/dashboard",

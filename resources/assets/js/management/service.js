@@ -1,6 +1,6 @@
 /**
  * Service (Client-side version with SweetAlert2)
- * Updated to support multiple tables per unit
+ * support multiple tables per unit
  */
 'use strict';
 

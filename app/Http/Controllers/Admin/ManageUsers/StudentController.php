@@ -22,7 +22,7 @@ class StudentController extends Controller
       ->groupBy(fn($item) => $item->jurusan->nama_jurusan)
       ->sortBy(fn($prodi, $nama_jurusan) => $prodi->first()->jurusan->id);
 
-    return view('content.apps.admin.manage-users.student.list', compact('data_mahasiswa', 'data_program_studi'));
+    return view('content.apps.admin.manage-users.mahasiswa.list', compact('data_mahasiswa', 'data_program_studi'));
   }
 
   public function store(Request $request)
@@ -65,7 +65,7 @@ class StudentController extends Controller
   public function show($id)
   {
     $data_mahasiswa = Mahasiswa::with(['user', 'programStudi.jurusan'])->findOrFail($id);
-    return view('content.apps.admin.manage-users.student.show', compact('data_mahasiswa'));
+    return view('content.apps.admin.manage-users.mahasiswa.show', compact('data_mahasiswa'));
   }
 
   public function edit($id)

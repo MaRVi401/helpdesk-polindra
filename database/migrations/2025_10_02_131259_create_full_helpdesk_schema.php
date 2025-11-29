@@ -109,6 +109,7 @@ return new class extends Migration
             $table->foreignId('pemohon_id')->constrained('users');
             $table->foreignId('layanan_id')->constrained('layanan');
             $table->text('deskripsi');
+            $table->string('lampiran')->nullable();
             $table->unsignedBigInteger('jawaban_id')->nullable();
             $table->timestamps();
         });
