@@ -38,41 +38,41 @@
       <div class="card">
         <div class="card-body">
           <div class="row align-items-center">
-            <div class="col-lg-7">
+            <div class="col-lg-7 mb-3 mb-lg-0">
               <div class="row gy-3">
                 <!-- TOTAL PERMOHONAN -->
                 <div class="col-md-4 col-6">
                   <div class="d-flex align-items-center">
-                    <div class="badge rounded bg-label-primary me-4 p-1">
-                      <i class="icon-base ti tabler-ticket icon-lg"></i>
+                    <div class="badge rounded bg-label-primary me-2 me-md-3 p-1">
+                      <i class="icon-base ti tabler-ticket fs-5 fs-md-4"></i>
                     </div>
                     <div class="card-info">
-                      <div class="fw-medium text-dark mb-1 fs-6">Total Permohonan</div>
-                      <small class="text-muted fs-7">{{ $total_tiket }}</small>
+                      <div class="fw-medium text-dark mb-1 small fs-md-6">Total Permohonan</div>
+                      <small class="text-muted d-block">{{ $total_tiket }}</small>
                     </div>
                   </div>
                 </div>
                 <!-- BELUM SELESAI -->
                 <div class="col-md-4 col-6">
                   <div class="d-flex align-items-center">
-                    <div class="badge rounded bg-label-warning me-4 p-1">
-                      <i class="icon-base ti tabler-ticket-off icon-lg"></i>
+                    <div class="badge rounded bg-label-warning me-2 me-md-3 p-1">
+                      <i class="icon-base ti tabler-ticket-off fs-5 fs-md-4"></i>
                     </div>
                     <div class="card-info">
-                      <div class="fw-medium text-dark mb-1 fs-6">Belum Selesai</div>
-                      <small class="text-muted fs-7">{{ $belumSelesai }}</small>
+                      <div class="fw-medium text-dark mb-1 small fs-md-6">Belum Selesai</div>
+                      <small class="text-muted d-block">{{ $belumSelesai }}</small>
                     </div>
                   </div>
                 </div>
                 <!-- SELESAI -->
                 <div class="col-md-4 col-6">
                   <div class="d-flex align-items-center">
-                    <div class="badge rounded bg-label-success me-4 p-1">
-                      <i class="icon-base ti tabler-checklist icon-lg"></i>
+                    <div class="badge rounded bg-label-success me-2 me-md-3 p-1">
+                      <i class="icon-base ti tabler-checklist fs-5 fs-md-4"></i>
                     </div>
                     <div class="card-info">
-                      <div class="fw-medium text-dark mb-1 fs-6">Tiket Selesai</div>
-                      <small class="text-muted fs-7">{{ $tiket_selesai }}</small>
+                      <div class="fw-medium text-dark mb-1 small fs-md-6">Tiket Selesai</div>
+                      <small class="text-muted d-block">{{ $tiket_selesai }}</small>
                     </div>
                   </div>
                 </div>
@@ -80,27 +80,26 @@
             </div>
             {{-- FILTER & SEARCH --}}
             <div class="col-lg-5">
-              <div class="d-flex flex-column flex-md-row align-items-md-center gap-3 justify-content-md-end">
+              <div class="d-flex flex-column flex-md-row align-items-md-center gap-2 gap-md-3 justify-content-md-end">
                 <div class="d-flex align-items-center gap-2 flex-shrink-0">
-                  <label class="form-label mb-0 text-nowrap">Status:</label>
-                  <select class="form-select form-select-sm" id="status-dropdown">
+                  <label class="form-label mb-0 text-nowrap small small-md-base">Status:</label>
+                  <select class="form-select form-select-sm" id="status-dropdown" style="min-width: 120px;">
                     <option value="semua">Semua</option>
                     <option value="belum-selesai">Belum Selesai</option>
                     <option value="selesai">Selesai</option>
                   </select>
                 </div>
-                <div>
-                  <input type="text" class="form-control form-control-sm" id="search-tiket" placeholder="Pencarian">
+                <div class="flex-grow-1 flex-md-grow-0" style="min-width: 0;">
+                  <input type="text" class="form-control form-control-sm w-100" id="search-tiket"
+                    placeholder="Pencarian" style="min-width: 120px;">
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </div>
     </div>
   </div>
-
   {{-- CARD TIKET LAYANAN  --}}
   <div class="row g-6 mt-2">
     @forelse($data_tiket as $tiket)
