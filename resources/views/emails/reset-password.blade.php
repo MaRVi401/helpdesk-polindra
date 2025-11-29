@@ -19,7 +19,7 @@
                     <!-- Header -->
                     <tr>
                         <td align="center" style="padding-bottom: 10px;">
-                            <img src="https://dalitmayaan.com/logo.png" width="80" alt="logo">
+                            <img src="https://assets.siakadcloud.com/uploads/polindra/logoaplikasi/1465.jpg" width="60" alt="logo">
                             <h2 style="margin-top: 10px; margin-bottom: 0; color: #004aad; font-size: 22px;">
                                 HELPDESK POLINDRA
                             </h2>
