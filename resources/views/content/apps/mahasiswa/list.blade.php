@@ -82,7 +82,7 @@
             <div class="col-lg-5">
               <div class="d-flex flex-column flex-md-row align-items-md-center gap-2 gap-md-3 justify-content-md-end">
                 <div class="d-flex align-items-center gap-2 flex-shrink-0">
-                  <label class="form-label mb-0 text-nowrap small small-md-base">Status:</label>
+                  <label class="form-label mb-0 text-nowrap small small-md-base">Status Tiket:</label>
                   <select class="form-select form-select-sm" id="status-dropdown" style="min-width: 120px;">
                     <option value="semua">Semua</option>
                     <option value="belum-selesai">Belum Selesai</option>
