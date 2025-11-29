@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const status = statusDropdown ? statusDropdown.value : 'semua';
     const q = searchInput ? searchInput.value.trim().toLowerCase() : '';
     const cards = document.querySelectorAll('.tiket-card');
+    let visibleCount = 0;
 
     cards.forEach(card => {
       const rawStatus = card.dataset.status || '';
@@ -29,9 +30,19 @@ document.addEventListener('DOMContentLoaded', function () {
       let textMatch = true;
       if (q) textMatch = tiketNo.includes(q) || judul.includes(q) || layanan.includes(q);
 
-      if (statusMatch && textMatch) card.style.display = '';
-      else card.style.display = 'none';
+      if (statusMatch && textMatch) {
+        card.style.display = '';
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
+      }
     });
+
+    // Show/hide no-results message
+    const noResultsMsg = document.getElementById('no-results-filter');
+    if (noResultsMsg) {
+      noResultsMsg.style.display = visibleCount === 0 ? '' : 'none';
+    }
   }
 
   if (statusDropdown) statusDropdown.addEventListener('change', applyFilters);

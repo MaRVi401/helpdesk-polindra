@@ -204,8 +204,13 @@
       </div>
     @empty
       <div class="col-12">
-        <div class="alert alert-info" role="alert">
-          Kamu belum memiliki tiket.
+        <div class="card">
+          <div class="card-body text-center">
+            <h2>
+              <i class="icon-base ti tabler-folder-open icon-42px text-danger"></i>
+            </h2>
+            <h6>Tidak ada tiket layanan. Mulai buat tiket layanan untuk permohonan layanan.</h6>
+          </div>
         </div>
       </div>
     @endforelse
