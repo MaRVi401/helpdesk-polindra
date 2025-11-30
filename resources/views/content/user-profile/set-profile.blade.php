@@ -105,10 +105,10 @@
               <button type="submit" class="btn btn-primary me-3">
                 Simpan Perubahan
               </button>
-              <a href="{{ route('user-profile.index') }}" class="btn btn-outline-secondary">
-                <i class="icon-base ti tabler-user me-1"></i>
-                Profil saya
-              </a>
+              <button type="reset" class="btn btn-outline-secondary">
+                <i class="icon-base ti tabler-reload me-1"></i>
+                Ulang
+              </button>
             </div>
           </form>
         </div>

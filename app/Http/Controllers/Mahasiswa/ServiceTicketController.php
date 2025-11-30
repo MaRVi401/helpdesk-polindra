@@ -1,20 +1,17 @@
 <?php
-
 namespace App\Http\Controllers\Mahasiswa;
-
 use App\Http\Controllers\Controller;
 use App\Models\KomentarTiket;
 use App\Models\Layanan;
 use App\Models\RiwayatStatusTiket;
 use App\Models\Tiket;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\DB;
 use App\Models\DetailTiketSuratKetAktif;
 use App\Models\DetailTiketResetAkun;
 use App\Models\DetailTiketUbahDataMhs;
 use App\Models\DetailTiketReqPublikasi;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ServiceTicketController extends Controller
 {
@@ -27,14 +24,11 @@ class ServiceTicketController extends Controller
   public function index()
   {
     $userId = Auth::id();
-
-    // Ambil tiket dengan relasi yang dibutuhkan termasuk status terakhir
     $data_tiket = Tiket::with(['layanan.unit', 'pemohon', 'statusAkhir'])
       ->where('pemohon_id', $userId)
       ->orderBy('created_at', 'desc')
       ->get();
 
-    // Total semua tiket
     $total_tiket = $data_tiket->count();
 
     // Status yang dianggap selesai
@@ -49,7 +43,6 @@ class ServiceTicketController extends Controller
       return $statusTerbaru && in_array($statusTerbaru, $statusSelesai);
     })->count();
 
-    // Tiket belum selesai
     $belumSelesai = $total_tiket - $tiket_selesai;
 
     return view('content.apps.mahasiswa.list', compact(
@@ -60,25 +53,17 @@ class ServiceTicketController extends Controller
     ), ['pageConfigs' => $this->pageConfigs]);
   }
 
-
   public function create()
   {
+    $userId = Auth::id();
+    $total_tiket = Tiket::where('pemohon_id', $userId)->count();
+
     $data_layanan = Layanan::with('unit')
       ->where('status_arsip', 0)
       ->orderBy('nama', 'asc')
       ->get();
-    return view('content.apps.mahasiswa.create', compact('data_layanan'), ['pageConfigs' => $this->pageConfigs]);
-  }
 
-  public function showCreateForm(Request $request)
-  {
-    $data_layanan = Layanan::with('unit')->get();
-    $layananTerpilih = null;
-    if ($request->has('layanan_id')) {
-      $layananTerpilih = Layanan::find($request->layanan_id);
-    }
-
-    return view('content.apps.mahasiswa.create', compact('data_layanan', 'layananTerpilih'), ['pageConfigs' => $this->pageConfigs]);
+    return view('content.apps.mahasiswa.create', compact('data_layanan', 'total_tiket'), ['pageConfigs' => $this->pageConfigs]);
   }
 
   public function store(Request $request)
@@ -188,7 +173,6 @@ class ServiceTicketController extends Controller
   public function show($id)
   {
     $userId = Auth::id();
-
     $tiket = Tiket::where('id', $id)
       ->where('pemohon_id', $userId)
       ->with([
@@ -222,7 +206,6 @@ class ServiceTicketController extends Controller
 
     $riwayatTerbaru = $tiket->riwayatStatus->sortByDesc('created_at')->first();
     $statusSekarang = $riwayatTerbaru ? $riwayatTerbaru->status : 'Diajukan_oleh_Pemohon';
-
     return view('content.apps.mahasiswa.show', compact('tiket', 'detail', 'statusSekarang'), ['pageConfigs' => $this->pageConfigs])
       ->with('detailLayanan', $detail);
   }
@@ -241,7 +224,6 @@ class ServiceTicketController extends Controller
       'pengirim_id' => Auth::id(),
       'komentar' => $request->komentar,
     ]);
-
     return redirect()->route('service-ticket.show', $tiket->id)
       ->with('success', 'Komentar terkirim.');
   }
@@ -250,24 +232,25 @@ class ServiceTicketController extends Controller
   {
     $userId = Auth::id();
 
-    $tiket = Tiket::where('id', $id)
+    $data_tiket = Tiket::where('id', $id)
       ->where('pemohon_id', $userId)
       ->firstOrFail();
 
-    if ($tiket->lampiran && Storage::disk('public')->exists($tiket->lampiran)) {
-      Storage::disk('public')->delete($tiket->lampiran);
+    if ($data_tiket->lampiran && Storage::disk('public')->exists($data_tiket->lampiran)) {
+      Storage::disk('public')->delete($data_tiket->lampiran);
     }
 
-    $detailPublikasi = DetailTiketReqPublikasi::where('tiket_id', $tiket->id)->first();
+    $detailPublikasi = DetailTiketReqPublikasi::where('tiket_id', $data_tiket->id)->first();
     if ($detailPublikasi && $detailPublikasi->gambar && Storage::disk('public')->exists($detailPublikasi->gambar)) {
       Storage::disk('public')->delete($detailPublikasi->gambar);
     }
 
-    $tiket->delete();
+    $data_tiket->delete();
 
     return redirect()->route('service-ticket.index')
       ->with('success', 'Tiket berhasil dihapus.');
   }
+
   public function statusConfirm(Request $request, $id)
   {
     $request->validate([
@@ -285,22 +268,20 @@ class ServiceTicketController extends Controller
         return redirect()->back()->with('error', 'Status tidak valid.');
       }
 
-      DB::table('riwayat_status_tiket')->insert([
+      RiwayatStatusTiket::create([
         'tiket_id' => $tiket->id,
         'user_id' => Auth::id(),
         'status' => $newStatus,
-        'created_at' => now(),
-        'updated_at' => now(),
       ]);
 
-      $msg = 'Status tiket berhasil diperbarui.';
-      if ($newStatus == 'Ditangani_oleh_PIC') {
-        $msg = 'Tiket dikembalikan ke PIC untuk penanganan ulang.';
-      } elseif ($newStatus == 'Dinilai_Selesai_oleh_Pemohon') {
-        $msg = 'Terima kasih! Tiket telah dinyatakan selesai.';
+      $message = 'Status tiket berhasil diperbarui.';
+      if ($newStatus == 'Dinilai_Selesai_oleh_Pemohon') {
+        $message = 'Terima kasih! Tiket telah dinyatakan selesai.';
+      } elseif ($newStatus == 'Dinilai_Belum_Selesai_oleh_Pemohon') {
+        $message = 'Tiket dikembalikan ke PIC untuk penanganan ulang.';
       }
 
-      return redirect()->back()->with('success', $msg);
+      return redirect()->back()->with('success', $message);
     }
 
     return redirect()->back()->with('error', 'Aksi tidak diizinkan untuk status tiket saat ini.');

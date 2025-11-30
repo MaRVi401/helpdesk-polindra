@@ -159,5 +159,4 @@
       window.studentErrorMessage = "{{ $errors->first() }}";
     </script>
   @endif
-
 @endsection

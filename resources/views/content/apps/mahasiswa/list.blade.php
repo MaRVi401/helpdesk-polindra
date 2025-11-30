@@ -3,7 +3,7 @@
 @section('title', 'Permohonan Layanan Saya')
 
 @section('vendor-style')
-  @vite(['resources/assets/vendor/libs/datatables-bs5/datatables.bootstrap5.scss', 'resources/assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.scss'])
+  @vite(['resources/assets/vendor/libs/datatables-bs5/datatables.bootstrap5.scss', 'resources/assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.scss', 'resources/assets/vendor/libs/@form-validation/form-validation.scss', 'resources/assets/vendor/libs/sweetalert2/sweetalert2.scss'])
 @endsection
 
 @section('page-style')
@@ -11,11 +11,11 @@
 @endsection
 
 @section('vendor-script')
-  @vite(['resources/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js'])
+  @vite(['resources/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js', 'resources/assets/vendor/libs/@form-validation/popular.js', 'resources/assets/vendor/libs/@form-validation/bootstrap5.js', 'resources/assets/vendor/libs/@form-validation/auto-focus.js', 'resources/assets/vendor/libs/sweetalert2/sweetalert2.js'])
 @endsection
 
 @section('page-script')
-  @vite('resources/assets/js/management/service-ticket/mahasiswa.js')
+  @vite('resources/assets/js/management/service-ticket/list-mahasiswa.js')
 @endsection
 
 @section('content')
@@ -24,8 +24,8 @@
     <div class="col-12">
       <div class="card mb-6">
         <div class="user-profile-header-banner">
-          <img src="{{ asset('assets/img/pages/profile-banner-mahasiswa.png') }}" alt="Banner image mahasiswa"
-            class="rounded-top" />
+          <img src="{{ asset('assets/img/pages/service-ticket-banner.png') }}" alt="Service Ticket Banner"
+            class="rounded w-100 h-100" />
         </div>
         <div class="user-profile-header d-flex flex-column flex-lg-row text-sm-start text-center mb-5">
         </div>
@@ -33,7 +33,7 @@
     </div>
   </div>
   {{-- STATISTIK LAYANAN --}}
-  <div class="row mt-5">
+  <div class="row mt-2">
     <div class="col-12">
       <div class="card">
         <div class="card-body">
@@ -101,7 +101,7 @@
     </div>
   </div>
   {{-- CARD TIKET LAYANAN  --}}
-  <div class="row g-6 mt-2">
+  <div class="row g-6 mt-1">
     @forelse($data_tiket as $tiket)
       <div class="col-xl-4 col-lg-6 col-md-6 tiket-card"
         data-status="{{ $tiket->riwayatStatus->sortByDesc('created_at')->first()->status ?? 'Diajukan_oleh_Pemohon' }}"
@@ -176,19 +176,27 @@
                   $statusTerakhir =
                       $tiket->riwayatStatus->sortByDesc('created_at')->first()->status ?? 'Diajukan_oleh_Pemohon';
                   $statusDisplay = str_replace('_', ' ', $statusTerakhir);
-                  // Conditional statement untuk menentukan status
-                  if (in_array($statusTerakhir, ['Diajukan_oleh_Pemohon'])) {
-                      $statusClass = 'bg-label-secondary';
-                  } elseif (in_array($statusTerakhir, ['Ditangani_oleh_PIC', 'Diselesaikan_oleh_PIC'])) {
-                      $statusClass = 'bg-label-info';
-                  } elseif (in_array($statusTerakhir, ['Dinilai_belum_selesai_oleh_Pemohon', 'Pemohon_bermasalah'])) {
-                      $statusClass = 'bg-label-danger';
-                  } elseif (
-                      in_array($statusTerakhir, ['Dinilai_selesai_oleh_Kepala', 'Dinilai_selesai_oleh_Pemohon'])
-                  ) {
-                      $statusClass = 'bg-label-info';
-                  } else {
-                      $statusClass = 'bg-label-success';
+                  switch ($statusTerakhir) {
+                      case 'Diajukan_oleh_Pemohon':
+                          $statusClass = 'bg-label-status-pending';
+                          break;
+                      case 'Ditangani_oleh_PIC':
+                          $statusClass = 'bg-label-status-process';
+                          break;
+                      case 'Diselesaikan_oleh_PIC':
+                          $statusClass = 'bg-label-status-review';
+                          break;
+                      case 'Dinilai_Belum_Selesai_oleh_Pemohon':
+                      case 'Pemohon_Bermasalah':
+                          $statusClass = 'bg-label-status-rejected';
+                          break;
+                      case 'Dinilai_Selesai_oleh_Kepala':
+                      case 'Dinilai_Selesai_oleh_Pemohon':
+                          $statusClass = 'bg-label-status-completed';
+                          break;
+                      default:
+                          $statusClass = 'bg-label-secondary';
+                          break;
                   }
                 @endphp
                 <span class="badge {{ $statusClass }}">
@@ -203,7 +211,7 @@
         </div>
       </div>
     @empty
-      <div class="col-12">
+      <div class="col-12" id="empty-data-message">
         <div class="card">
           <div class="card-body text-center">
             <h2>
@@ -214,6 +222,17 @@
         </div>
       </div>
     @endforelse
+    {{-- PESAN TIDAK ADA HASIL FILTER (HIDDEN BY DEFAULT) --}}
+    <div class="col-12" id="no-results-filter" style="display: none;">
+      <div class="card">
+        <div class="card-body text-center">
+          <h2>
+            <i class="icon-base ti tabler-folder-open icon-42px text-danger"></i>
+          </h2>
+          <h6>Tidak ada tiket layanan yang sesuai dengan filter atau pencarian.</h6>
+        </div>
+      </div>
+    </div>
   </div>
   @if (session('success'))
     <script>

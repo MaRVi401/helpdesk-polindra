@@ -18,18 +18,13 @@
 @section('vendor-script')
   @vite(['resources/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js'])
 @endsection
-
-@section('page-script')
-  @vite(['resources/assets/js/app-user-view-account.js'])
-@endsection
-
 @section('content')
   {{-- HEADER --}}
   <div class="row">
     <div class="col-12">
       <div class="card mb-6">
         <div class="user-profile-header-banner">
-          <img src="{{ asset('assets/img/pages/profile-banner.png') }}" alt="Banner image" class="rounded-top" />
+          <img src="{{ asset('assets/img/pages/profile-banner.png') }}" alt="Profile Banner" class="rounded-top" />
         </div>
         <div class="user-profile-header d-flex flex-column flex-lg-row text-sm-start text-center mb-5">
           <div class="flex-shrink-0 mt-n2 mx-sm-0 mx-auto">

@@ -29,7 +29,6 @@ use App\Http\Controllers\Admin\ProgramStudiController;
 use App\Http\Controllers\Admin\KategoriArtikelController;
 use App\Http\Controllers\KepalaUnit\MonitoringTiketController;
 use App\Http\Controllers\KepalaUnit\KelolaPicController;
-use App\Http\Controllers\Mahasiswa\TiketController as MahasiswaTiketController;
 use App\Http\Controllers\AdminUnit\TiketController as AdminUnitTiketController;
 use App\Http\Controllers\Admin\PositionController;
 
@@ -87,7 +86,6 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
     Route::post('/save-profile', [CompleteProfileController::class, 'saveCompleteProfile'])->name('save.complete.profile');
 
     Route::middleware('role:super_admin')->group(function () {
-
         // SERVICE MANAGEMENT (SUPER ADMIN)
         Route::prefix('service')->name('service.')->group(function () {
             Route::get('/{slug}', [ServiceController::class, 'filterByUnit'])->name('unit');
@@ -113,88 +111,57 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
         // ARTICLE MANAGEMENT (SUPER ADMIN)
         Route::resource('article', ArticleController::class);
         Route::resource('article-category', ArticleCategoryController::class);
-    });
 
+        // POSITION MANAGEMENT (SUPER ADMIN)
+        Route::resource('position', PositionController::class)->names('position');
+    });
 
     // SERVICE TICKET (MAHASISWA)
     Route::middleware('role:mahasiswa')->group(function () {
         Route::resource('service-ticket', ServiceTicketController::class);
         Route::post('service-ticket/{id}/comment', [ServiceTicketController::class, 'serviceTicketComment'])->name('service.ticket.comment');
-
-        // Route::get('buat-tiket', [MahasiswaTiketController::class, 'showCreateForm'])->name('tiket.show-create-form');
-        // Route::resource('tiket', MahasiswaTiketController::class);
-        // Route::post('tiket/{id}/komentar', [MahasiswaTiketController::class, 'storeKomentar'])->name('tiket.komentar.store');
-        // Route::post('tiket/{id}/komentar', [MahasiswaTiketController::class, 'storeKomentar'])->name('tiket.storeKomentar');
         Route::patch('service-ticket/{id}/status-confirm', [ServiceTicketController::class, 'statusConfirm'])->name('service.ticket.statusConfirm');
-      
     });
 
-    // // SERVICE TICKET (MAHASISWA)
-    // Route::middleware('role:mahasiswa')->prefix('mahasiswa')->name('mahasiswa.')->group(function () {
-    //     Route::get('/dashboard', [MahasiswaTiketController::class, 'dashboard'])->name('dashboard');
-    //     Route::get('/tiket', [MahasiswaTiketController::class, 'index'])->name('tiket.index');
-    //     Route::get('/tiket/create', [MahasiswaTiketController::class, 'create'])->name('tiket.create');
-    //     Route::post('/tiket', [MahasiswaTiketController::class, 'store'])->name('tiket.store');
-    //     Route::get('/tiket/{id}', [MahasiswaTiketController::class, 'show'])->name('tiket.show');
-    //     Route::post('tiket/{tiket}/komentar', [TiketController::class, 'storeKomentar'])->name('tiket.komentar.store');
-    //     Route::get('buat-tiket', [MahasiswaTiketController::class, 'showCreateForm'])->name('tiket.show-create-form');
-    //     Route::resource('tiket', MahasiswaTiketController::class);
-    //     Route::post('tiket/{id}/komentar', [MahasiswaTiketController::class, 'storeKomentar'])->name('tiket.komentar.store');
-    //     Route::post('tiket/{id}/komentar', [MahasiswaTiketController::class, 'storeKomentar'])->name('tiket.storeKomentar');
-    //     Route::patch('tiket/{id}/update-status', [MahasiswaTiketController::class, 'updateStatus'])->name('tiket.updateStatus');
+
+    // // Super Admin
+    // Route::middleware('role:super_admin')->prefix('admin')->name('admin.')->group(function () {
+    //     ;
+    //     // Kelola Pengguna - Staff
+    //     Route::get('staff/export/excel', [StaffController::class, 'exportExcel'])->name('staff.export.excel');
+    //     Route::resource('staff', StaffController::class);
+
+    //     // Kelola FAQ
+    //     Route::get('kelolafaq/export/excel', [KelolaFaqController::class, 'exportExcel'])->name('kelolafaq.export.excel');
+    //     Route::resource('kelolafaq', KelolaFaqController::class);
+
+    //     // Kelola Jurusan
+    //     Route::get('jurusan/export/excel', [JurusanController::class, 'exportExcel'])->name('jurusan.export.excel');
+    //     Route::resource('jurusan', JurusanController::class)->names('jurusan');
+
+    //     // Kelola Program Studi
+    //     Route::get('program-studi/export/excel', [ProgramStudiController::class, 'exportExcel'])->name('program-studi.export.excel');
+    //     Route::resource('program-studi', ProgramStudiController::class)->except(['index', 'show'])->names('program-studi');
+
+    //     // Master Route Jurusan & Prodi
+    //     Route::get('jurusan/{jurusan}/program-studi', [ProgramStudiController::class, 'index'])->name('jurusan.program-studi.index');
+
+    //     // Kelola Unit
+    //     Route::get('unit/export/excel', [UnitControllerOld::class, 'exportExcel'])->name('unit.export.excel');
+    //     Route::resource('unit', UnitControllerOld::class)->names('unit');
+
+    //     // Kelola Artikel dan Kategori Artikel
+    //     Route::get('artikel/export/excel', [ArtikelController::class, 'exportExcel'])->name('artikel.export.excel');
+    //     Route::resource('artikel', ArtikelController::class)->names('artikel');
+    //     Route::resource('kategori-artikel', KategoriArtikelController::class)->names('kategori-artikel');
+
+    //     // Kelola Tiket Semua Unit
+    //     Route::get('tiket/export/excel', [AdminTiketController::class, 'exportExcel'])->name('tiket.export.excel');
+    //     Route::resource('tiket', AdminTiketController::class);
+
+    //     // Kelola PIC Layanan
+    //     Route::resource('layanan', LayananController::class);
     // });
-
-
-
-
-
-
-    // Super Admin
-    Route::middleware('role:super_admin')->prefix('admin')->name('admin.')->group(function () {
-        ;
-        // Kelola Pengguna - Staff
-        Route::get('staff/export/excel', [StaffController::class, 'exportExcel'])->name('staff.export.excel');
-        Route::resource('staff', StaffController::class);
-
-        // Kelola FAQ
-        Route::get('kelolafaq/export/excel', [KelolaFaqController::class, 'exportExcel'])->name('kelolafaq.export.excel');
-        Route::resource('kelolafaq', KelolaFaqController::class);
-
-        // Kelola Jurusan
-        Route::get('jurusan/export/excel', [JurusanController::class, 'exportExcel'])->name('jurusan.export.excel');
-        Route::resource('jurusan', JurusanController::class)->names('jurusan');
-
-        // Kelola Program Studi
-        Route::get('program-studi/export/excel', [ProgramStudiController::class, 'exportExcel'])->name('program-studi.export.excel');
-        Route::resource('program-studi', ProgramStudiController::class)->except(['index', 'show'])->names('program-studi');
-
-        // Master Route Jurusan & Prodi
-        Route::get('jurusan/{jurusan}/program-studi', [ProgramStudiController::class, 'index'])->name('jurusan.program-studi.index');
-
-
-        // Kelola Unit
-        Route::get('unit/export/excel', [UnitControllerOld::class, 'exportExcel'])->name('unit.export.excel');
-        Route::resource('unit', UnitControllerOld::class)->names('unit');
-
-        // Kelola Artikel dan Kategori Artikel
-        Route::get('artikel/export/excel', [ArtikelController::class, 'exportExcel'])->name('artikel.export.excel');
-        Route::resource('artikel', ArtikelController::class)->names('artikel');
-        Route::resource('kategori-artikel', KategoriArtikelController::class)->names('kategori-artikel');
-
-        // Kelola Tiket Semua Unit
-        Route::get('tiket/export/excel', [AdminTiketController::class, 'exportExcel'])->name('tiket.export.excel');
-        Route::resource('tiket', AdminTiketController::class);
-
-        // Kelola PIC Layanan
-        Route::resource('layanan', LayananController::class);
-
-        // Kelola Jabatan/Posisi Staff
-        Route::resource('position', PositionController::class)->names('position');
-
-    });
-
-
-    // Mahasiswa
 
 
     // Kepala Unit

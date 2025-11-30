@@ -15,7 +15,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const status = statusDropdown ? statusDropdown.value : 'semua';
     const q = searchInput ? searchInput.value.trim().toLowerCase() : '';
     const cards = document.querySelectorAll('.tiket-card');
+    const emptyDataMessage = document.getElementById('empty-data-message');
+    const noResultsFilter = document.getElementById('no-results-filter');
+
     let visibleCount = 0;
+    const totalCards = cards.length;
 
     cards.forEach(card => {
       const rawStatus = card.dataset.status || '';
@@ -38,10 +42,17 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
 
-    // Show/hide no-results message
-    const noResultsMsg = document.getElementById('no-results-filter');
-    if (noResultsMsg) {
-      noResultsMsg.style.display = visibleCount === 0 ? '' : 'none';
+    //  Untuk menampilkan pesan yang tepat
+    if (totalCards === 0) {
+      // Jika memang tidak ada data dari server (empty state)
+      if (emptyDataMessage) emptyDataMessage.style.display = '';
+      if (noResultsFilter) noResultsFilter.style.display = 'none';
+    } else {
+      // Jika ada data tapi hasil filter kosong
+      if (emptyDataMessage) emptyDataMessage.style.display = 'none';
+      if (noResultsFilter) {
+        noResultsFilter.style.display = visibleCount === 0 ? '' : 'none';
+      }
     }
   }
 
