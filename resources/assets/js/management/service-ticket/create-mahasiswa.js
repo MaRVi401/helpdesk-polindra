@@ -1,12 +1,14 @@
+/**
+ * Create Service Ticket - Mahasiswa
+ */
+
 'use strict';
-import Swal from 'sweetalert2';
 
 let fv;
 
 document.addEventListener('DOMContentLoaded', function () {
   const formCreateTicket = document.getElementById('form-create-ticket');
 
-  // Form validation for Add new record
   if (formCreateTicket) {
     fv = FormValidation.formValidation(formCreateTicket, {
       fields: {
@@ -39,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
         keperluan_lainnya: {
           validators: {}
         },
-        // Reset Akun Fields
+        // Reset Account Fields
         aplikasi: {
           validators: {
             notEmpty: { message: 'Aplikasi wajib dipilih' }
@@ -50,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
             notEmpty: { message: 'Detail masalah wajib diisi' }
           }
         },
-        // Ubah Data Fields
+        // Change Data Fields
         data_nama_lengkap: {
           validators: {
             notEmpty: { message: 'Nama lengkap wajib diisi' }
@@ -66,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function () {
             notEmpty: { message: 'Tanggal lahir wajib diisi' }
           }
         },
-        // Publikasi Fields
+        // Publication Fields
         judul_publikasi: {
           validators: {
             notEmpty: { message: 'Judul publikasi wajib diisi' }
@@ -74,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         kategori: {
           validators: {
-            notEmpty: { message: 'Kategori publikasi wajib diisi' }
+            notEmpty: { message: 'Kategori wajib diisi' }
           }
         },
         konten: {
@@ -103,18 +105,36 @@ document.addEventListener('DOMContentLoaded', function () {
             e.element.parentElement.insertAdjacentElement('afterend', e.messageElement);
           }
         });
+
+        instance.on('core.form.valid', function () {
+          Swal.fire({
+            title: 'Memproses...',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            allowEnterKey: false,
+            didOpen: () => {
+              Swal.showLoading();
+            }
+          });
+          formCreateTicket.submit();
+        });
       }
     });
   }
 
-  // Toggle spesific form based on service
   function toggleSpecificForm() {
-    // Sembunyikan semua form spesifik & DISABLE
+    // Hide all specific forms & disable their inputs & validators
     const forms = document.querySelectorAll('.specific-form');
     forms.forEach(el => {
       el.classList.add('d-none');
       const inputs = el.querySelectorAll('input, select, textarea');
-      inputs.forEach(input => (input.disabled = true)); // Disable input tersembunyi
+      inputs.forEach(input => {
+        input.disabled = true;
+        // Disable validator for hidden fields
+        if (fv && input.name) {
+          fv.disableValidator(input.name);
+        }
+      });
     });
 
     const select = document.getElementById('layanan_id');
@@ -124,7 +144,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!namaLayanan) return;
 
     let activeFormId = null;
-    // Sesuaikan pencarian dengan nama layanan
     if (namaLayanan.includes('Surat Keterangan Aktif')) {
       activeFormId = 'form-ska';
     } else if (namaLayanan.includes('Reset Akun')) {
@@ -135,12 +154,18 @@ document.addEventListener('DOMContentLoaded', function () {
       activeFormId = 'form-publikasi';
     }
 
-    // Tampilkan form yang sesuai & ENABLE inputnya
+    // Show and enable the active form & its validators
     if (activeFormId) {
       const activeForm = document.getElementById(activeFormId);
       activeForm.classList.remove('d-none');
       const inputs = activeForm.querySelectorAll('input, select, textarea');
-      inputs.forEach(input => (input.disabled = false)); // Enable input yang aktif
+      inputs.forEach(input => {
+        input.disabled = false;
+        // Enable validator for visible fields
+        if (fv && input.name) {
+          fv.enableValidator(input.name);
+        }
+      });
     }
 
     // Revalidate form to update field status
@@ -154,7 +179,6 @@ document.addEventListener('DOMContentLoaded', function () {
     layananSelect.addEventListener('change', toggleSpecificForm);
   }
 
-  // Image preview & validation
   const imgInp = document.getElementById('imgInp');
   const previewBox = document.getElementById('preview-box');
   const previewImg = document.getElementById('preview-img');
@@ -166,6 +190,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const [file] = imgInp.files;
 
       if (file) {
+        // FILE SIZE VALIDATION (CLIENT SIDE)
         const fileSizeMB = file.size / 1024 / 1024;
         const maxFileSize = 2; // 2MB
 
@@ -173,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function () {
           Swal.fire({
             icon: 'warning',
             title: 'Ukuran File Terlalu Besar!',
-            text: 'Ukuran gambar maksimal adalah 2MB. File Kamu berukuran ' + fileSizeMB.toFixed(2) + 'MB.',
+            text: 'Ukuran gambar maksimal adalah 2MB. File Anda berukuran ' + fileSizeMB.toFixed(2) + 'MB.',
             confirmButtonText: 'Ganti Gambar',
             confirmButtonColor: '#ff9f43',
             customClass: {
@@ -198,28 +223,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // Handle form submission
-  if (formCreateTicket) {
-    formCreateTicket.addEventListener('submit', function (e) {
-      e.preventDefault();
-
-      // Validate form
-      fv.validate().then(function (status) {
-        if (status === 'Valid') {
-          Swal.fire({
-            title: 'Memproses...',
-            allowOutsideClick: false,
-            allowEscapeKey: false,
-            allowEnterKey: false,
-            didOpen: () => {
-              Swal.showLoading();
-            }
-          });
-          formCreateTicket.submit();
-        }
-      });
-    });
-  }
+  toggleSpecificForm(); // Reset state on page load
 
   // Check for server-side upload error
   const urlParams = new URLSearchParams(window.location.search);
@@ -227,9 +231,24 @@ document.addEventListener('DOMContentLoaded', function () {
     Swal.fire({
       icon: 'error',
       title: 'File Terlalu Besar!',
-      text: 'Ukuran file melebihi batas. Silakan kompres file Kamu.',
+      text: 'Ukuran file melebihi batas server. Silakan kompres file Anda.',
       confirmButtonColor: '#ea5455'
     });
     window.history.replaceState(null, null, window.location.pathname);
+  }
+
+  // Laravel validation error
+  if (document.querySelector('.invalid-feedback:not(:empty)')) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Gagal Membuat Tiket!',
+      text: 'Mohon periksa kembali inputan Kamu yang berwarna merah.',
+      confirmButtonText: 'Periksa Inputan',
+      confirmButtonColor: '#ea5455',
+      customClass: {
+        confirmButton: 'btn btn-danger'
+      },
+      buttonsStyling: false
+    });
   }
 });
