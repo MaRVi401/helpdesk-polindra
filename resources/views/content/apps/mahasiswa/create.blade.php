@@ -13,7 +13,7 @@
 @endsection
 
 @section('page-script')
-  @vite('resources/assets/js/management/service-ticket/create-mahasiswa.js')
+  @vite('resources/assets/js/management/service-ticket/create.js')
 @endsection
 @section('content')
   <div class="row">

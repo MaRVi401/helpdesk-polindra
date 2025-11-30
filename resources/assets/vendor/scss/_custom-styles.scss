@@ -20,7 +20,6 @@
   }
 }
 
-
 // ===============================
 // HEIGHT UTILITIES
 // ===============================
@@ -30,4 +29,73 @@
   .hpx-#{$i} {
     height: #{$i}px !important;
   }
+}
+
+// ===============================
+// TIME LINE SERVICE TICKET
+// ===============================
+
+.timeline {
+  position: relative;
+  padding-left: 1rem;
+}
+
+.timeline-item {
+  position: relative;
+  padding-left: 2rem;
+  padding-bottom: 1.5rem;
+  border-left: 2px solid #e2e8f0;
+}
+
+.timeline-item:last-child {
+  border-left: 0;
+  padding-bottom: 0;
+}
+
+.timeline-dot {
+  position: absolute;
+  left: -7px;
+  top: 0;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+}
+
+.timeline-time {
+  font-size: 0.75rem;
+  color: #a0aec0;
+  margin-bottom: 0.25rem;
+}
+
+.timeline-title {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.timeline-body-comment {
+  padding: 1rem;
+  border-radius: 6px;
+  margin-top: 0.5rem;
+}
+
+.dot-super_admin {
+  background-color: $danger !important;
+}
+
+.dot-mahasiswa {
+  background-color: $primary !important;
+}
+
+.dot-kepala_unit {
+  background-color: $info !important;
+}
+
+.dot-admin_unit {
+  background-color: $success !important;
+}
+
+.dot-system {
+  background-color: $secondary !important;
 }

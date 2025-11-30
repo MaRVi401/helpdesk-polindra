@@ -22,19 +22,10 @@
       ]
     },
     {
-      "name": "Buat Tiket Baru",
-      "url": "/mahasiswa/tiket/create", 
-      "icon": "menu-icon icon-base ti tabler-tag-plus",
-      "slug": "mahasiswa.tiket.create",
-      "roles": [
-        "mahasiswa"
-      ]
-    },
-    {
       "url": "admin-unit/tiket",
-      "name": "Tiket Masuk",
-      "icon": "menu-icon tf-icons bx bx-envelope",
-      "slug": "admin-unit-tiket",
+      "name": "Daftar Tiket Layanan",
+      "icon": "menu-icon icon-base ti tabler-ticket",
+      "slug": "admin_unit.tiket.index",
       "roles": [
         "admin_unit"
       ]

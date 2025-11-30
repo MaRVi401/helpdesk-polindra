@@ -106,12 +106,12 @@ class TiketController extends Controller
             case 'Diselesaikan_oleh_PIC':
                 // Alur 4: Sudah selesai -> Disable (Tunggu Mahasiswa)
                 $isFormDisabled = true;
-                $statusMessage = 'Menunggu konfirmasi dari pemohon (Mahasiswa).';
+                $statusMessage = 'Menunggu konfirmasi dari pemohon (Mahasiswa)';
                 break;
 
             case 'Dinilai_Belum_Selesai_oleh_Pemohon':
                 // Alur 6 & 7: Mahasiswa menolak
-                $statusMessage = "Pemohon menilai tiket belum selesai (Penolakan ke-".($rejectionCount).").";
+                $statusMessage = "Pemohon menilai tiket belum selesai (Penolakan ke-".($rejectionCount).")";
                 
                 // Opsi default: Tangani Lagi
                 $nextOptions['Ditangani_oleh_PIC'] = 'Ditangani oleh PIC';
@@ -131,7 +131,7 @@ class TiketController extends Controller
             case 'Dinilai_Selesai_oleh_Kepala':
             case 'Ditolak':
                 $isFormDisabled = true;
-                $statusMessage = 'Tiket telah ditutup/selesai.';
+                $statusMessage = 'Tiket telah diselesaikan oleh pemohon (Mahasiswa)';
                 break;
 
             default:
