@@ -24,6 +24,8 @@ class DatabaseSeeder extends Seeder
             KategoriArtikelSeeder::class,
             StudentWithoutNimSeeder::class,
             TiketSeeder::class,
+            ArtikelSeeder::class,
+            FaqSeeder::class,
         ]);
     }
 }
