@@ -25,7 +25,7 @@
       "url": "admin-unit/tiket",
       "name": "Daftar Tiket Layanan",
       "icon": "menu-icon icon-base ti tabler-ticket",
-      "slug": "admin_unit.tiket.index",
+      "slug": ["admin_unit.tiket.index", "admin_unit.tiket.show"],
       "roles": [
         "admin_unit"
       ]

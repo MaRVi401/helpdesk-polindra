@@ -27,7 +27,7 @@ class ResetPasswordNotification extends Notification
         ], false));
 
         return (new MailMessage)
-            ->subject('Reset Kata Sandi - Helpdesk Polindra')
+            ->subject('Reset Kata Password - Service Desk')
             ->view('emails.reset-password', [
                 'url'   => $url,
                 'user'  => $notifiable,

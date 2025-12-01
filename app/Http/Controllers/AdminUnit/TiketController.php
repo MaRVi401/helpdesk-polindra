@@ -34,25 +34,27 @@ class TiketController extends Controller
         }
 
         $layanans = Layanan::whereIn('id', $picLayananIds)
-            ->with(['tiket' => function($query) use ($request) {
-                $query->with(['pemohon.mahasiswa', 'statusTerbaru'])->latest();
-                
-                if ($request->filled('q')) {
-                    $search = $request->q;
-                    $query->where(function($q) use ($search) {
-                        $q->where('no_tiket', 'like', "%{$search}%")
-                          ->orWhere('judul', 'like', "%{$search}%")
-                          ->orWhereHas('pemohon', fn($u) => $u->where('name', 'like', "%{$search}%"));
-                    });
+            ->with([
+                'tiket' => function ($query) use ($request) {
+                    $query->with(['pemohon.mahasiswa', 'statusTerbaru'])->latest();
+
+                    if ($request->filled('q')) {
+                        $search = $request->q;
+                        $query->where(function ($q) use ($search) {
+                            $q->where('no_tiket', 'like', "%{$search}%")
+                                ->orWhere('judul', 'like', "%{$search}%")
+                                ->orWhereHas('pemohon', fn($u) => $u->where('name', 'like', "%{$search}%"));
+                        });
+                    }
+                    if ($request->filled('status')) {
+                        $query->whereHas('statusTerbaru', fn($q) => $q->where('status', $request->status));
+                    }
                 }
-                if ($request->filled('status')) {
-                    $query->whereHas('statusTerbaru', fn($q) => $q->where('status', $request->status));
-                }
-            }])
+            ])
             ->get();
 
         $totalTiket = 0;
-        foreach($layanans as $layanan) {
+        foreach ($layanans as $layanan) {
             $totalTiket += $layanan->tiket->count();
         }
 
@@ -62,16 +64,16 @@ class TiketController extends Controller
     public function show($id)
     {
         $tiket = Tiket::with([
-            'pemohon.mahasiswa.programStudi.jurusan', 
-            'layanan.unit', 
-            'riwayatStatus.user', 
+            'pemohon.mahasiswa.programStudi.jurusan',
+            'layanan.unit',
+            'riwayatStatus.user',
             'komentar.pengirim',
             'detail'
         ])->findOrFail($id);
-        
+
         $this->authorizeAccess($tiket);
         $this->checkAndProcessTimer($tiket);
-        
+
         $cacheKey = 'tiket_timer_' . $tiket->id;
         $tiket->cached_deadline = Cache::get($cacheKey);
 
@@ -111,8 +113,8 @@ class TiketController extends Controller
 
             case 'Dinilai_Belum_Selesai_oleh_Pemohon':
                 // Alur 6 & 7: Mahasiswa menolak
-                $statusMessage = "Pemohon menilai tiket belum selesai (Penolakan ke-".($rejectionCount).")";
-                
+                $statusMessage = "Pemohon menilai tiket belum selesai (Penolakan ke-" . ($rejectionCount) . ")";
+
                 // Opsi default: Tangani Lagi
                 $nextOptions['Ditangani_oleh_PIC'] = 'Ditangani oleh PIC';
 
@@ -121,7 +123,7 @@ class TiketController extends Controller
                     $nextOptions['Pemohon_Bermasalah'] = 'Pemohon Bermasalah';
                 }
                 break;
-            
+
             case 'Pemohon_Bermasalah':
                 // Admin bisa memutuskan untuk menangani lagi atau membiarkan
                 $nextOptions['Ditangani_oleh_PIC'] = 'Ditangani oleh PIC';
@@ -143,10 +145,10 @@ class TiketController extends Controller
         $detailLayanan = $this->getDetailLayanan($tiket);
 
         return view('admin_unit.tiket.show', compact(
-            'tiket', 
-            'detailLayanan', 
-            'nextOptions', 
-            'isFormDisabled', 
+            'tiket',
+            'detailLayanan',
+            'nextOptions',
+            'isFormDisabled',
             'statusMessage',
             'rejectionCount'
         ));
@@ -178,10 +180,10 @@ class TiketController extends Controller
 
                 // Update Status
                 if ($request->filled('status') && $request->status != $statusSekarang) {
-                    
+
                     // Validasi Alur (Backend Protection)
                     if ($request->status == 'Diselesaikan_oleh_PIC' && $statusSekarang == 'Diajukan_oleh_Pemohon') {
-                         throw new \Exception('Tiket harus melalui proses "Ditangani" terlebih dahulu.');
+                        throw new \Exception('Tiket harus melalui proses "Ditangani" terlebih dahulu.');
                     }
 
                     // Cek limitasi Pemohon Bermasalah (Optional backend check)
@@ -203,34 +205,45 @@ class TiketController extends Controller
             });
 
             return redirect()->route('admin_unit.tiket.show', $tiket->id)
-                             ->with('success', 'Tiket berhasil diperbarui.');
+                ->with('success', 'Tiket berhasil diperbarui.');
 
         } catch (\Exception $e) {
             return back()->with('error', 'Error: ' . $e->getMessage());
         }
     }
-    
+
     // ... (sisa method index, storeKomentar, authorizeAccess, checkAndProcessTimer, updateTimer, getDetailLayanan sama) ...
     // Pastikan helper getDetailLayanan ada di class ini
-    private function getDetailLayanan($tiket) {
+    private function getDetailLayanan($tiket)
+    {
         $namaLayanan = $tiket->layanan->nama;
-        if (Str::contains($namaLayanan, 'Surat Keterangan Aktif')) return $tiket->detailSuratKetAktif;
-        if (Str::contains($namaLayanan, 'Reset Akun')) return $tiket->detailResetAkun;
-        if (Str::contains($namaLayanan, 'Ubah Data')) return $tiket->detailUbahDataMhs;
-        if (Str::contains($namaLayanan, 'Publikasi')) return $tiket->detailReqPublikasi;
+        if (Str::contains($namaLayanan, 'Surat Keterangan Aktif'))
+            return $tiket->detailSuratKetAktif;
+        if (Str::contains($namaLayanan, 'Reset Akun'))
+            return $tiket->detailResetAkun;
+        if (Str::contains($namaLayanan, 'Ubah Data'))
+            return $tiket->detailUbahDataMhs;
+        if (Str::contains($namaLayanan, 'Publikasi'))
+            return $tiket->detailReqPublikasi;
         return null;
     }
-    
-    public function storeKomentar(Request $request, $id) { return $this->update($request, $id); }
-    
-    private function authorizeAccess($tiket) {
+
+    public function storeKomentar(Request $request, $id)
+    {
+        return $this->update($request, $id);
+    }
+
+    private function authorizeAccess($tiket)
+    {
         $user = Auth::user();
         $staff = Staff::where('user_id', $user->id)->first();
         $isPic = $staff->layanan()->where('layanan.id', $tiket->layanan_id)->exists();
-        if (!$isPic) abort(403);
+        if (!$isPic)
+            abort(403);
     }
 
-    private function checkAndProcessTimer($tiket) {
+    private function checkAndProcessTimer($tiket)
+    {
         if ($tiket->statusTerbaru?->status === 'Diselesaikan_oleh_PIC') {
             $cacheKey = 'tiket_timer_' . $tiket->id;
             $deadline = Cache::get($cacheKey);
@@ -240,37 +253,41 @@ class TiketController extends Controller
                 if (Carbon::now()->greaterThan($defaultDeadline)) {
                     $this->autoCloseTicket($tiket);
                 } else {
-                    Cache::put($cacheKey, $defaultDeadline, now()->addYear()); 
+                    Cache::put($cacheKey, $defaultDeadline, now()->addYear());
                 }
             } else {
                 $deadlineDate = Carbon::parse($deadline);
                 if (Carbon::now()->greaterThan($deadlineDate)) {
-                    Cache::forget($cacheKey); 
+                    Cache::forget($cacheKey);
                     $this->autoCloseTicket($tiket);
                 }
             }
         }
     }
 
-    private function autoCloseTicket($tiket) {
+    private function autoCloseTicket($tiket)
+    {
         if ($tiket->statusTerbaru?->status !== 'Dinilai_Selesai_oleh_Pemohon') {
             RiwayatStatusTiket::create([
                 'tiket_id' => $tiket->id,
-                'user_id' => Auth::id(), 
+                'user_id' => Auth::id(),
                 'status' => 'Dinilai_Selesai_oleh_Pemohon',
             ]);
-            $tiket->touch(); 
+            $tiket->touch();
         }
     }
-    
-    public function updateTimer(Request $request, $id) {
+
+    public function updateTimer(Request $request, $id)
+    {
         $tiket = Tiket::findOrFail($id);
         $this->authorizeAccess($tiket);
         $request->validate(['amount' => 'required|integer|min:1', 'unit' => 'required|in:days,hours']);
         $cacheKey = 'tiket_timer_' . $tiket->id;
         $newDeadline = Carbon::now();
-        if($request->unit == 'days') $newDeadline->addDays($request->amount);
-        if($request->unit == 'hours') $newDeadline->addHours($request->amount);
+        if ($request->unit == 'days')
+            $newDeadline->addDays($request->amount);
+        if ($request->unit == 'hours')
+            $newDeadline->addHours($request->amount);
         Cache::put($cacheKey, $newDeadline, now()->addYear());
         return back()->with('success', "Timer update.");
     }

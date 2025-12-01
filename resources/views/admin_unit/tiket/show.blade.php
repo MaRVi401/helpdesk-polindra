@@ -270,7 +270,6 @@
           </div>
           @endif
         </div>
-
         {{-- INFORMASI TIKET --}}
         <div class="card mb-4">
           <div class="card-header border-bottom py-3">
