@@ -1,8 +1,19 @@
 @use('Illuminate\Support\Str')
 @extends('layouts/contentNavbarLayout')
 
-
 @section('title', 'Detail Tiket #' . $tiket->no_tiket)
+
+@section('vendor-style')
+  @vite(['resources/assets/vendor/libs/@form-validation/form-validation.scss', 'resources/assets/vendor/libs/sweetalert2/sweetalert2.scss'])
+@endsection
+
+@section('vendor-script')
+  @vite(['resources/assets/vendor/libs/@form-validation/popular.js', 'resources/assets/vendor/libs/@form-validation/bootstrap5.js', 'resources/assets/vendor/libs/@form-validation/auto-focus.js', 'resources/assets/vendor/libs/sweetalert2/sweetalert2.js'])
+@endsection
+
+@section('page-script')
+  @vite('resources/assets/js/management/service-ticket/show-admin.js')
+@endsection
 
 @section('content')
   <div class="container-xxl flex-grow-1 container-p-y">
@@ -20,7 +31,9 @@
         <div class="card-body pt-3 text-center">
           <p class="mb-1 text-warning small">Tiket ini akan otomatis ditutup jika tidak ada respon dalam</p>
           <hr class="my-2">
-          <div id="admin-countdown" class="p-1 mb-1 fw-bold fs-5">
+          <div id="admin-countdown"
+            data-deadline="{{ $deadline ? \Carbon\Carbon::parse($deadline)->format('Y-m-d H:i:s') : '' }}"
+            class="p-1 mb-1 fw-bold fs-6">
             Memuat...
           </div>
           <small class="text-muted mb-2">
@@ -35,7 +48,7 @@
               <div class="input-group input-group-sm">
                 <input type="number" name="amount" class="form-control" placeholder="Nilai" min="1"
                   value="1" required>
-                <select name="unit" class="form-select" style="max-width: 90px;">
+                <select name="unit" class="form-select">
                   <option value="days">Hari</option>
                   <option value="hours">Jam</option>
                 </select>
@@ -45,35 +58,10 @@
           </div>
         </div>
       </div>
-      <script>
-        document.addEventListener('DOMContentLoaded', function() {
-          var deadlineStr = "{{ \Carbon\Carbon::parse($deadline)->format('Y-m-d H:i:s') }}";
-          var countDownDate = new Date(deadlineStr).getTime();
-
-          var x = setInterval(function() {
-            var now = new Date().getTime();
-            var distance = countDownDate - now;
-            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            document.getElementById("admin-countdown").innerHTML =
-              days + " Hari " + hours + " Jam " + minutes + " Menit " + seconds + " Detik";
-
-            if (distance < 0) {
-              clearInterval(x);
-              document.getElementById("admin-countdown").innerHTML = "WAKTU HABIS - Sedang Memproses...";
-              setTimeout(function() {
-                location.reload();
-              }, 2000);
-            }
-          }, 1000);
-        });
-      </script>
     @endif
 
     <div class="row">
+      {{-- KOLOM KIRI --}}
       <div class="col-md-8">
         {{-- TINDAK LANJUT --}}
         <div class="card mb-4">
@@ -96,12 +84,17 @@
                 </div>
               </div>
             @endif
-            <form action="{{ route('admin_unit.tiket.update', $tiket->id) }}" method="POST">
+            <form id="form-update-status" action="{{ route('admin_unit.tiket.update', $tiket->id) }}" method="POST">
               @csrf
               @method('PUT')
               <div class="row g-3">
                 <div class="col-12">
-                  <label class="form-label fw-bold">Status Pengerjaan</label>
+                  <label class="form-label">Status Pengerjaan</label>
+                  @if (!$isFormDisabled)
+                    <div class="form-text text-warning">
+                      Pilih status berikutnya untuk memproses tiket ini.
+                    </div>
+                  @endif
                   <select name="status" class="form-select" {{ $isFormDisabled ? 'disabled' : '' }} required>
                     @if ($isFormDisabled)
                       <option selected>{{ str_replace('_', ' ', $tiket->statusTerbaru?->status) }}</option>
@@ -112,11 +105,6 @@
                       @endforeach
                     @endif
                   </select>
-                  @if (!$isFormDisabled)
-                    <div class="form-text text-muted">
-                      Pilih status berikutnya untuk memproses tiket ini.
-                    </div>
-                  @endif
                 </div>
                 <div class="col-12 mt-3">
                   <button type="submit" class="btn btn-primary w-100" {{ $isFormDisabled ? 'disabled' : '' }}>
@@ -127,6 +115,7 @@
             </form>
           </div>
         </div>
+
         {{-- KOMENTAR --}}
         <div class="card mb-4">
           <div class="card-header border-bottom py-3 d-flex justify-content-between align-items-center">
@@ -167,7 +156,6 @@
                   <div class="border timeline-body-comment rounded-3 p-2">
                     <p class="mb-0 text-break">{!! nl2br(e($komen->komentar)) !!}</p>
                   </div>
-
                 </div>
               @empty
                 <div class="text-center py-5">
@@ -178,6 +166,7 @@
             </div>
           </div>
         </div>
+
         {{-- RIWAYAT STATUS --}}
         <div class="card mb-4">
           <div class="card-header border-bottom py-3">
@@ -211,7 +200,7 @@
                   <div class="timeline-title d-flex flex-wrap align-items-center gap-2">
                     <span class="fw-bold">{{ $userName }}</span>
                     @if ($role !== 'system')
-                      <span style="font-size: 0.7rem;">
+                      <span style="font-size:0.8em">
                         ({{ ucwords(strtolower(str_replace('_', ' ', trim($role)))) }})
                       </span>
                     @endif
@@ -230,46 +219,9 @@
           </div>
         </div>
       </div>
+
+      {{-- KOLOM KANAN --}}
       <div class="col-md-4">
-        {{-- DATA PEMOHON --}}
-        <div class="card mb-4">
-          <div class="card-header border-bottom py-3">
-            <h5 class="mb-0">Data Pemohon</h5>
-          </div>
-          <div class="card-body text-center pt-4">
-            @php
-              $pemohon = $tiket->pemohon ?? null;
-              $avatarUrl = null;
-              if ($pemohon) {
-                  $avatarUrl = $pemohon->avatar
-                      ? asset('storage/avatar/' . $pemohon->avatar)
-                      : $pemohon->profile_photo_url ?? null;
-              }
-            @endphp
-            <div class="avatar avatar-xl mx-auto mb-2 text-center">
-              @if (!empty($avatarUrl))
-                <img src="{{ $avatarUrl }}" alt="Avatar" class="rounded-circle" />
-              @else
-                <span
-                  class="avatar-initial rounded-circle bg-label-info d-inline-flex align-items-center justify-content-center"
-                  style="width:56px;height:56px;font-weight:600;">
-                  {{ strtoupper(substr($pemohon->name ?? 'U', 0, 2)) }}
-                </span>
-              @endif
-            </div>
-            <h5 class="mb-1">{{ $tiket->pemohon->name }}</h5>
-            <p class="text-muted mb-0 small">{{ $tiket->pemohon->email }}</p>
-            @if ($tiket->pemohon->mahasiswa)
-              <hr>
-              <div class="text-start small">
-                <div> <span>NIM - {{ $tiket->pemohon->mahasiswa->nim }}</span></div>
-                <div> <span
-                    class="badge bg-label-primary">{{ $tiket->pemohon->mahasiswa->programStudi->program_studi ?? '-' }}</span>
-                </div>
-              </div>
-          </div>
-          @endif
-        </div>
         {{-- INFORMASI TIKET --}}
         <div class="card mb-4">
           <div class="card-header border-bottom py-3">
@@ -307,27 +259,29 @@
             <div class="mb-3">
               <span class="text-muted d-block">Status</span>
               @php
-                $statusBadge = match ($tiket->statusTerbaru?->status ?? 'Diajukan_oleh_Pemohon') {
+                $currentStatus =
+                    $tiket->riwayatStatus->sortByDesc('created_at')->first()?->status ??
+                    ($tiket->statusTerbaru?->status ?? 'Diajukan_oleh_Pemohon');
+                $statusClass = match ($currentStatus) {
                     'Diajukan_oleh_Pemohon' => 'bg-label-status-pending',
                     'Ditangani_oleh_PIC' => 'bg-label-status-process',
                     'Diselesaikan_oleh_PIC' => 'bg-label-status-review',
                     'Dinilai_Selesai_oleh_Kepala', 'Dinilai_Selesai_oleh_Pemohon' => 'bg-label-status-completed',
                     'Dinilai_Belum_Selesai_oleh_Pemohon', 'Pemohon_Bermasalah', 'Ditolak' => 'bg-label-status-rejected',
-                    default => 'text-muted',
+                    default => 'bg-label-secondary',
                 };
+                $labelStatus = str_replace('_', ' ', $currentStatus);
               @endphp
-              <small
-                class="badge {{ $statusBadge }}">{{ str_replace('_', ' ', $tiket->statusTerbaru?->status ?? 'Menunggu') }}</small>
+              <small class="badge {{ $statusClass }}">{{ $labelStatus }}</small>
             </div>
             <hr class="my-2">
             <div class="mb-3">
               <span class="text-muted d-block">Penanggungjawab (PIC)</span>
               @php
-                $pic =
-                    $tiket->riwayatStatus->where('status', 'Ditangani_oleh_PIC')->first()?->user?->name ??
-                    'Menunggu penanganan...';
+                $picUser = $tiket->riwayatStatus->where('status', 'Ditangani_oleh_PIC')->first()?->user;
+                $picName = $picUser ? $picUser->name : 'Menunggu penanganan...';
               @endphp
-              <small>{{ $pic }}</small>
+              <small>{{ $picName }}</small>
             </div>
             <hr class="my-2">
             <div class="mb-3">
@@ -341,9 +295,50 @@
             </div>
           </div>
         </div>
+        {{-- DATA PEMOHON --}}
+        <div class="card mb-4">
+          <div class="card-header border-bottom py-3">
+            <h5 class="mb-0">Data Pemohon</h5>
+          </div>
+          <div class="card-body text-center pt-4">
+            @php
+              $pemohon = $tiket->pemohon ?? null;
+              $avatarUrl = null;
+              if ($pemohon) {
+                  $avatarUrl = $pemohon->avatar
+                      ? asset('storage/avatar/' . $pemohon->avatar)
+                      : $pemohon->profile_photo_url ?? null;
+              }
+            @endphp
+            <div class="avatar avatar-xl mx-auto mb-2 text-center">
+              @if (!empty($avatarUrl))
+                <img src="{{ $avatarUrl }}" alt="Avatar" class="rounded-circle" />
+              @else
+                <span
+                  class="avatar-initial rounded-circle bg-label-info d-inline-flex align-items-center justify-content-center">
+                  {{ strtoupper(substr($pemohon->name ?? 'U', 0, 2)) }}
+                </span>
+              @endif
+            </div>
+            <h5 class="mb-1">{{ $tiket->pemohon->name }}</h5>
+            <p class="text-muted mb-0 small">{{ $tiket->pemohon->email }}</p>
+            @if ($tiket->pemohon->mahasiswa)
+              <hr>
+              <div class="text-start small">
+                <div> <span>NIM - {{ $tiket->pemohon->mahasiswa->nim }}</span></div>
+                <div> <span>{{ $tiket->pemohon->mahasiswa->programStudi->program_studi ?? '-' }}</span>
+                </div>
+              </div>
+            @endif
+          </div>
+        </div>
+      </div>
+    </div>
 
-        {{-- DETAIL LAYANAN SPESIFIK --}}
-        @if (isset($detailLayanan))
+    {{-- DETAIL LAYANAN SPESIFIK (FULL WIDTH) --}}
+    @if (isset($detailLayanan))
+      <div class="row">
+        <div class="col-12">
           <div class="card mb-4">
             <div class="card-header border-bottom py-3">
               <h5 class="mb-0">Detail Layanan</h5>
@@ -351,101 +346,105 @@
             <div class="card-body pt-3 pb-3">
               {{-- 1. Surat Keterangan Aktif Kuliah --}}
               @if (Str::contains($tiket->layanan->nama, 'Surat Keterangan Aktif Kuliah'))
-                <div class="mb-3">
-                  <span class="text-muted d-block">Keperluan</span>
-                  <small class="mb-0">{{ $detailLayanan->keperluan }}</small>
-                </div>
-                <hr class="my-2">
-                <div class="mb-3">
-                  <span class="text-muted d-block">Tahun Ajaran</span>
-                  <small class="mb-0">{{ $detailLayanan->tahun_ajaran }}</small>
-                </div>
-                <hr class="my-2">
-                <div class="mb-3">
-                  <span class="text-muted d-block">Semester</span>
-                  <small class="mb-0">{{ $detailLayanan->semester }}</small>
-                </div>
-                <hr class="my-2">
-                @if ($detailLayanan->keperluan_lainnya)
-                  <div>
-                    <span class="text-muted d-block">Keperluan Lainnya</span>
-                    <small class="mb-0">{{ $detailLayanan->keperluan_lainnya }}</small>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <span class="text-muted d-block">Keperluan</span>
+                    <small class="mb-0">{{ $detailLayanan->keperluan }}</small>
                   </div>
-                @endif
+                  <div class="col-md-3 mb-3">
+                    <span class="text-muted d-block">Tahun Ajaran</span>
+                    <small class="mb-0">{{ $detailLayanan->tahun_ajaran }}</small>
+                  </div>
+                  <div class="col-md-3 mb-3">
+                    <span class="text-muted d-block">Semester</span>
+                    <small class="mb-0">{{ $detailLayanan->semester }}</small>
+                  </div>
+                  @if ($detailLayanan->keperluan_lainnya)
+                    <div class="col-12">
+                      <hr class="my-2">
+                      <span class="text-muted d-block">Keperluan Lainnya</span>
+                      <small class="mb-0">{{ $detailLayanan->keperluan_lainnya }}</small>
+                    </div>
+                  @endif
+                </div>
+
                 {{-- 2. Reset Akun --}}
               @elseif(Str::contains($tiket->layanan->nama, 'Reset Akun'))
-                <div class="mb-3">
-                  <span class="text-muted d-block">Aplikasi</span>
-                  <small class="mb-0">{{ $detailLayanan->aplikasi }}</small>
+                <div class="row">
+                  <div class="col-md-4 mb-3">
+                    <span class="text-muted d-block">Aplikasi</span>
+                    <small class="mb-0">{{ $detailLayanan->aplikasi }}</small>
+                  </div>
+                  <div class="col-md-8 mb-3">
+                    <span class="text-muted d-block">Deskripsi Masalah</span>
+                    <small class="mb-0">{{ $detailLayanan->deskripsi }}</small>
+                  </div>
                 </div>
-                <hr class="my-2">
-                <div>
-                  <span class="text-muted d-block">Deskripsi Masalah</span>
-                  <small class="mb-0">{{ $detailLayanan->deskripsi }}</small>
-                </div>
+
                 {{-- 3. Ubah Data Mahasiswa --}}
               @elseif(Str::contains($tiket->layanan->nama, 'Ubah Data Mahasiswa'))
-                <div class="mb-3">
-                  <span class="text-muted d-block">Nama Lengkap</span>
-                  <small class="mb-0">{{ $detailLayanan->data_nama_lengkap ?? '-' }}</small>
+                <div class="row">
+                  <div class="col-md-4 mb-3">
+                    <span class="text-muted d-block">Nama Lengkap</span>
+                    <small class="mb-0">{{ $detailLayanan->data_nama_lengkap ?? '-' }}</small>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <span class="text-muted d-block">Tempat Lahir</span>
+                    <small class="mb-0">{{ $detailLayanan->data_tmp_lahir ?? '-' }}</small>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <span class="text-muted d-block">Tanggal Lahir</span>
+                    <small
+                      class="mb-0">{{ $detailLayanan->data_tgl_lhr ? date('d-m-Y', strtotime($detailLayanan->data_tgl_lhr)) : '-' }}</small>
+                  </div>
                 </div>
-                <hr class="my-2">
-                <div class="mb-3">
-                  <span class="text-muted d-block">Tempat Lahir</span>
-                  <small class="mb-0">{{ $detailLayanan->data_tmp_lahir ?? '-' }}</small>
-                </div>
-                <hr class="my-2">
-                <div>
-                  <span class="text-muted d-block">Tanggal Lahir</span>
-                  <small
-                    class="mb-0">{{ $detailLayanan->data_tgl_lhr ? date('d-m-Y', strtotime($detailLayanan->data_tgl_lhr)) : '-' }}</small>
-                </div>
+
                 {{-- 4. Request Publikasi --}}
               @elseif(Str::contains($tiket->layanan->nama, 'Request Publikasi') || Str::contains($tiket->layanan->nama, 'Publikasi'))
-                <div class="mb-3">
-                  <span class="text-muted d-block">Judul / Topik</span>
-                  <small class="mb-0">{{ $detailLayanan->judul }}</small>
-                </div>
-                <hr class="my-2">
-                <div class="mb-3">
-                  <span class="text-muted d-block">Kategori</span>
-                  <small class="mb-0">{{ $detailLayanan->kategori }}</small>
-                </div>
-                <hr class="my-2">
-
-                <div class="mb-3">
-                  <span class="text-muted d-block">Konten / Isi</span>
-                  <small class="mb-0">{!! nl2br(e($detailLayanan->konten)) !!}</small>
-                </div>
-                <hr class="my-2">
-
-                @if (isset($detailLayanan->gambar) && $detailLayanan->gambar)
-                  <div class="mb-2">
-                    <span class="text-muted d-block mb-2">Lampiran Gambar</span>
-                    <div class="text-center border rounded p-2 bg-light mb-2">
-                      <img src="{{ asset('storage/' . $detailLayanan->gambar) }}" alt="Preview"
-                        class="img-fluid rounded" style="max-height: 150px;">
-                    </div>
-                    <a href="{{ asset('storage/' . $detailLayanan->gambar) }}" target="_blank"
-                      class="btn btn-sm btn-primary w-100">
-                      <i class='bx bx-image me-1'></i> Lihat Gambar Penuh
-                    </a>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <span class="text-muted d-block">Judul / Topik</span>
+                    <small class="mb-0">{{ $detailLayanan->judul }}</small>
                   </div>
-                @endif
-
+                  <div class="col-md-6 mb-3">
+                    <span class="text-muted d-block">Kategori</span>
+                    <small class="mb-0">{{ $detailLayanan->kategori }}</small>
+                  </div>
+                  <div class="col-12 mb-3">
+                    <hr class="my-2">
+                    <span class="text-muted d-block">Konten / Isi</span>
+                    <small class="mb-0">{!! nl2br(e($detailLayanan->konten)) !!}</small>
+                  </div>
+                  @if (isset($detailLayanan->gambar) && $detailLayanan->gambar)
+                    <div class="col-12">
+                      <hr class="my-2">
+                      <span class="text-muted d-block mb-2">Lampiran Gambar</span>
+                      <div class="text-center border rounded p-3 bg-light mb-2">
+                        <img src="{{ asset('storage/' . $detailLayanan->gambar) }}" alt="Preview"
+                          class="img-fluid rounded">
+                      </div>
+                      <a href="{{ asset('storage/' . $detailLayanan->gambar) }}" target="_blank"
+                        class="btn btn-sm btn-primary">
+                        <i class='bx bx-image me-1'></i> Lihat Gambar Penuh
+                      </a>
+                    </div>
+                  @endif
+                </div>
               @endif
             </div>
           </div>
-        @endif
+        </div>
       </div>
+    @endif
 
-      <div class="mt-3">
+    {{-- TOMBOL KEMBALI --}}
+    <div class="row">
+      <div class="col-12">
         <a href="{{ route('admin_unit.tiket.index') }}" class="btn btn-primary w-100">
           Semua Daftar Tiket Layanan
           <i class="icon-base ti tabler-trending-up ms-2"></i>
         </a>
       </div>
     </div>
-  </div>
   </div>
 @endsection
