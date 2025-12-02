@@ -19,7 +19,8 @@ class Helpers
   {
     $layout = match ($role) {
       'mahasiswa' => 'horizontal',
-      'dosen', 'staff', 'kepala_unit' => 'vertical',
+      'kepala_unit' => 'vertical',
+      'admin_unit' => 'vertical',
       'super_admin' => 'vertical',
       default => 'vertical'
     };

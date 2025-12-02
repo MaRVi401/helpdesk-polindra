@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Storage;
 class ServiceTicketController extends Controller
 {
   private $validStatuses = [
-    'Diajukan_oleh_Pemohon',
+    'Diajukan_oleh_Pemohon',  
     'Dinilai_Belum_Selesai_oleh_Pemohon',
     'Dinilai_Selesai_oleh_Pemohon',
   ];
@@ -183,6 +183,7 @@ class ServiceTicketController extends Controller
       ])
       ->firstOrFail();
 
+    // Load detail layanan
     $detail = null;
     if ($tiket->detailSuratAktif)
       $detail = $tiket->detailSuratAktif;
@@ -204,12 +205,43 @@ class ServiceTicketController extends Controller
         $detail = DetailTiketReqPublikasi::where('tiket_id', $tiket->id)->first();
     }
 
+    // Tentukan status sekarang
     $riwayatTerbaru = $tiket->riwayatStatus->sortByDesc('created_at')->first();
     $statusSekarang = $riwayatTerbaru ? $riwayatTerbaru->status : 'Diajukan_oleh_Pemohon';
-    return view('content.apps.mahasiswa.show', compact('tiket', 'detail', 'statusSekarang'), ['pageConfigs' => $this->pageConfigs])
-      ->with('detailLayanan', $detail);
-  }
 
+    $rejectionCount = $tiket->riwayatStatus()
+      ->where('status', 'Dinilai_Belum_Selesai_oleh_Pemohon')
+      ->count();
+
+    $isFormDisabled = false;
+    $statusMessage = '';
+    $nextOptions = [];
+
+    $closedStatuses = [
+      'Dinilai_Selesai_oleh_Kepala',
+      'Dinilai_Selesai_oleh_Pemohon',
+      'Ditolak'
+    ];
+
+    if (in_array($statusSekarang, $closedStatuses)) {
+      $isFormDisabled = true;
+      $statusMessage = 'Tiket ini telah ditutup.';
+    }
+
+    if ($statusSekarang == 'Diselesaikan_oleh_PIC') {
+      $statusMessage = 'Menunggu konfirmasi Anda untuk menyelesaikan tiket ini.';
+    }
+
+    return view('content.apps.mahasiswa.show', compact(
+      'tiket',
+      'detail',
+      'statusSekarang',
+      'rejectionCount',
+      'isFormDisabled',
+      'statusMessage',
+      'nextOptions'
+    ),['pageConfigs' => $this->pageConfigs]);
+  }
   public function serviceTicketComment(Request $request, $id)
   {
     $request->validate([

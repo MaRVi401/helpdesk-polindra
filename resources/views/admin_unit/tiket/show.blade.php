@@ -219,9 +219,45 @@
           </div>
         </div>
       </div>
-
       {{-- KOLOM KANAN --}}
       <div class="col-md-4">
+        {{-- DATA PEMOHON --}}
+        <div class="card mb-4">
+          <div class="card-header border-bottom py-3">
+            <h5 class="mb-0">Data Pemohon</h5>
+          </div>
+          <div class="card-body text-center pt-4">
+            @php
+              $pemohon = $tiket->pemohon ?? null;
+              $avatarUrl = null;
+              if ($pemohon) {
+                  $avatarUrl = $pemohon->avatar
+                      ? asset('storage/avatar/' . $pemohon->avatar)
+                      : $pemohon->profile_photo_url ?? null;
+              }
+            @endphp
+            <div class="avatar avatar-xl mx-auto mb-2 text-center">
+              @if (!empty($avatarUrl))
+                <img src="{{ $avatarUrl }}" alt="Avatar" class="rounded-circle" />
+              @else
+                <span
+                  class="avatar-initial rounded-circle bg-label-info d-inline-flex align-items-center justify-content-center">
+                  {{ strtoupper(substr($pemohon->name ?? 'U', 0, 2)) }}
+                </span>
+              @endif
+            </div>
+            <h5 class="mb-1">{{ $tiket->pemohon->name }}</h5>
+            <p class="text-muted mb-0 small">{{ $tiket->pemohon->email }}</p>
+            @if ($tiket->pemohon->mahasiswa)
+              <hr>
+              <div class="text-start small">
+                <div> <span>NIM - {{ $tiket->pemohon->mahasiswa->nim }}</span></div>
+                <div> <span>{{ $tiket->pemohon->mahasiswa->programStudi->program_studi ?? '-' }}</span>
+                </div>
+              </div>
+            @endif
+          </div>
+        </div>
         {{-- INFORMASI TIKET --}}
         <div class="card mb-4">
           <div class="card-header border-bottom py-3">
@@ -293,43 +329,6 @@
               <span class="text-muted d-block">Deskripsi</span>
               <small class="mb-0 small">{{ $tiket->deskripsi }}</small>
             </div>
-          </div>
-        </div>
-        {{-- DATA PEMOHON --}}
-        <div class="card mb-4">
-          <div class="card-header border-bottom py-3">
-            <h5 class="mb-0">Data Pemohon</h5>
-          </div>
-          <div class="card-body text-center pt-4">
-            @php
-              $pemohon = $tiket->pemohon ?? null;
-              $avatarUrl = null;
-              if ($pemohon) {
-                  $avatarUrl = $pemohon->avatar
-                      ? asset('storage/avatar/' . $pemohon->avatar)
-                      : $pemohon->profile_photo_url ?? null;
-              }
-            @endphp
-            <div class="avatar avatar-xl mx-auto mb-2 text-center">
-              @if (!empty($avatarUrl))
-                <img src="{{ $avatarUrl }}" alt="Avatar" class="rounded-circle" />
-              @else
-                <span
-                  class="avatar-initial rounded-circle bg-label-info d-inline-flex align-items-center justify-content-center">
-                  {{ strtoupper(substr($pemohon->name ?? 'U', 0, 2)) }}
-                </span>
-              @endif
-            </div>
-            <h5 class="mb-1">{{ $tiket->pemohon->name }}</h5>
-            <p class="text-muted mb-0 small">{{ $tiket->pemohon->email }}</p>
-            @if ($tiket->pemohon->mahasiswa)
-              <hr>
-              <div class="text-start small">
-                <div> <span>NIM - {{ $tiket->pemohon->mahasiswa->nim }}</span></div>
-                <div> <span>{{ $tiket->pemohon->mahasiswa->programStudi->program_studi ?? '-' }}</span>
-                </div>
-              </div>
-            @endif
           </div>
         </div>
       </div>
