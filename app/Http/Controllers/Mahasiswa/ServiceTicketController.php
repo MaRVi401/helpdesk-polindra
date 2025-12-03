@@ -9,6 +9,8 @@ use App\Models\DetailTiketSuratKetAktif;
 use App\Models\DetailTiketResetAkun;
 use App\Models\DetailTiketUbahDataMhs;
 use App\Models\DetailTiketReqPublikasi;
+use Cache;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -16,7 +18,7 @@ use Illuminate\Support\Facades\Storage;
 class ServiceTicketController extends Controller
 {
   private $validStatuses = [
-    'Diajukan_oleh_Pemohon',  
+    'Diajukan_oleh_Pemohon',
     'Dinilai_Belum_Selesai_oleh_Pemohon',
     'Dinilai_Selesai_oleh_Pemohon',
   ];
@@ -33,8 +35,7 @@ class ServiceTicketController extends Controller
 
     // Status yang dianggap selesai
     $statusSelesai = [
-      'Diselesaikan_oleh_PIC',
-      'Dinilai_Selesai_oleh_Pemohon',
+      'Dinilai_Selesai_oleh_Pemohon'
     ];
 
     // Hitung tiket yang status akhirnya termasuk status selesai
@@ -240,7 +241,7 @@ class ServiceTicketController extends Controller
       'isFormDisabled',
       'statusMessage',
       'nextOptions'
-    ),['pageConfigs' => $this->pageConfigs]);
+    ), ['pageConfigs' => $this->pageConfigs]);
   }
   public function serviceTicketComment(Request $request, $id)
   {
@@ -317,5 +318,20 @@ class ServiceTicketController extends Controller
     }
 
     return redirect()->back()->with('error', 'Aksi tidak diizinkan untuk status tiket saat ini.');
+  }
+
+  public function updateTimer(Request $request, $id)
+  {
+    $tiket = Tiket::findOrFail($id);
+
+    $request->validate(['amount' => 'required|integer|min:1', 'unit' => 'required|in:days,hours']);
+    $cacheKey = 'tiket_timer_' . $tiket->id;
+    $newDeadline = Carbon::now();
+    if ($request->unit == 'days')
+      $newDeadline->addDays($request->amount);
+    if ($request->unit == 'hours')
+      $newDeadline->addHours($request->amount);
+    Cache::put($cacheKey, $newDeadline, now()->addYear());
+    return back()->with('success', "Timer update.");
   }
 }

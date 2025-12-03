@@ -18,7 +18,6 @@ use App\Models\DetailTiketReqPublikasi;
 class TiketController extends Controller
 {
     private $validStatuses = [
-        'Diajukan_oleh_Pemohon',
         'Dinilai_Belum_Selesai_oleh_Pemohon',
         'Dinilai_Selesai_oleh_Pemohon',
     ];

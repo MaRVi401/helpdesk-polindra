@@ -50,7 +50,7 @@
         {{-- Filter Global --}}
         <div class="card mb-4">
             <div class="card-body p-3">
-                <form action="{{ route('admin_unit.tiket.index') }}" method="GET">
+                <form action="{{ route('admin_unit.ticket.index') }}" method="GET">
                     <div class="row g-3">
                         <div class="col-md-5">
                             <div class="input-group input-group-merge">
@@ -71,7 +71,7 @@
                             <button type="submit" class="btn btn-primary w-100">Filter</button>
                         </div>
                         <div class="col-md-2">
-                             <a href="{{ route('admin_unit.tiket.index') }}" class="btn btn-outline-secondary w-100">Reset</a>
+                             <a href="{{ route('admin_unit.ticket.index') }}" class="btn btn-outline-secondary w-100">Reset</a>
                         </div>
                     </div>
                 </form>
@@ -145,7 +145,7 @@
                                     <small class="text-muted">{{ $tiket->created_at->format('H:i') }} WIB</small>
                                 </td>
                                 <td class="text-center">
-                                    <a href="{{ route('admin_unit.tiket.show', $tiket->id) }}" class="btn btn-sm btn-primary shadow-sm">
+                                    <a href="{{ route('admin_unit.ticket.show', $tiket->id) }}" class="btn btn-sm btn-primary shadow-sm">
                                         <i class="bx bx-search-alt me-1"></i> Detail
                                     </a>
                                 </td>

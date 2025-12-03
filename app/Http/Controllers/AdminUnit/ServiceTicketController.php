@@ -15,7 +15,7 @@ use App\Models\RiwayatStatusTiket;
 use App\Models\KomentarTiket;
 use Carbon\Carbon;
 
-class TiketController extends Controller
+class ServiceTicketController extends Controller
 {
     private $validStatuses = [
         'Ditangani_oleh_PIC',
@@ -30,7 +30,7 @@ class TiketController extends Controller
         $picLayananIds = $staff->layanan()->pluck('layanan.id')->toArray();
 
         if (empty($picLayananIds)) {
-            return view('admin_unit.tiket.index', ['layanans' => collect([]), 'isPic' => false]);
+            return view('content.apps.admin_unit.ticket.index', ['layanans' => collect([]), 'isPic' => false]);
         }
 
         $layanans = Layanan::whereIn('id', $picLayananIds)
@@ -58,7 +58,7 @@ class TiketController extends Controller
             $totalTiket += $layanan->tiket->count();
         }
 
-        return view('admin_unit.tiket.index', compact('layanans', 'totalTiket'));
+        return view('content.apps.admin_unit.ticket.index', compact('layanans', 'totalTiket'));
     }
 
     public function show($id)
@@ -144,7 +144,7 @@ class TiketController extends Controller
         // Load detail layanan
         $detailLayanan = $this->getDetailLayanan($tiket);
 
-        return view('admin_unit.tiket.show', compact(
+        return view('content.apps.admin_unit.ticket.show', compact(
             'tiket',
             'detailLayanan',
             'nextOptions',
@@ -204,8 +204,8 @@ class TiketController extends Controller
                 }
             });
 
-            return redirect()->route('admin_unit.tiket.show', $tiket->id)
-                ->with('success', 'Tiket berhasil diperbarui.');
+            return redirect()->route('admin_unit.ticket.show', $tiket->id)
+                ->with('success', 'Status tiket berhasil diperbarui.');
 
         } catch (\Exception $e) {
             return back()->with('error', 'Error: ' . $e->getMessage());
@@ -230,8 +230,13 @@ class TiketController extends Controller
 
     public function storeKomentar(Request $request, $id)
     {
-        return $this->update($request, $id);
+        $this->update($request, $id);
+
+        return redirect()
+            ->route('admin_unit.ticket.show', $id)
+            ->with('success', 'Komentar berhasil dikirim.');
     }
+
 
     private function authorizeAccess($tiket)
     {

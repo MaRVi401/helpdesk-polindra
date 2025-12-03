@@ -41,7 +41,7 @@
           </small>
           <hr class="my-2">
           <div class="collapse" id="settingTimer">
-            <form action="{{ route('admin_unit.tiket.updateTimer', $tiket->id) }}" method="POST"
+            <form action="{{ route('admin_unit.ticket.updateTimer', $tiket->id) }}" method="POST"
               class="bg-light p-2 rounded border">
               @csrf
               @method('PUT')
@@ -71,9 +71,14 @@
           </div>
           <div class="card-body">
             {{-- Alert Informasi Status --}}
-            @if ($isFormDisabled)
+            @if ($isFormDisabled && $tiket->statusTerbaru?->status === 'Diselesaikan_oleh_PIC')
+              <div class="alert alert-info d-flex align-items-center mb-3" role="alert">
+                <i class="icon-base ti tabler-info-circle me-2"></i>
+                <div>{{ $statusMessage ?? 'Menunggu respon...' }}</div>
+              </div>
+            @elseif ($isFormDisabled)
               <div class="alert alert-success d-flex align-items-center mb-3" role="alert">
-                <i class="icon-base ti tabler-circle-dashed-check me-2"></i>
+                <i class="icon-base ti tabler-circle-check me-2"></i>
                 <div>{{ $statusMessage ?? 'Menunggu respon...' }}</div>
               </div>
             @elseif($tiket->statusTerbaru?->status == 'Dinilai_Belum_Selesai_oleh_Pemohon')
@@ -84,7 +89,7 @@
                 </div>
               </div>
             @endif
-            <form id="form-update-status" action="{{ route('admin_unit.tiket.update', $tiket->id) }}" method="POST">
+            <form id="form-update-status" action="{{ route('admin_unit.ticket.update', $tiket->id) }}" method="POST">
               @csrf
               @method('PUT')
               <div class="row g-3">
@@ -123,7 +128,7 @@
             <span class="badge bg-label-secondary">{{ $tiket->komentar->count() }} Komentar</span>
           </div>
           <div class="card-body pt-4">
-            <form action="{{ route('admin_unit.tiket.komentar', $tiket->id) }}" method="POST" class="mb-4">
+            <form action="{{ route('admin_unit.ticket.comment', $tiket->id) }}" method="POST" class="mb-4">
               @csrf
               <div class="mb-3">
                 <textarea name="komentar" class="form-control" rows="2"
@@ -439,11 +444,28 @@
     {{-- TOMBOL KEMBALI --}}
     <div class="row">
       <div class="col-12">
-        <a href="{{ route('admin_unit.tiket.index') }}" class="btn btn-primary w-100">
+        <a href="{{ route('admin_unit.ticket.index') }}" class="btn btn-primary w-100">
           Semua Daftar Tiket Layanan
           <i class="icon-base ti tabler-trending-up ms-2"></i>
         </a>
       </div>
     </div>
   </div>
+  @if (session('success'))
+    <script>
+      window.serviceTicketSuccessMessage = "{{ session('success') }}";
+    </script>
+  @endif
+
+  @if (session('error'))
+    <script>
+      window.serviceTicketErrorMessage = "{{ session('error') }}";
+    </script>
+  @endif
+
+  @if ($errors->any())
+    <script>
+      window.serviceTickeErrorMessage = "{{ $errors->first() }}";
+    </script>
+  @endif
 @endsection

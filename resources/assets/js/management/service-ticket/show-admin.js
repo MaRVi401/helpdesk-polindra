@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function () {
           cancelButtonText: 'Batal',
           customClass: {
             confirmButton: 'btn btn-primary me-2',
-            cancelButton: 'btn btn-secondary'
+            cancelButton: 'btn btn-outline-secondary'
           },
           buttonsStyling: false,
           reverseButtons: false,
@@ -148,4 +148,32 @@ document.addEventListener('DOMContentLoaded', function () {
       console.error('FormValidation init failed:', e);
     }
   })();
+
+  // Flash messages (support different variable names for compatibility)
+  const successMsg = window.serviceTicketSuccessMessage || window.serviceSuccessMessage || window.serviceSuccess;
+  const errorMsg =
+    window.serviceTicketErrorMessage ||
+    window.serviceErrorMessage ||
+    window.serviceTickeErrorMessage ||
+    window.serviceError;
+
+  if (successMsg) {
+    Swal.fire({
+      icon: 'success',
+      title: 'Berhasil!',
+      text: successMsg,
+      customClass: { confirmButton: 'btn btn-primary waves-effect waves-light' },
+      buttonsStyling: false
+    });
+  }
+
+  if (errorMsg) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Gagal!',
+      text: errorMsg,
+      customClass: { confirmButton: 'btn btn-primary waves-effect waves-light' },
+      buttonsStyling: false
+    });
+  }
 });

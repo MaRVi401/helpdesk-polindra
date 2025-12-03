@@ -29,7 +29,7 @@ use App\Http\Controllers\Admin\ProgramStudiController;
 use App\Http\Controllers\Admin\KategoriArtikelController;
 use App\Http\Controllers\KepalaUnit\MonitoringTiketController;
 use App\Http\Controllers\KepalaUnit\KelolaPicController;
-use App\Http\Controllers\AdminUnit\TiketController as AdminUnitTiketController;
+use App\Http\Controllers\AdminUnit\ServiceTicketController as AdminUnitServiceTicketController;
 use App\Http\Controllers\Admin\PositionController;
 
 // FOR TESTING BLADE
@@ -121,6 +121,7 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
         Route::resource('service-ticket', ServiceTicketController::class);
         Route::post('service-ticket/{id}/comment', [ServiceTicketController::class, 'serviceTicketComment'])->name('service.ticket.comment');
         Route::patch('service-ticket/{id}/status-confirm', [ServiceTicketController::class, 'statusConfirm'])->name('service.ticket.statusConfirm');
+        Route::put('/service-ticket/{id}/update-timer', [ServiceController::class, 'updateTimer'])->name('service-ticket.updateTimer');
     });
 
 
@@ -183,11 +184,10 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
     });
     // Admin Unit
     Route::middleware(['auth', 'role:admin_unit'])->prefix('admin-unit')->name('admin_unit.')->group(function () {
-        Route::get('/dashboard', [AdminUnitTiketController::class, 'index'])->name('dashboard');
-        Route::get('/tiket', [AdminUnitTiketController::class, 'index'])->name('tiket.index');
-        Route::get('/tiket/{id}', [AdminUnitTiketController::class, 'show'])->name('tiket.show');
-        Route::put('/tiket/{id}', [AdminUnitTiketController::class, 'update'])->name('tiket.update');
-        Route::post('/tiket/{id}/komentar', [AdminUnitTiketController::class, 'storeKomentar'])->name('tiket.komentar');
-        Route::put('/tiket/{id}/update-timer', [AdminUnitTiketController::class, 'updateTimer'])->name('tiket.updateTimer');
+        Route::get('/service-ticket', [AdminUnitServiceTicketController::class, 'index'])->name('ticket.index');
+        Route::get('/service-ticket/{id}', [AdminUnitServiceTicketController::class, 'show'])->name('ticket.show');
+        Route::put('/service-ticket/{id}', [AdminUnitServiceTicketController::class, 'update'])->name('ticket.update');
+        Route::post('/service-ticket/{id}/comment', [AdminUnitServiceTicketController::class, 'storeKomentar'])->name('ticket.comment');
+        Route::put('/service-ticket/{id}/update-timer', [AdminUnitServiceTicketController::class, 'updateTimer'])->name('ticket.updateTimer');
     });
 });

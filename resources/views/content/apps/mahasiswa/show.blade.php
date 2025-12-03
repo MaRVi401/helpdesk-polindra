@@ -12,14 +12,14 @@
 @endsection
 
 @section('page-script')
-  @vite('resources/assets/js/management/service-ticket/show-admin.js')
+  @vite('resources/assets/js/management/service-ticket/show-mahasiswa.js')
 @endsection
 
 @section('content')
   <div class="container">
     {{-- TIMER --}}
     @php
-      $cacheKey = 'tiket_timer_' . $tiket->id;  
+      $cacheKey = 'tiket_timer_' . $tiket->id;
       $deadline = \Illuminate\Support\Facades\Cache::get($cacheKey);
       $isTimerActive = $tiket->statusTerbaru?->status === 'Diselesaikan_oleh_PIC' && $deadline;
     @endphp
@@ -31,7 +31,7 @@
         <div class="card-body pt-3 text-center">
           <p class="mb-1 text-warning small">Tiket ini akan otomatis ditutup jika tidak ada respon dalam</p>
           <hr class="my-2">
-          <div id="admin-countdown"
+          <div id="mahasiswa-countdown"
             data-deadline="{{ $deadline ? \Carbon\Carbon::parse($deadline)->format('Y-m-d H:i:s') : '' }}"
             class="p-1 mb-1 fw-bold fs-6">
             Memuat...
@@ -41,7 +41,7 @@
           </small>
           <hr class="my-2">
           <div class="collapse" id="settingTimer">
-            <form action="{{ route('admin_unit.tiket.updateTimer', $tiket->id) }}" method="POST"
+            <form action="{{ route('service-ticket.updateTimer', $tiket->id) }}" method="POST"
               class="bg-light p-2 rounded border">
               @csrf
               @method('PUT')
@@ -99,22 +99,22 @@
                 pengerjaan ini?</p>
               <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                 {{-- TOMBOL SETUJU --}}
-                <form action="{{ route('service.ticket.statusConfirm', $tiket->id) }}" method="POST">
+                <form action="{{ route('service.ticket.statusConfirm', $tiket->id) }}" method="POST"
+                  id="form-confirm-completion">
                   @csrf
                   @method('PATCH')
                   <input type="hidden" name="status" value="Dinilai_Selesai_oleh_Pemohon">
-                  <button type="submit" class="btn btn-primary"
-                    onclick="return confirm('Apakah Anda yakin ingin menyelesaikan tiket ini?')">
+                  <button type="submit" class="btn btn-primary">
                     Setuju
                   </button>
                 </form>
                 {{-- TOMBOL BELUM SELESAI --}}
-                <form action="{{ route('service.ticket.statusConfirm', $tiket->id) }}" method="POST">
+                <form action="{{ route('service.ticket.statusConfirm', $tiket->id) }}" method="POST"
+                  id="form-not-completed">
                   @csrf
                   @method('PATCH')
                   <input type="hidden" name="status" value="Dinilai_Belum_Selesai_oleh_Pemohon">
-                  <button type="submit" class="btn btn-danger"
-                    onclick="return confirm('Status tiket akan berubah menjadi Dinilai Belum Selesai oleh Pemohon. Lanjutkan?')">
+                  <button type="submit" class="btn btn-danger">
                     Belum Selesai
                   </button>
                 </form>
@@ -444,11 +444,29 @@
     {{-- TOMBOL KEMBALI --}}
     <div class="row">
       <div class="col-12">
-        <a href="{{ route('admin_unit.tiket.index') }}" class="btn btn-primary w-100">
+        <a href="{{ route('service-ticket.index') }}" class="btn btn-primary w-100">
           Semua Daftar Tiket Layanan
           <i class="icon-base ti tabler-trending-up ms-2"></i>
         </a>
       </div>
     </div>
   </div>
+
+  @if (session('success'))
+    <script>
+      window.serviceTicketSuccessMessage = "{{ session('success') }}";
+    </script>
+  @endif
+
+  @if (session('error'))
+    <script>
+      window.serviceTicketErrorMessage = "{{ session('error') }}";
+    </script>
+  @endif
+
+  @if ($errors->any())
+    <script>
+      window.serviceTickeErrorMessage = "{{ $errors->first() }}";
+    </script>
+  @endif
 @endsection

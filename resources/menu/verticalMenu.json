@@ -22,7 +22,7 @@
       ]
     },
     {
-      "url": "admin-unit/tiket",
+      "url": "admin-unit/service-ticket",
       "name": "Daftar Tiket Layanan",
       "icon": "menu-icon icon-base ti tabler-ticket",
       "slug": [
