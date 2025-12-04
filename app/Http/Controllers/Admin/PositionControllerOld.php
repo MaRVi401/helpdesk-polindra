@@ -7,24 +7,19 @@ use App\Models\Jabatan;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
-class PositionController extends Controller
+class PositionControllerOld extends Controller
 {
-    // Menampilkan daftar semua jabatan
     public function index()
     {
         $data_positions = Jabatan::orderBy('created_at', 'asc')->get();
-        // Mengubah path view dari 'admin.position.index' menjadi 'content.apps.admin.position.list'
-        return view('content.apps.admin.position.list', compact('data_positions'));
+        return view('admin.position.index', compact('data_positions'));
     }
 
-    // Menampilkan form tambah jabatan
     public function create()
     {
-        // Mengubah path view dari 'admin.position.create' menjadi 'content.apps.admin.position.create'
-        return view('content.apps.admin.position.create');
+        return view('admin.position.create');
     }
 
-    // Menyimpan data jabatan baru
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -46,24 +41,17 @@ class PositionController extends Controller
     }
 
 
-    // Menampilkan detail jabatan (saat ini di-redirect ke index)
     public function show($id)
     {
-        // Tetap me-redirect ke index seperti logika awal, atau Anda bisa ubah ini
-        // $data_position = Jabatan::findOrFail($id);
-        // return view('content.apps.admin.position.show', compact('data_position'));
         return redirect()->route('position.index');
     }
 
-    // Menampilkan form edit jabatan
     public function edit($id)
     {
         $data_position = Jabatan::findOrFail($id);
-        // Mengubah path view dari 'admin.position.edit' menjadi 'content.apps.admin.position.edit'
-        return view('content.apps.admin.position.edit', compact('data_position'));
+        return view('admin.position.edit', compact('data_position'));
     }
 
-    // Memperbarui data jabatan
     public function update(Request $request, $id)
     {
         $data_position = Jabatan::findOrFail($id);
@@ -92,7 +80,6 @@ class PositionController extends Controller
     }
 
 
-    // Menghapus data jabatan
     public function destroy($id)
     {
         $data_position = Jabatan::findOrFail($id);

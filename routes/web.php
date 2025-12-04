@@ -31,6 +31,7 @@ use App\Http\Controllers\KepalaUnit\MonitoringTiketController;
 use App\Http\Controllers\KepalaUnit\KelolaPicController;
 use App\Http\Controllers\AdminUnit\ServiceTicketController as AdminUnitServiceTicketController;
 use App\Http\Controllers\Admin\PositionController;
+use App\Http\Controllers\Admin\PositionControllerOld;
 
 // FOR TESTING BLADE
 Route::get('/test', [TestPage::class, 'index'])->name('page.index');
@@ -113,7 +114,9 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
         Route::resource('article-category', ArticleCategoryController::class);
 
         // POSITION MANAGEMENT (SUPER ADMIN)
+        // Route::resource('position', PositionControllerOld::class)->names('position');
         Route::resource('position', PositionController::class)->names('position');
+        
     });
 
     // SERVICE TICKET (MAHASISWA)
