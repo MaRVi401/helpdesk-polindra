@@ -32,7 +32,7 @@
         </div>
     <?php endif; ?>
 
-    <a href="<?= route('admin.position.create') ?>" class="button btn-primary">Tambah Jabatan</a>
+    <a href="<?= route('position.create') ?>" class="button btn-primary">Tambah Jabatan</a>
 
     <table>
         <thead>
@@ -49,9 +49,9 @@
                     <td><?= $index + 1 ?></td>
                     <td><?= $pos->nama_jabatan ?></td>
                     <td>
-                        <a href="<?= route('admin.position.edit', $pos->id) ?>" class="btn-edit">Edit</a>
+                        <a href="<?= route('position.edit', $pos->id) ?>" class="btn-edit">Edit</a>
 
-                        <form action="<?= route('admin.position.destroy', $pos->id) ?>" method="POST" style="display:inline;" onsubmit="return confirm('Delete this position?')">
+                        <form action="<?= route('position.destroy', $pos->id) ?>" method="POST" style="display:inline;" onsubmit="return confirm('Delete this position?')">
                             <?= csrf_field() ?>
                             <?= method_field('DELETE') ?>
                             <button type="submit" class="btn-danger">Delete</button>
