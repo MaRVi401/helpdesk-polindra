@@ -252,6 +252,20 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Jabatan",
+      "url": "/position",
+      "icon": "menu-icon icon-base ti tabler-briefcase",
+      "slug": [
+        "position.index",
+        "position.create",
+        "position.edit",
+        "position.show"
+      ],
+      "roles": [
+        "super_admin"
+      ]
     }
   ]
 }
