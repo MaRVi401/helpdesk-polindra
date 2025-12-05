@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -69,8 +68,9 @@ return new class extends Migration
         Schema::create('layanan', function (Blueprint $table) {
             $table->id();
             $table->string('nama');
+            $table->string('slug')->unique();
             $table->boolean('status_arsip')->default(false);
-            $table->foreignId('unit_id')->constrained('units');
+            $table->foreignId('unit_id')->constrained('units')->onDelete('cascade');
             $table->integer('prioritas')->default(0);
             $table->timestamps();
         });

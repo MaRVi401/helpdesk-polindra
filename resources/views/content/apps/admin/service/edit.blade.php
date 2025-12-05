@@ -83,7 +83,7 @@
         {{-- BUTTON --}}
         <div class="mb-6">
           <button class="btn btn-primary" type="submit">Perbarui</button>
-          <a href="{{ route('service.unit', ['slug' => $slug]) }}" class="btn btn-outline-secondary">
+          <a href="{{ route('service.unit', ['unitSlug' => $unitSlug]) }}" class="btn btn-outline-secondary">
             Batal
           </a>
         </div>

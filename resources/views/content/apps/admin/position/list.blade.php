@@ -1,84 +1,63 @@
-@extends('layouts.layoutMaster')
+@extends('layouts/layoutMaster')
 
 @section('title', 'Daftar Jabatan')
 
-@section('content')
-    <div class="container-xxl flex-grow-1 container-p-y">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Daftar Jabatan</h5>
-                <a href="{{ route('position.create') }}" class="btn btn-primary">
-                    <i class="icon-base ti tabler-plus me-0 me-sm-1 icon-20px"></i> Tambah Jabatan
-                </a>
-            </div>
-            <div class="card-body">
-                {{-- Bagian untuk menampilkan pesan sukses atau error --}}
-                @if (session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
-                @if (session('error'))
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        {{ session('error') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
-
-                <div class="table-responsive text-nowrap">
-                    <table class="table table-striped table-hover" id="datatable-jabatan">
-                        <thead>
-                            <tr>
-                                <th>No.</th>
-                                <th>Nama Jabatan</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="table-border-bottom-0">
-                            @foreach ($data_positions as $position)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td><span>{{ $position->nama_jabatan }}</span></td>
-                                    <td>
-                                        <div class="dropdown">
-                                            <button type="button" class="btn p-0 dropdown-toggle hide-arrow"
-                                                data-bs-toggle="dropdown">
-                                                <i class="icon-base ti tabler-dots-vertical icon-22px"></i>
-                                            </button>
-
-                                            <div class="dropdown-menu">
-                                                <a class="dropdown-item" href="{{ route('position.edit', $position->id) }}">
-                                                    <i class="ti ti-pencil me-1"></i> Edit
-                                                </a>
-
-                                                <form action="{{ route('position.destroy', $position->id) }}" method="POST"
-                                                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus jabatan ini? Tindakan ini tidak dapat dibatalkan.');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="dropdown-item text-danger">
-                                                        <i class="ti ti-trash me-1"></i> Hapus
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </td>
-
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
+@section('vendor-style')
+  @vite(['resources/assets/vendor/libs/datatables-bs5/datatables.bootstrap5.scss', 'resources/assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.scss', 'resources/assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.scss', 'resources/assets/vendor/libs/select2/select2.scss', 'resources/assets/vendor/libs/sweetalert2/sweetalert2.scss', 'resources/assets/vendor/libs/animate-css/animate.scss'])
 @endsection
 
-@push('scripts')
+@section('vendor-script')
+  @vite(['resources/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js', 'resources/assets/vendor/libs/select2/select2.js', 'resources/assets/vendor/libs/sweetalert2/sweetalert2.js'])
+@endsection
+
+@section('page-script')
+  @vite(['resources/assets/js/management/position.js', 'resources/assets/js/extended-ui-sweetalert2.js'])
+@endsection
+
+@section('content')
+  {{-- TABEL DAFTAR JABATAN --}}
+  <div class="card">
+    <div class="card-header border-bottom">
+      <h5 class="card-title">Daftar Jabatan</h5>
+      <div class="col-md-4 position_status"></div>
+      <div class="col-md-4 judul"></div>
+    </div>
+    <div class="card-datatable table-responsive">
+      <table class="datatables-basic table">
+        <thead>
+          <tr>
+            <th></th>
+            <th></th>
+            <th>No</th>
+            <th>Nama Jabatan</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach ($data_jabatan as $jabatan)
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>{{ $jabatan->nama_jabatan }}</td>
+              <td data-id="{{ $jabatan->id }}"></td>
+            </tr>
+          @endforeach
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {{-- Success message dari session --}}
+  @if (session('success'))
     <script>
-        $(document).ready(function() {
-            // DataTable Initialization
-            // $('#datatable-jabatan').DataTable();
-        });
+      window.positionSuccessMessage = "{{ session('success') }}";
     </script>
-@endpush
+  @endif
+
+  @if (session('error'))
+    <script>
+      window.positionErrorMessage = "{{ session('error') }}";
+    </script>
+  @endif
+@endsection

@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use App\Models\Layanan;
 use App\Models\Unit;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class LayananSeeder extends Seeder
 {
@@ -20,11 +21,13 @@ class LayananSeeder extends Seeder
         $kemahasiswaan = Unit::where('nama_unit', 'Kemahasiswaan')->first();
 
         if (!$akademik || !$upaTik || !$kemahasiswaan) {
-            $this->command->error('Unit (Akademik/UPA TIK/Kemahasiswaan) tidak ditemukan. Pastikan MasterDataSeeder/UnitSeeder sudah dijalankan.');
+            $this->command->error(
+                'Unit (Akademik/UPA TIK/Kemahasiswaan) tidak ditemukan. Pastikan MasterDataSeeder/UnitSeeder sudah dijalankan.'
+            );
             return;
         }
 
-        $layanans = [
+        $data_layanan = [
             [
                 'unit_id' => $akademik->id,
                 'nama' => 'Surat Keterangan Aktif Kuliah',
@@ -51,9 +54,14 @@ class LayananSeeder extends Seeder
             ]
         ];
 
-        foreach ($layanans as $layanan) {
-            Layanan::create($layanan);
+        foreach ($data_layanan as $layanan) {
+            Layanan::create([
+                'unit_id' => $layanan['unit_id'],
+                'nama' => $layanan['nama'],
+                'slug' => Str::slug($layanan['nama']),  
+                'status_arsip' => $layanan['status_arsip'],
+                'prioritas' => $layanan['prioritas'],
+            ]);
         }
-
     }
 }

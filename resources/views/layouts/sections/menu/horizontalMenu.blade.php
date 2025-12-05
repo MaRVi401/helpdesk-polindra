@@ -2,7 +2,7 @@
   use Illuminate\Support\Facades\Route;
   $configData = Helper::appClasses();
 @endphp
-<!-- Horizontal Menu -->
+{{-- Horizontal Menu --}}
 <aside id="layout-menu" class="layout-menu-horizontal menu-horizontal  menu bg-menu-theme flex-grow-0"
   @foreach ($configData['menuAttributes'] as $attribute => $value)
   {{ $attribute }}="{{ $value }}" @endforeach>
@@ -51,4 +51,3 @@
     </ul>
   </div>
 </aside>
-<!--/ Horizontal Menu -->

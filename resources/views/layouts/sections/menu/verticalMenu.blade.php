@@ -15,7 +15,7 @@
       $filteredMenu = Helper::filterMenuByRole($menuData['menu'] ?? [], $userRole);
   }
 @endphp
-
+{{-- Vertical Menu --}}
 <aside id="layout-menu" class="layout-menu menu-vertical menu"
   @foreach ($configData['menuAttributes'] as $attribute => $value)
   {{ $attribute }}="{{ $value }}" @endforeach>
@@ -92,5 +92,4 @@
       @endif
     @endforeach
   </ul>
-
 </aside>

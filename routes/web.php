@@ -89,9 +89,9 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
     Route::middleware('role:super_admin')->group(function () {
         // SERVICE MANAGEMENT (SUPER ADMIN)
         Route::prefix('service')->name('service.')->group(function () {
-            Route::get('/{slug}', [ServiceController::class, 'filterByUnit'])->name('unit');
-            Route::get('/{slug}/{id}', [ServiceController::class, 'show'])->name('show');
-            Route::get('/{slug}/{id}/edit', [ServiceController::class, 'edit'])->name('edit');
+            Route::get('/{unitSlug}', [ServiceController::class, 'filterByUnit'])->name('unit');
+            Route::get('/{unitSlug}/{layananSlug}', [ServiceController::class, 'show'])->name('show');
+            Route::get('/{unitSlug}/{layananSlug}/edit', [ServiceController::class, 'edit'])->name('edit');
         });
         Route::resource('service', ServiceController::class)->only(['store', 'update', 'destroy']);
 
@@ -116,7 +116,7 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
         // POSITION MANAGEMENT (SUPER ADMIN)
         // Route::resource('position', PositionControllerOld::class)->names('position');
         Route::resource('position', PositionController::class)->names('position');
-        
+
     });
 
     // SERVICE TICKET (MAHASISWA)

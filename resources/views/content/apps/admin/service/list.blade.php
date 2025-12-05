@@ -71,17 +71,15 @@
                     <span class="badge bg-label-success">Aktif</span>
                   @endif
                 </td>
-                <td data-id="{{ $layanan->id }}" data-slug="{{ $slug ?? $layanan->unit->slug }}"></td>
+                <td data-id="{{ $layanan->id }}" data-unit-slug="{{ $layanan->unit->slug }}"
+                  data-slug="{{ $layanan->slug }}">
+                </td>
               </tr>
             @endforeach
           </tbody>
         </table>
       </div>
     </div>
-
-
-
-    
   @endforeach
   {{-- MODAL TAMBAH LAYANAN --}}
   <div class="offcanvas offcanvas-end" id="add-new-record">

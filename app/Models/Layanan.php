@@ -8,18 +8,19 @@ use Illuminate\Database\Eloquent\Model;
 class Layanan extends Model
 {
     use HasFactory;
-    
-    
+
+
     protected $table = 'layanan';
 
     protected $fillable = [
         'nama',
+        'slug',
         'status_arsip',
         'unit_id',
         'prioritas',
     ];
 
-    
+
     public function unit()
     {
         return $this->belongsTo(Unit::class, 'unit_id');

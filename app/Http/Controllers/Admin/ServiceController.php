@@ -1,12 +1,14 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
+
 use App\Http\Controllers\Controller;
 use App\Models\Layanan;
 use App\Models\Unit;
 use App\Models\Staff;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
 
 class ServiceController extends Controller
 {
@@ -39,8 +41,7 @@ class ServiceController extends Controller
         'string',
         'max:255',
         Rule::unique('layanan', 'nama')->where(
-          fn($query) =>
-          $query->where('unit_id', $request->unit_id)
+          fn($query) => $query->where('unit_id', $request->unit_id)
         ),
       ],
       'unit_id' => 'required|exists:units,id',
@@ -51,11 +52,14 @@ class ServiceController extends Controller
     ], [
       'nama.unique' => 'Nama layanan sudah digunakan pada unit ini.',
     ]);
+
     try {
       // Ambil unit untuk redirect
       $data_unit = Unit::findOrFail($request->unit_id);
+
       $data_layanan = Layanan::create([
         'nama' => $request->nama,
+        'slug' => Str::slug($request->nama),
         'unit_id' => $request->unit_id,
         'prioritas' => $request->prioritas,
         'status_arsip' => (int) $request->status_arsip,
@@ -63,7 +67,8 @@ class ServiceController extends Controller
 
       // Sinkronkan PIC di tabel
       $data_layanan->penanggungJawab()->sync($request->input('penanggung_jawab_ids', []));
-      return $this->redirectToUnitRoute($data_unit->nama_unit, 'Layanan baru berhasil dibuat.');
+
+      return $this->redirectToUnitRoute($data_unit->slug, 'Layanan baru berhasil dibuat.');
     } catch (\Exception $e) {
       return redirect()->back()
         ->with('error', 'Gagal membuat layanan. Error: ' . $e->getMessage())
@@ -71,53 +76,42 @@ class ServiceController extends Controller
     }
   }
 
-  private function getUnitSlug($nama_unit)
+  public function show($unitSlug, $layananSlug)
   {
-    $unitMapping = [
-      'UPA TIK' => 'upatik',
-      'UPT. Bahasa' => 'upt-bahasa',
-      'Akademik' => 'academy',
-      'Kemahasiswaan' => 'student-affairs'
-    ];
+    $unit = Unit::where('slug', $unitSlug)->firstOrFail();
 
-    return $unitMapping[$nama_unit] ?? null;
+    $data_layanan = Layanan::where('slug', $layananSlug)
+      ->where('unit_id', $unit->id)
+      ->with(['unit', 'penanggungJawab.user'])
+      ->firstOrFail();
+
+    return view('content.apps.admin.service.show', compact('data_layanan', 'unitSlug'));
   }
 
-  public function show($slug, $id)
+  public function edit($unitSlug, $layananSlug)
   {
-    $data_layanan = Layanan::with([
-      'unit',
-      'penanggungJawab.user',
-    ])->findOrFail($id);
+    $unit = Unit::where('slug', $unitSlug)->firstOrFail();
 
-    // Validasi apakah layanan sesuai dengan slug unit
-    $unit = Unit::where('slug', $slug)->firstOrFail();
-    if ($data_layanan->unit_id !== $unit->id) {
-      abort(404);
-    }
-
-    return view('content.apps.admin.service.show', compact('data_layanan', 'slug'));
-  }
-
-  public function edit($slug, $id)
-  {
-    $data_layanan = Layanan::with(['unit', 'penanggungJawab'])->findOrFail($id);
-
-    // Validasi apakah layanan sesuai dengan slug unit
-    $unit = Unit::where('slug', $slug)->firstOrFail();
-    if ($data_layanan->unit_id !== $unit->id) {
-      abort(404);
-    }
+    $data_layanan = Layanan::where('slug', $layananSlug)
+      ->where('unit_id', $unit->id)
+      ->with(['unit', 'penanggungJawab'])
+      ->firstOrFail();
 
     $data_unit = Unit::orderBy('nama_unit')->get();
     $data_staf = Staff::with('user')->get();
 
-    return view('content.apps.admin.service.edit', compact('data_layanan', 'data_unit', 'data_staf', 'slug'));
+    return view('content.apps.admin.service.edit', compact(
+      'data_layanan',
+      'data_unit',
+      'data_staf',
+      'unitSlug'
+    ));
   }
 
   public function update(Request $request, $id)
   {
     $data_layanan = Layanan::findOrFail($id);
+
     $request->validate([
       'nama' => [
         'required',
@@ -137,8 +131,12 @@ class ServiceController extends Controller
     ]);
 
     try {
+      // Ambil unit untuk redirect
+      $data_unit = Unit::findOrFail($request->unit_id);
+
       $data_layanan->update([
         'nama' => $request->nama,
+        'slug' => Str::slug($request->nama),
         'unit_id' => $request->unit_id,
         'prioritas' => $request->prioritas,
         'status_arsip' => (int) $request->status_arsip,
@@ -146,9 +144,8 @@ class ServiceController extends Controller
 
       // Update relasi pivot
       $data_layanan->penanggungJawab()->sync($request->input('penanggung_jawab_ids', []));
-      $data_unit = Unit::find($request->unit_id);
-      return $this->redirectToUnitRoute($data_unit->nama_unit, 'Layanan berhasil diperbarui.');
 
+      return $this->redirectToUnitRoute($data_unit->slug, 'Layanan berhasil diperbarui.');
     } catch (\Exception $e) {
       return redirect()->back()
         ->with('error', 'Gagal memperbarui layanan. Error: ' . $e->getMessage())
@@ -162,36 +159,42 @@ class ServiceController extends Controller
       $data_layanan = Layanan::findOrFail($id);
 
       if ($data_layanan->tiket()->count() > 0) {
-        return $this->redirectToUnitRoute(
-          $data_layanan->unit->nama_unit,
-          'Layanan ini masih memiliki tiket terkait.'
-        )->with('error', 'Layanan ini masih memiliki tiket terkait.');
+        return redirect()->back()
+          ->with('error', 'Layanan ini masih memiliki tiket terkait.');
       }
-      // Simpan nama unit sebelum hapus
-      $nama_unit = $data_layanan->unit->nama_unit;
+
+      // Simpan slug unit sebelum hapus
+      $unit_slug = $data_layanan->unit->slug;
 
       // Hapus relasi penanggung jawab
       $data_layanan->penanggungJawab()->sync([]);
+
       // Hapus layanan
       $data_layanan->delete();
-      return $this->redirectToUnitRoute($nama_unit, 'Layanan berhasil dihapus.');
+
+      return $this->redirectToUnitRoute($unit_slug, 'Layanan berhasil dihapus.');
     } catch (\Exception $e) {
       return redirect()->back()
         ->with('error', 'Gagal menghapus layanan. Error: ' . $e->getMessage());
     }
   }
 
-  private function redirectToUnitRoute($nama_unit, $successMessage)
+  /**
+   * Redirect to unit service list page
+   *
+   * @param string|null $unit_slug
+   * @param string $successMessage
+   * @return \Illuminate\Http\RedirectResponse
+   */
+  private function redirectToUnitRoute($unit_slug, $successMessage)
   {
-    $unit = Unit::where('nama_unit', $nama_unit)->first();
-
-    if ($unit && $unit->slug) {
-      return redirect()->route('service.unit', ['slug' => $unit->slug])
+    if ($unit_slug) {
+      return redirect()->route('service.unit', ['unitSlug' => $unit_slug])
         ->with('success', $successMessage);
     }
 
+    // Fallback jika slug tidak ada
     return redirect()->back()
       ->with('success', $successMessage);
   }
-
 }

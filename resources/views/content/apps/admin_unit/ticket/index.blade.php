@@ -79,7 +79,7 @@
         </div>
 
         {{-- LOOPING PER LAYANAN (TABEL TERPISAH) --}}
-        @forelse($layanans as $layanan)
+        @forelse($data_layanan as $layanan)
             <div class="card mb-5 border border-primary">
                 <div class="card-header bg-label-primary d-flex justify-content-between align-items-center py-3">
                     <h5 class="mb-0 text-primary fw-bold"><i class='bx bx-layer me-2'></i>{{ $layanan->nama }}</h5>

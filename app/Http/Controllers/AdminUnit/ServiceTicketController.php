@@ -26,40 +26,33 @@ class ServiceTicketController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-        $staff = Staff::where('user_id', $user->id)->firstOrFail();
-        $picLayananIds = $staff->layanan()->pluck('layanan.id')->toArray();
+        $data_staf = Staff::where('user_id', $user->id)->firstOrFail();
+        $picLayananID = $data_staf->layanan()->pluck('layanan.id')->toArray();
 
-        if (empty($picLayananIds)) {
-            return view('content.apps.admin_unit.ticket.index', ['layanans' => collect([]), 'isPic' => false]);
+        if (empty($picLayananID)) {
+            return view('content.apps.admin_unit.ticket.index', [
+                'data_layanan' => collect([]),
+                'isPic' => false
+            ]);
         }
 
-        $layanans = Layanan::whereIn('id', $picLayananIds)
+        $data_layanan = Layanan::whereIn('id', $picLayananID)
             ->with([
-                'tiket' => function ($query) use ($request) {
-                    $query->with(['pemohon.mahasiswa', 'statusTerbaru'])->latest();
-
-                    if ($request->filled('q')) {
-                        $search = $request->q;
-                        $query->where(function ($q) use ($search) {
-                            $q->where('no_tiket', 'like', "%{$search}%")
-                                ->orWhere('judul', 'like', "%{$search}%")
-                                ->orWhereHas('pemohon', fn($u) => $u->where('name', 'like', "%{$search}%"));
-                        });
-                    }
-                    if ($request->filled('status')) {
-                        $query->whereHas('statusTerbaru', fn($q) => $q->where('status', $request->status));
-                    }
+                'tiket' => function ($query) {
+                    $query->with(['pemohon.mahasiswa', 'statusTerbaru'])
+                        ->latest();
                 }
             ])
             ->get();
 
         $totalTiket = 0;
-        foreach ($layanans as $layanan) {
+        foreach ($data_layanan as $layanan) {
             $totalTiket += $layanan->tiket->count();
         }
 
-        return view('content.apps.admin_unit.ticket.index', compact('layanans', 'totalTiket'));
+        return view('content.apps.admin_unit.ticket.index', compact('data_layanan', 'totalTiket'));
     }
+
 
     public function show($id)
     {

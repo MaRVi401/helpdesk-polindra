@@ -22,12 +22,21 @@
       ]
     },
     {
+      "name": "Layanan Saya",
+      "icon": "menu-icon icon-base ti tabler-layout-grid-add",
+      "slug": "admin_unit_service",
+      "roles": [
+        "admin_unit"
+      ],
+      "submenu": []
+    },
+    {
       "url": "admin-unit/service-ticket",
       "name": "Daftar Tiket Layanan",
       "icon": "menu-icon icon-base ti tabler-ticket",
       "slug": [
-        "admin_unit.tiket.index",
-        "admin_unit.tiket.show"
+        "admin_unit.ticket.index",
+        "admin_unit.ticket.show"
       ],
       "roles": [
         "admin_unit"
@@ -254,17 +263,27 @@
       ]
     },
     {
-      "name": "Jabatan",
       "url": "/position",
       "icon": "menu-icon icon-base ti tabler-briefcase",
-      "slug": [
-        "position.index",
-        "position.create",
-        "position.edit",
-        "position.show"
-      ],
+      "name": "Jabatan",
+      "slug": "position",
       "roles": [
         "super_admin"
+      ],
+      "submenu": [
+        {
+          "url": "/position",
+          "name": "Daftar Jabatan",
+          "slug": [
+            "position.index",
+            "position.edit"
+          ]
+        },
+        {
+          "url": "/position/create",
+          "name": "Tambah Jabatan",
+          "slug": "position.create"
+        }
       ]
     }
   ]
