@@ -63,7 +63,8 @@ class AdminTicketController extends Controller
         $tikets = $query->paginate($perPage)->withQueryString();
         $statuses = $this->validStatuses;
 
-        return view('admin.tiket.index', compact('tikets', 'searchQuery', 'perPage', 'statusFilter', 'statuses'));
+        // Mengarahkan ke view baru: resources/views/content/apps/admin/ticket/list.blade.php
+        return view('content.apps.admin.ticket.list', compact('tikets', 'searchQuery', 'perPage', 'statusFilter', 'statuses'));
     }
 
     /**
@@ -75,7 +76,8 @@ class AdminTicketController extends Controller
         $mahasiswas = User::where('role', 'mahasiswa')->get();
         $layanans = Layanan::where('status_arsip', false)->get();
 
-        return view('admin.tiket.create', compact('mahasiswas', 'layanans'));
+        // Mengarahkan ke view baru: resources/views/content/apps/admin/ticket/create.blade.php
+        return view('content.apps.admin.ticket.create', compact('mahasiswas', 'layanans'));
     }
 
     /**
@@ -107,7 +109,8 @@ class AdminTicketController extends Controller
                 ]);
             });
 
-            return redirect()->route('admin.tiket.index')->with('success', 'Tiket berhasil dibuat.');
+            // Menggunakan nama route 'ticket.index'
+            return redirect()->route('ticket.index')->with('success', 'Tiket berhasil dibuat.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Gagal membuat tiket: ' . $e->getMessage())->withInput();
         }
@@ -127,22 +130,24 @@ class AdminTicketController extends Controller
         ]);
 
         $detailLayanan = null;
-        $namaLayanan = $tiket->layanan->nama;
+        // Penanganan null check untuk relasi (walaupun tidak menyebabkan error di stack trace, ini praktik yang baik)
+        $namaLayanan = $tiket->layanan->nama ?? null; 
 
-        if (str_contains($namaLayanan, 'Surat Keterangan Aktif Kuliah')) {
+        if ($namaLayanan && str_contains($namaLayanan, 'Surat Keterangan Aktif Kuliah')) {
             $detailLayanan = $tiket->detailSuratKetAktif;
-        } elseif (str_contains($namaLayanan, 'Reset Akun')) {
+        } elseif ($namaLayanan && str_contains($namaLayanan, 'Reset Akun')) {
             $detailLayanan = $tiket->detailResetAkun;
-        } elseif (str_contains($namaLayanan, 'Ubah Data Mahasiswa')) {
+        } elseif ($namaLayanan && str_contains($namaLayanan, 'Ubah Data Mahasiswa')) {
             $detailLayanan = $tiket->detailUbahDataMhs;
-        } elseif (str_contains($namaLayanan, 'Request Publikasi')) {
+        } elseif ($namaLayanan && str_contains($namaLayanan, 'Request Publikasi')) {
             $detailLayanan = $tiket->detailReqPublikasi;
         }
 
         $statuses = $this->validStatuses;
         $statusSekarang = $tiket->statusTerbaru->status ?? 'Draft';
 
-        return view('admin.tiket.edit', compact('tiket', 'detailLayanan', 'statuses', 'statusSekarang'));
+        // Mengarahkan ke view baru: resources/views/content/apps/admin/ticket/edit.blade.php
+        return view('content.apps.admin.ticket.edit', compact('tiket', 'detailLayanan', 'statuses', 'statusSekarang'));
     }
 
     /**
@@ -203,8 +208,16 @@ class AdminTicketController extends Controller
 
     private function getServiceCode($layananId)
     {
-        $layanan = Layanan::find($layananId);
-        $namaLayanan = $layanan->nama ?? 'Unknown';
+        // Baris 132
+        $layanan = Layanan::find($layananId); 
+
+        // PERBAIKAN: Jika Layanan tidak ditemukan (null), kembalikan kode darurat
+        if (is_null($layanan)) {
+            return 'ERR'; 
+        }
+
+        // Baris 133 (Sekarang aman karena $layanan pasti bukan null)
+        $namaLayanan = $layanan->nama ?? 'Unknown'; 
 
         // Logika kustom untuk membuat kode 3 huruf dari nama layanan
         if (str_contains($namaLayanan, 'Surat Keterangan Aktif')) {
@@ -299,10 +312,12 @@ class AdminTicketController extends Controller
                 $tiket->delete();
             });
 
-            return redirect()->route('admin.tiket.index')->with('success', 'Tiket berhasil dihapus secara permanen.');
+            // Menggunakan nama route 'ticket.index'
+            return redirect()->route('ticket.index')->with('success', 'Tiket berhasil dihapus secara permanen.');
         } catch (\Exception $e) {
             // Log::error("Gagal menghapus tiket: " . $e->getMessage()); // Opsional untuk debugging
-            return redirect()->route('admin.tiket.index')->with('error', 'Gagal menghapus tiket: ' . $e->getMessage());
+            // Menggunakan nama route 'ticket.index'
+            return redirect()->route('ticket.index')->with('error', 'Gagal menghapus tiket: ' . $e->getMessage());
         }
     }
 }
