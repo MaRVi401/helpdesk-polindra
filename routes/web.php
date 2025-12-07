@@ -1,4 +1,6 @@
 <?php
+
+use App\Http\Controllers\Admin\AdminTicketController;
 use App\Http\Controllers\Admin\ArticleCategoryController;
 use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\Admin\MajorController;
@@ -116,6 +118,9 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
         // POSITION MANAGEMENT (SUPER ADMIN)
         // Route::resource('position', PositionControllerOld::class)->names('position');
         Route::resource('position', PositionController::class)->names('position');
+        
+        // TICKET MANAGEMENT (SUPER ADMIN) 
+        Route::resource('ticket', AdminTicketController::class)->names('ticket');
 
     });
 
