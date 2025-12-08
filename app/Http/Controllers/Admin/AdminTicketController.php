@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class AdminTicketController extends Controller
 {
@@ -63,7 +64,6 @@ class AdminTicketController extends Controller
         $tikets = $query->paginate($perPage)->withQueryString();
         $statuses = $this->validStatuses;
 
-        // Mengarahkan ke view baru: resources/views/content/apps/admin/ticket/list.blade.php
         return view('content.apps.admin.ticket.list', compact('tikets', 'searchQuery', 'perPage', 'statusFilter', 'statuses'));
     }
 
@@ -76,7 +76,6 @@ class AdminTicketController extends Controller
         $mahasiswas = User::where('role', 'mahasiswa')->get();
         $layanans = Layanan::where('status_arsip', false)->get();
 
-        // Mengarahkan ke view baru: resources/views/content/apps/admin/ticket/create.blade.php
         return view('content.apps.admin.ticket.create', compact('mahasiswas', 'layanans'));
     }
 
@@ -93,7 +92,6 @@ class AdminTicketController extends Controller
 
         try {
             DB::transaction(function () use ($request) {
-                // 1. Buat Tiket
                 $tiket = Tiket::create([
                     'no_tiket' => $this->generateTicketNumber($request->layanan_id),
                     'pemohon_id' => $request->pemohon_id,
@@ -101,7 +99,6 @@ class AdminTicketController extends Controller
                     'deskripsi' => $request->deskripsi,
                 ]);
 
-                // 2. Buat Riwayat Status Awal
                 RiwayatStatusTiket::create([
                     'tiket_id' => $tiket->id,
                     'user_id' => Auth::id(),
@@ -109,7 +106,6 @@ class AdminTicketController extends Controller
                 ]);
             });
 
-            // Menggunakan nama route 'ticket.index'
             return redirect()->route('ticket.index')->with('success', 'Tiket berhasil dibuat.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Gagal membuat tiket: ' . $e->getMessage())->withInput();
@@ -121,7 +117,6 @@ class AdminTicketController extends Controller
      */
     public function edit(Tiket $tiket)
     {
-        // ... (kode load relasi tetap sama)
         $tiket->load([
             'pemohon.mahasiswa.programStudi.jurusan',
             'layanan.unit',
@@ -130,8 +125,7 @@ class AdminTicketController extends Controller
         ]);
 
         $detailLayanan = null;
-        // Penanganan null check untuk relasi (walaupun tidak menyebabkan error di stack trace, ini praktik yang baik)
-        $namaLayanan = $tiket->layanan->nama ?? null; 
+        $namaLayanan = $tiket->layanan->nama ?? null;
 
         if ($namaLayanan && str_contains($namaLayanan, 'Surat Keterangan Aktif Kuliah')) {
             $detailLayanan = $tiket->detailSuratKetAktif;
@@ -146,7 +140,6 @@ class AdminTicketController extends Controller
         $statuses = $this->validStatuses;
         $statusSekarang = $tiket->statusTerbaru->status ?? 'Draft';
 
-        // Mengarahkan ke view baru: resources/views/content/apps/admin/ticket/edit.blade.php
         return view('content.apps.admin.ticket.edit', compact('tiket', 'detailLayanan', 'statuses', 'statusSekarang'));
     }
 
@@ -165,7 +158,6 @@ class AdminTicketController extends Controller
                 $statusSekarang = $tiket->statusTerbaru->status ?? 'Draft';
                 $adminId = Auth::id();
 
-                // 1. Cek jika ada komentar baru
                 if ($request->filled('komentar')) {
                     KomentarTiket::create([
                         'tiket_id' => $tiket->id,
@@ -174,7 +166,6 @@ class AdminTicketController extends Controller
                     ]);
                 }
 
-                // 2. Cek jika ada perubahan status
                 if ($request->filled('status') && $request->status != $statusSekarang) {
                     RiwayatStatusTiket::create([
                         'tiket_id' => $tiket->id,
@@ -208,18 +199,14 @@ class AdminTicketController extends Controller
 
     private function getServiceCode($layananId)
     {
-        // Baris 132
-        $layanan = Layanan::find($layananId); 
+        $layanan = Layanan::find($layananId);
 
-        // PERBAIKAN: Jika Layanan tidak ditemukan (null), kembalikan kode darurat
         if (is_null($layanan)) {
-            return 'ERR'; 
+            return 'ERR';
         }
 
-        // Baris 133 (Sekarang aman karena $layanan pasti bukan null)
-        $namaLayanan = $layanan->nama ?? 'Unknown'; 
+        $namaLayanan = $layanan->nama ?? 'Unknown';
 
-        // Logika kustom untuk membuat kode 3 huruf dari nama layanan
         if (str_contains($namaLayanan, 'Surat Keterangan Aktif')) {
             return 'SKA';
         } elseif (str_contains($namaLayanan, 'Reset Akun')) {
@@ -229,35 +216,27 @@ class AdminTicketController extends Controller
         } elseif (str_contains($namaLayanan, 'Request Publikasi')) {
             return 'RPK';
         } else {
-            // Fallback code jika tidak cocok dengan kriteria di atas
             return 'TKT';
         }
     }
     private function generateTicketNumber($layananId)
     {
-        // Ambil Kode Layanan
         $code = $this->getServiceCode($layananId);
 
-        // Format tanggal: YYYYMMDD (misal: 20251114)
         $date = now()->format('Ymd');
 
-        // Prefix untuk pencarian di hari ini
         $prefix = $code . '-' . $date . '%';
 
-        // Cari tiket terakhir dengan kode dan tanggal hari ini
         $lastTicket = Tiket::where('no_tiket', 'like', $code . '-' . $date . '-%')
             ->orderBy('no_tiket', 'desc')
             ->first();
 
         if ($lastTicket) {
-            // Ambil nomor urut terakhir (4 digit setelah strip terakhir)
             $lastNumber = (int) substr($lastTicket->no_tiket, -4);
             $newNumber = $lastNumber + 1;
         } else {
             $newNumber = 1;
         }
-
-        // Format akhir: SKA-YYYYMMDD-XXXX (misal: SKA-20251114-0001)
         return $code . '-' . $date . '-' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
     }
 
@@ -268,55 +247,56 @@ class AdminTicketController extends Controller
     {
         try {
             DB::transaction(function () use ($tiket) {
-                // 1. Hapus Komentar Tiket terkait
                 $tiket->komentar()->delete();
 
-                // 2. Hapus Riwayat Status Tiket terkait
                 $tiket->riwayatStatus()->delete();
 
-                // 3. Hapus Detail Layanan Spesifik (jika ada) dan file terkait
+                if ($tiket->lampiran && Storage::disk('public')->exists($tiket->lampiran)) {
+                    Storage::disk('public')->delete($tiket->lampiran);
+                    Log::info("File lampiran umum berhasil dihapus: " . $tiket->lampiran);
+                }
 
-                // Hapus Detail Surat Keterangan Aktif
+
                 if ($tiket->detailSuratKetAktif) {
                     $tiket->detailSuratKetAktif->delete();
                 }
 
-                // Hapus Detail Request Publikasi (HAPUS GAMBAR DULU)
                 if ($tiket->detailReqPublikasi) {
                     $detailPublikasi = $tiket->detailReqPublikasi;
 
-                    // Cek dan hapus file gambar jika ada
                     if ($detailPublikasi->gambar) {
-                        $filePath = 'lampiran-req-publikasi/' . $detailPublikasi->gambar;
-                        // Hapus dari public disk
+                        $filePath = $detailPublikasi->gambar;
+
                         if (Storage::disk('public')->exists($filePath)) {
-                            Storage::disk('public')->delete($filePath);
+                            $deleted = Storage::disk('public')->delete($filePath);
+                            if ($deleted) {
+                                Log::info("File publikasi berhasil dihapus: " . $filePath);
+                            } else {
+                                Log::error("Gagal menghapus file publikasi: " . $filePath . " (Izin Akses?)");
+                            }
+                        } else {
+                            Log::warning("File publikasi tidak ditemukan di storage: " . $filePath);
                         }
                     }
 
-                    // Hapus record detail publikasi dari database
                     $detailPublikasi->delete();
                 }
 
-                // Hapus Detail Reset Akun
                 if ($tiket->detailResetAkun) {
                     $tiket->detailResetAkun->delete();
                 }
 
-                // Hapus Detail Ubah Data Mahasiswa
                 if ($tiket->detailUbahDataMhs) {
                     $tiket->detailUbahDataMhs->delete();
                 }
 
-                // 4. Hapus Tiket utama
                 $tiket->delete();
             });
 
-            // Menggunakan nama route 'ticket.index'
-            return redirect()->route('ticket.index')->with('success', 'Tiket berhasil dihapus secara permanen.');
+            return redirect()->route('ticket.index')->with('success', 'Tiket berhasil dihapus secara permanen. File lampiran telah dihapus.');
         } catch (\Exception $e) {
-            // Log::error("Gagal menghapus tiket: " . $e->getMessage()); // Opsional untuk debugging
-            // Menggunakan nama route 'ticket.index'
+            Log::error("Gagal menghapus tiket/file: " . $e->getMessage() . " di baris " . $e->getLine());
+
             return redirect()->route('ticket.index')->with('error', 'Gagal menghapus tiket: ' . $e->getMessage());
         }
     }

@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 
-class AdminTiketController extends Controller
+class AdminTiketControllerOld extends Controller
 {
     // Daftar status yang valid (sesuaikan jika perlu)
     private $validStatuses = [
