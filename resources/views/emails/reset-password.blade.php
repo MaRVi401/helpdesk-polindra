@@ -21,7 +21,7 @@
           <!-- HEADER WITH LOGO -->
           <tr>
             <td style="padding: 50px 50px 30px; text-align: center;">
-              <img src="https://res.cloudinary.com/ddmmgr8gd/image/upload/v1764513166/servicedesk_zfjpfs.png"
+              <img src="https://pub-b5d114e52b2949f283554f792e009c90.r2.dev/LogoServiceDesk.png"
                 width="200" alt="Logo Servicedesk" style="display: block; margin: 0 auto;">
             </td>
           </tr>
