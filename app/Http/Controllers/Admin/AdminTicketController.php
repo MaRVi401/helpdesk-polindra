@@ -35,82 +35,54 @@ class AdminTicketController extends Controller
     public function index(Request $request)
     {
         $searchQuery = $request->input('q');
-        $perPage = $request->input('per_page', 10);
         $statusFilter = $request->input('status');
+        // $perPage tidak digunakan lagi karena kita tidak menggunakan pagination standar di view baru
 
-        $query = Tiket::with(['pemohon', 'layanan.unit', 'statusTerbaru'])->latest();
+        // 1. Ambil SEMUA Layanan
+        $queryLayanan = Layanan::where('status_arsip', false)->with('unit');
+        $data_layanan = $queryLayanan->get();
 
-        if ($searchQuery) {
-            $query->where(function ($q) use ($searchQuery) {
-                $q->where('no_tiket', 'like', "%{$searchQuery}%")
-                    ->orWhereHas('pemohon', function ($subQ) use ($searchQuery) {
-                        $subQ->where('name', 'like', "%{$searchQuery}%");
-                    })
-                    ->orWhereHas('layanan', function ($subQ) use ($searchQuery) {
-                        $subQ->where('nama', 'like', "%{$searchQuery}%");
-                    })
-                    ->orWhereHas('layanan.unit', function ($subQ) use ($searchQuery) {
-                        $subQ->where('nama_unit', 'like', "%{$searchQuery}%");
-                    });
-            });
+        $totalTiket = 0;
+        $baseRoute = 'ticket.'; // Asumsi route Super Admin/Admin umum adalah 'ticket.index'
+
+        // 2. Loop melalui setiap layanan dan ambil tiket yang sesuai dengan filter
+        foreach ($data_layanan as $layanan) {
+            // Query untuk tiket pada layanan ini
+            $queryTiket = $layanan->tiket()->with('pemohon.mahasiswa', 'statusTerbaru');
+
+            // --- Terapkan Filter Pencarian ---
+            if ($searchQuery) {
+                $queryTiket->where(function ($q) use ($searchQuery) {
+                    $q->where('no_tiket', 'like', "%{$searchQuery}%")
+                        ->orWhereHas('pemohon', function ($subQ) use ($searchQuery) {
+                            $subQ->where('name', 'like', "%{$searchQuery}%");
+                        });
+                });
+            }
+
+            // --- Terapkan Filter Status ---
+            if ($statusFilter) {
+                $queryTiket->whereHas('statusTerbaru', function ($q) use ($statusFilter) {
+                    $q->where('status', $statusFilter);
+                });
+            }
+
+            // Ambil tiket yang sudah difilter dan masukkan kembali ke objek layanan
+            // Gunakan get() karena kita ingin memproses seluruh koleksi sebelum ditampilkan
+            $layanan->tiket = $queryTiket->latest()->get();
+            $totalTiket += $layanan->tiket->count();
         }
 
-        if ($statusFilter) {
-            $query->whereHas('statusTerbaru', function ($q) use ($statusFilter) {
-                $q->where('status', $statusFilter);
-            });
-        }
+        // 3. Hapus layanan yang tidak memiliki tiket setelah difilter (opsional, untuk tampilan lebih bersih)
+        $data_layanan = $data_layanan->filter(fn($layanan) => $layanan->tiket->isNotEmpty());
 
-        $tikets = $query->paginate($perPage)->withQueryString();
-        $statuses = $this->validStatuses;
+        // Karena ini Super Admin, isPic diset true atau null/dihilangkan
+        $isPic = null;
 
-        return view('content.apps.admin.ticket.list', compact('tikets', 'searchQuery', 'perPage', 'statusFilter', 'statuses'));
+        // Ganti nama view jika Anda memisahkannya, atau pastikan view di bawah ini digunakan.
+        return view('content.apps.admin.ticket.list', compact('data_layanan', 'totalTiket', 'isPic', 'baseRoute'));
     }
 
-    /**
-     * Menampilkan form untuk membuat tiket baru (create).
-     */
-    public function create()
-    {
-        // Ambil hanya mahasiswa untuk pilihan pemohon
-        $mahasiswas = User::where('role', 'mahasiswa')->get();
-        $layanans = Layanan::where('status_arsip', false)->get();
-
-        return view('content.apps.admin.ticket.create', compact('mahasiswas', 'layanans'));
-    }
-
-    /**
-     * Menyimpan tiket baru ke database (store).
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'pemohon_id' => 'required|exists:users,id',
-            'layanan_id' => 'required|exists:layanan,id',
-            'deskripsi' => 'required|string|min:10',
-        ]);
-
-        try {
-            DB::transaction(function () use ($request) {
-                $tiket = Tiket::create([
-                    'no_tiket' => $this->generateTicketNumber($request->layanan_id),
-                    'pemohon_id' => $request->pemohon_id,
-                    'layanan_id' => $request->layanan_id,
-                    'deskripsi' => $request->deskripsi,
-                ]);
-
-                RiwayatStatusTiket::create([
-                    'tiket_id' => $tiket->id,
-                    'user_id' => Auth::id(),
-                    'status' => 'Diajukan_oleh_Pemohon',
-                ]);
-            });
-
-            return redirect()->route('ticket.index')->with('success', 'Tiket berhasil dibuat.');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal membuat tiket: ' . $e->getMessage())->withInput();
-        }
-    }
 
     /**
      * Menampilkan detail tiket untuk diedit/dibalas (edit/show).
@@ -127,7 +99,7 @@ class AdminTicketController extends Controller
         $detailLayanan = null;
         $namaLayanan = $tiket->layanan->nama ?? null;
 
-        if ($namaLayanan && str_contains($namaLayanan, 'Surat Keterangan Aktif Kuliah')) {
+        if ($namaLayanan && str_contains($namaLayanan, 'Surat Keterangan Aktif')) {
             $detailLayanan = $tiket->detailSuratKetAktif;
         } elseif ($namaLayanan && str_contains($namaLayanan, 'Reset Akun')) {
             $detailLayanan = $tiket->detailResetAkun;
@@ -153,91 +125,64 @@ class AdminTicketController extends Controller
             'status' => 'nullable|in:' . implode(',', $this->validStatuses),
         ]);
 
+        // Inisialisasi variabel pesan
+        $message = '';
+
         try {
-            DB::transaction(function () use ($request, $tiket) {
+            DB::transaction(function () use ($request, $tiket, &$message) {
                 $statusSekarang = $tiket->statusTerbaru->status ?? 'Draft';
                 $adminId = Auth::id();
 
+                $isStatusUpdated = false;
+                $isCommentAdded = false;
+
+                // 1. Logika Tambah Komentar
                 if ($request->filled('komentar')) {
                     KomentarTiket::create([
                         'tiket_id' => $tiket->id,
                         'pengirim_id' => $adminId,
                         'komentar' => $request->komentar,
                     ]);
+                    $isCommentAdded = true;
                 }
 
+                // 2. Logika Update Status
                 if ($request->filled('status') && $request->status != $statusSekarang) {
                     RiwayatStatusTiket::create([
                         'tiket_id' => $tiket->id,
                         'user_id' => $adminId,
                         'status' => $request->status,
                     ]);
+                    $isStatusUpdated = true;
+                }
+
+                // Tentukan pesan sukses/info
+                if ($isStatusUpdated && $isCommentAdded) {
+                    $message = 'Status dan Komentar berhasil diperbarui.';
+                } elseif ($isStatusUpdated) {
+                    $message = 'Status berhasil diperbarui menjadi ' . str_replace('_', ' ', $request->status) . '.';
+                } elseif ($isCommentAdded) {
+                    $message = 'Komentar berhasil ditambahkan.';
+                } else {
+                    // Jika tidak ada perubahan
+                    $message = 'Tidak ada perubahan yang dilakukan pada tiket.';
                 }
             });
 
-            return redirect()->back()->with('success', 'Tiket berhasil diperbarui.');
+            // Pastikan ada sesuatu yang diubah.
+            if (str_contains($message, 'Tidak ada perubahan')) {
+                return redirect()->back()->with('error', $message);
+            }
+
+            // KEMBALIKAN REDIRECT DI LUAR CLOSURE
+            return redirect()->back()->with('success', $message);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
+            // Log error untuk debugging lebih lanjut
+            Log::error("Gagal memperbarui tiket: " . $e->getMessage() . " di baris " . $e->getLine());
             return redirect()->back()->with('error', 'Gagal memperbarui tiket: ' . $e->getMessage());
         }
-    }
-
-    /**
-     * Handle ekspor data ke Excel.
-     */
-    public function exportExcel(Request $request)
-    {
-        $selectedIds = $request->input('selected_ids');
-
-        if (empty($selectedIds)) {
-            return redirect()->back()->with('error', 'Tidak ada data yang dipilih untuk diekspor.');
-        }
-
-        return Excel::download(new TiketExport($selectedIds), 'daftar_tiket_terpilih.xlsx');
-    }
-
-
-
-    private function getServiceCode($layananId)
-    {
-        $layanan = Layanan::find($layananId);
-
-        if (is_null($layanan)) {
-            return 'ERR';
-        }
-
-        $namaLayanan = $layanan->nama ?? 'Unknown';
-
-        if (str_contains($namaLayanan, 'Surat Keterangan Aktif')) {
-            return 'SKA';
-        } elseif (str_contains($namaLayanan, 'Reset Akun')) {
-            return 'RAM';
-        } elseif (str_contains($namaLayanan, 'Ubah Data Mahasiswa')) {
-            return 'UDM';
-        } elseif (str_contains($namaLayanan, 'Request Publikasi')) {
-            return 'RPK';
-        } else {
-            return 'TKT';
-        }
-    }
-    private function generateTicketNumber($layananId)
-    {
-        $code = $this->getServiceCode($layananId);
-
-        $date = now()->format('Ymd');
-
-        $prefix = $code . '-' . $date . '%';
-
-        $lastTicket = Tiket::where('no_tiket', 'like', $code . '-' . $date . '-%')
-            ->orderBy('no_tiket', 'desc')
-            ->first();
-
-        if ($lastTicket) {
-            $lastNumber = (int) substr($lastTicket->no_tiket, -4);
-            $newNumber = $lastNumber + 1;
-        } else {
-            $newNumber = 1;
-        }
-        return $code . '-' . $date . '-' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
     }
 
     /**

@@ -102,7 +102,7 @@
                             @forelse($layanan->tiket as $tiket)
                             <tr>
                                 <td>
-                                    <span class="fw-bold text-primary">#{{ $tiket->no_tiket }}</span>
+                                    <span class="fw-bold text-primary">{{ $tiket->no_tiket }}</span>
                                 </td>
                                 <td>
                                     <div class="d-flex flex-column">
