@@ -285,6 +285,17 @@
           "slug": "position.create"
         }
       ]
+    },
+    {
+      "url": "/tiket",
+      "name": "Daftar Semua Tiket",
+      "icon": "menu-icon icon-base ti tabler-ticket",
+      "slug": [
+        "tiket.list"
+      ],
+      "roles": [
+        "super_admin"
+      ]
     }
   ]
 }
