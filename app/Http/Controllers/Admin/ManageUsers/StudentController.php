@@ -7,6 +7,7 @@ use App\Models\Mahasiswa;
 use App\Models\User;
 use App\Models\ProgramStudi;
 use Illuminate\Http\Request;
+use App\Models\Tiket;
 use Illuminate\Validation\Rule;
 
 class StudentController extends Controller
@@ -125,8 +126,16 @@ class StudentController extends Controller
   {
     try {
       $data_mahasiswa = Mahasiswa::findOrFail($id);
+      $user_id = $data_mahasiswa->user_id;
+      $has_open_tickets = Tiket::where('pemohon_id', $user_id)
+        ->whereDoesntHave('riwayatStatus', function ($query) {
+          $query->where('status', 'Dinilai_Selesai_oleh_Pemohon');
+        })
+        ->exists();
 
-      // Hapus user terkait
+      if ($has_open_tickets) {
+        return redirect()->route('student.index')->with('error', 'Gagal menghapus data mahasiswa. Mahasiswa masih memiliki tiket layanan yang belum tuntas.');
+      }
       if ($data_mahasiswa->user) {
         $data_mahasiswa->user->delete();
       }
@@ -134,7 +143,6 @@ class StudentController extends Controller
 
       return redirect()->route('student.index')->with('success', 'Data mahasiswa dan akun pengguna berhasil dihapus.');
     } catch (\Exception $e) {
-      return redirect()->route('student.index')->with('error', 'Gagal menghapus data mahasiswa: ' . $e->getMessage());
     }
   }
 }
