@@ -498,7 +498,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
                   ]
                 },
                 {
-                  text: '<i class="icon-base ti tabler-plus me-0 me-sm-1 icon-20px"></i><span class="d-none d-sm-inline-block">Tambah Staff</span>',
+                  text: '<i class="icon-base ti tabler-plus me-0 me-sm-1 icon-20px"></i><span class="d-none d-sm-inline-block">Tambah Staf</span>',
                   className: 'add-new btn btn-primary create-new'
                 }
               ]
