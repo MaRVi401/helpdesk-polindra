@@ -29,7 +29,7 @@
 
         <div class="card mb-4 shadow-sm">
             <h5 class="card-header d-flex justify-content-between align-items-center">
-                <span><i class="bx bx-file me-2"></i>Detail Tiket #{{ $tiket->no_tiket }}</span>
+                <span><i class="bx bx-file me-2"></i>Detail Tiket: <strong>{{ $tiket->no_tiket }}</strong></span>
                 {{-- Tampilkan status dengan warna CSS yang sudah disiapkan --}}
                 <span class="status-badge {{ $statusClass }}">{{ str_replace('_', ' ', $currentStatus) }}</span>
             </h5>

@@ -121,7 +121,7 @@ class AdminTicketController extends Controller
     public function update(Request $request, Tiket $tiket)
     {
         $request->validate([
-            'komentar' => 'nullable|string|min:5',
+            'komentar' => 'nullable|string',
             'status' => 'nullable|in:' . implode(',', $this->validStatuses),
         ]);
 
