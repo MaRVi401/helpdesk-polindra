@@ -61,8 +61,7 @@ class GoogleLoginController extends Controller
                     'name' => $googleUser->getName(),
                     'google_id' => $googleUser->getId(),
                     'role' => 'mahasiswa',
-                    'password' => $hashedPassword,
-                    // avatar akan di-set nanti
+                    'password' => null,
                 ]);
             }
 
