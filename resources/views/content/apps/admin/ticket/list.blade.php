@@ -100,10 +100,10 @@
                 <small class="text-muted">Daftar tiket dikelompokkan berdasarkan layanan.</small>
             </div>
             <div class="col-md-6 text-end">
-             @if(isset($totalTiket))
-                <span class="badge bg-primary p-2">Total Tiket: {{ $totalTiket }}</span>
-            @endif
-        </div>
+                @if (isset($totalTiket))
+                    <span class="badge bg-primary p-2">Total Tiket: {{ $totalTiket }}</span>
+                @endif
+            </div>
         </div>
 
         @if (isset($isPic) && $isPic === false)
@@ -129,21 +129,13 @@
                             <div class="col-md-3">
                                 <select name="status" class="form-select">
                                     <option value="">- Semua Status -</option>
-                                    <option value="Diajukan_oleh_Pemohon"
-                                        {{ request('status') == 'Diajukan_oleh_Pemohon' ? 'selected' : '' }}>Baru Masuk
-                                    </option>
-                                    <option value="Ditangani_oleh_PIC"
-                                        {{ request('status') == 'Ditangani_oleh_PIC' ? 'selected' : '' }}>Sedang Ditangani
-                                    </option>
-                                    <option value="Diselesaikan_oleh_PIC"
-                                        {{ request('status') == 'Diselesaikan_oleh_PIC' ? 'selected' : '' }}>Menunggu
-                                        Konfirmasi</option>
-                                    <option value="Dinilai_Selesai_oleh_Kepala"
-                                        {{ request('status') == 'Dinilai_Selesai_oleh_Kepala' ? 'selected' : '' }}>Selesai
-                                        (Final)</option>
-                                    <option value="Pemohon_Bermasalah"
-                                        {{ request('status') == 'Pemohon_Bermasalah' ? 'selected' : '' }}>Bermasalah
-                                    </option>
+
+                                    @foreach ($validStatuses as $status)
+                                        <option value="{{ $status }}"
+                                            {{ request('status') == $status ? 'selected' : '' }}>
+                                            {{ str_replace('_', ' ', $status) }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
                             <div class="col-md-2">

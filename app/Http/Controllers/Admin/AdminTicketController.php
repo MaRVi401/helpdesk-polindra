@@ -34,6 +34,7 @@ class AdminTicketController extends Controller
      */
     public function index(Request $request)
     {
+        $validStatuses = $this->validStatuses;
         $searchQuery = $request->input('q');
         $statusFilter = $request->input('status');
         // $perPage tidak digunakan lagi karena kita tidak menggunakan pagination standar di view baru
@@ -80,7 +81,7 @@ class AdminTicketController extends Controller
         $isPic = null;
 
         // Ganti nama view jika Anda memisahkannya, atau pastikan view di bawah ini digunakan.
-        return view('content.apps.admin.ticket.list', compact('data_layanan', 'totalTiket', 'isPic', 'baseRoute'));
+        return view('content.apps.admin.ticket.list', compact('data_layanan', 'totalTiket', 'isPic', 'baseRoute', 'validStatuses'));
     }
 
 
