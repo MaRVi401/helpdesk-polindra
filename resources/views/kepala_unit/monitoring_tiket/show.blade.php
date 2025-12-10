@@ -72,7 +72,7 @@
                         <div class="alert alert-warning d-flex align-items-center mb-4" role="alert">
                             <i class="bx bx-lock-alt me-2"></i>
                             <div>
-                                <strong>Menu Terkunci:</strong> Anda hanya dapat mengubah status jika tiket saat ini berstatus <strong>"Pemohon Bermasalah"</strong>. Saat ini status adalah: <em>{{ str_replace('_', ' ', $currentStatus ?: 'Baru') }}</em>.
+                                <strong>Menu Terkunci:</strong> Anda hanya dapat mengubah status jika tiket saat ini berstatus <strong>"Pemohon Bermasalah"</strong>. Saat ini status adalah: <em>{{ str_replace('_', ' ', $currentStatus ?: 'Diajukan Oleh Pemohon') }}</em>.
                             </div>
                         </div>
                     @endif
