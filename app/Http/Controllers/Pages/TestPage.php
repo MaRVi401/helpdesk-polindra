@@ -7,9 +7,9 @@ use Illuminate\Http\Request;
 
 class TestPage extends Controller
 {
-  public function home()
+  public function index()
   { 
-    $pageConfigs = ['myLayout' => 'blank'];
-    return view('content.auth.complete-profile', ['pageConfigs' => $pageConfigs]);
+    $pageConfigs = ['myLayout' => 'horizontal'];
+    return view('content.apps.mahasiswa.faq', ['pageConfigs' => $pageConfigs]);
   }
 }

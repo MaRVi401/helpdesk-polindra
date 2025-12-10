@@ -16,8 +16,9 @@ use App\Http\Controllers\Mahasiswa\ServiceTicketController;
 use App\Http\Controllers\Pages\LandingController;
 use App\Http\Controllers\Profile\UserProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\TestPage;
+use App\Http\Controllers\Pages\TestPage;
 use App\Http\Controllers\Admin\FaqController;
+use App\Http\Controllers\Mahasiswa\FaqController as ServiceDeskFAQ;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Pages\DashboardController;
 use App\Http\Controllers\Auth\GoogleLoginController;
@@ -130,6 +131,7 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
         Route::post('service-ticket/{id}/comment', [ServiceTicketController::class, 'serviceTicketComment'])->name('service.ticket.comment');
         Route::patch('service-ticket/{id}/status-confirm', [ServiceTicketController::class, 'statusConfirm'])->name('service.ticket.statusConfirm');
         Route::put('/service-ticket/{id}/update-timer', [ServiceController::class, 'updateTimer'])->name('service-ticket.updateTimer');
+        Route::get('/servicedesk-faq', [ServiceDeskFAQ::class, 'index'])->name('servicedesk.faq.index');
     });
 
 
