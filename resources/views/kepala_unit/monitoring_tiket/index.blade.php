@@ -88,21 +88,6 @@
                         <div class="d-flex align-items-center gap-2 flex-wrap">
                             <form action="{{ route('kepala-unit.monitoring.index') }}" method="GET"
                                 class="d-flex gap-2 flex-wrap" id="filterForm">
-
-                                {{-- FILTER UNIT (Hanya Muncul Jika Lebih dari 1 Unit) --}}
-                                @if (isset($unitsDipimpin) && $unitsDipimpin->count() > 1)
-                                    <select name="unit_id" class="form-select form-select-sm w-auto"
-                                        onchange="this.form.submit()">
-                                        <option value="">Semua Unit Saya</option>
-                                        @foreach ($unitsDipimpin as $u)
-                                            <option value="{{ $u->id }}"
-                                                {{ request('unit_id') == $u->id ? 'selected' : '' }}>
-                                                {{ $u->nama_unit }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                @endif
-
                                 <select name="status" class="form-select form-select-sm w-auto text-capitalize"
                                     onchange="this.form.submit()">
                                     <option value="">Semua Status</option>

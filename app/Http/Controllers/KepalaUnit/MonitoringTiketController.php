@@ -26,7 +26,7 @@ class MonitoringTiketController extends Controller
         $staff = Staff::where('user_id', $user->id)->firstOrFail();
 
         // Ambil SEMUA unit yang dipimpin
-        $unitsDipimpin = Unit::where('kepala_id', $staff->id)->get();
+        $unitsDipimpin = Unit::where('kepala_id', $staff->id)->get(); //
 
         // Array ID unit yang dipimpin (Akses Kontrol Dasar)
         $allowedUnitIds = $unitsDipimpin->pluck('id')->toArray();
@@ -34,53 +34,60 @@ class MonitoringTiketController extends Controller
         // Array ID layanan di mana user ini adalah PIC
         $picLayananIds = $staff->layanan()->pluck('layanan.id')->toArray();
 
-        // Ambil filter unit_id dari request
+        // Ambil filter unit_id dari request (Nilai 0 jika kosong/invalid)
         $requestedUnitId = $request->integer('unit_id');
 
-        $query = Tiket::with(['pemohon.mahasiswa.programStudi', 'layanan.unit', 'statusTerbaru'])
-            ->where(function ($mainQuery) use ($allowedUnitIds, $picLayananIds, $requestedUnitId) {
+        $query = Tiket::with(['pemohon.mahasiswa.programStudi', 'layanan.unit', 'statusTerbaru']);
 
-                // Cek apakah user memiliki akses apa pun
-                if (empty($allowedUnitIds) && empty($picLayananIds)) {
-                    $mainQuery->whereRaw('1 = 0'); // Jika tidak ada akses, batalkan semua
-                    return;
+        // --- FILTER AKSES KEPALA UNIT ATAU PIC ---
+        $query->where(function ($mainQuery) use ($allowedUnitIds, $picLayananIds, $requestedUnitId) {
+
+            // Logika Gabungan: Tiket harus berasal dari unit yang dipimpin ATAU di mana user adalah PIC,
+            // dan jika filter unit diterapkan, harus di unit tersebut.
+
+            // 1. KONDISI SEBAGAI KEPALA UNIT
+            if (!empty($allowedUnitIds)) {
+                $unitIdsToFilter = $allowedUnitIds;
+
+                if ($requestedUnitId && in_array($requestedUnitId, $allowedUnitIds)) {
+                    // Jika filter unit dipilih dan termasuk dalam unit yang dipimpin
+                    $unitIdsToFilter = [$requestedUnitId];
                 }
 
-                $isFirstCondition = true;
+                $mainQuery->whereHas('layanan', function ($q) use ($unitIdsToFilter) {
+                    $q->whereIn('unit_id', $unitIdsToFilter);
+                });
+            }
 
-                // --- KONDISI KEPALA UNIT (Melalui Unit yang Dipimpin) ---
-                if (!empty($allowedUnitIds)) {
-                    $unitIdsToFilter = $requestedUnitId && in_array($requestedUnitId, $allowedUnitIds)
-                        ? [$requestedUnitId]
-                        : $allowedUnitIds;
+            // 2. KONDISI SEBAGAI PIC (Menggunakan OR)
+            if (!empty($picLayananIds)) {
 
-                    $mainQuery->whereHas('layanan', function ($q) use ($unitIdsToFilter) {
-                        $q->whereIn('unit_id', $unitIdsToFilter);
-                    });
-                    $isFirstCondition = false;
-                }
+                $picCondition = function ($q) use ($picLayananIds, $requestedUnitId) {
+                    $q->whereIn('layanan.id', $picLayananIds);
 
-                // --- KONDISI PIC (Melalui Layanan yang Ditangani) ---
-                if (!empty($picLayananIds)) {
-                    $picQuery = function ($q) use ($picLayananIds, $requestedUnitId) {
-                        $q->whereIn('layanan.id', $picLayananIds);
-
-                        // Jika ada filter unit yang diminta, saring juga berdasarkan unit layanan PIC
-                        if ($requestedUnitId) {
-                            $q->where('unit_id', $requestedUnitId);
-                        }
-                    };
-
-                    if ($isFirstCondition) {
-                        $mainQuery->whereHas('layanan', $picQuery);
-                    } else {
-                        $mainQuery->orWhereHas('layanan', $picQuery);
+                    // Jika ada filter unit yang diminta, saring juga berdasarkan unit layanan PIC
+                    if ($requestedUnitId) {
+                        // Pastikan layanan PIC berada di unit yang difilter
+                        $q->where('unit_id', $requestedUnitId);
                     }
-                }
-            })
-            ->latest();
+                };
 
-        // --- Filter Cepat Lainnya (Diterapkan sebagai AND ke query utama) ---
+                // Jika sudah ada kondisi Kepala Unit, gunakan OR
+                if (!empty($allowedUnitIds)) {
+                    $mainQuery->orWhereHas('layanan', $picCondition);
+                } else {
+                    // Jika TIDAK ada kondisi Kepala Unit, ini adalah kondisi pertama, gunakan WHERE
+                    $mainQuery->whereHas('layanan', $picCondition);
+                }
+            }
+
+            // 3. JIKA TIDAK ADA AKSES (Pastikan hasil kosong)
+            if (empty($allowedUnitIds) && empty($picLayananIds)) {
+                $mainQuery->whereRaw('1 = 0');
+            }
+        });
+
+        // --- FILTER TAMBAHAN (Search, Status, Prioritas) ---
 
         if ($request->filled('q')) {
             $search = $request->q;
@@ -99,7 +106,7 @@ class MonitoringTiketController extends Controller
             $query->whereHas('layanan', fn($l) => $l->where('prioritas', $prioInt));
         }
 
-        $tikets = $query->paginate(10)->withQueryString();
+        $tikets = $query->latest()->paginate(10)->withQueryString();
 
         return view('kepala_unit.monitoring_tiket.index', compact('tikets', 'unitsDipimpin'));
     }
