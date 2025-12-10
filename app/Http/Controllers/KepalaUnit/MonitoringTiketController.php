@@ -52,7 +52,7 @@ class MonitoringTiketController extends Controller
             $search = $request->q;
             $query->where(function($q) use ($search) {
                 $q->where('no_tiket', 'like', "%{$search}%")
-                  ->orWhere('judul', 'like', "%{$search}%")
+                  ->orWhere('deskripsi', 'like', "%{$search}%")
                   ->orWhereHas('pemohon', fn($u) => $u->where('name', 'like', "%{$search}%"));
             });
         }
