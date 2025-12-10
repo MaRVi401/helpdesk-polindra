@@ -37,10 +37,10 @@
       "slug": ""
     },
     {
-      "url": "/dashboard",
+      "url": "/servicedesk-faq",
       "name": "FAQ",
       "icon": "menu-icon icon-base ti tabler-bubble-text",
-      "slug": ""
+      "slug": "servicedesk.faq.index"
     }
   ]
 }
