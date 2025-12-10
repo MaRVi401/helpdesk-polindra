@@ -521,12 +521,6 @@
                             </div>
 
                             <hr class="my-2">
-
-                            <button class="btn btn-sm btn-outline-primary w-100 mb-2" type="button"
-                                data-bs-toggle="collapse" data-bs-target="#settingTimer">
-                                <i class='bx bx-cog'></i> Atur Ulang Timer
-                            </button>
-
                             <div class="collapse" id="settingTimer">
                                 <form action="{{ route('admin_unit.ticket.updateTimer', $tiket->id) }}" method="POST"
                                     class="bg-light p-2 rounded border">
