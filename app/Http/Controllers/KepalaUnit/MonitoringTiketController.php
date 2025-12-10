@@ -24,36 +24,70 @@ class MonitoringTiketController extends Controller
     {
         $user = Auth::user();
         $staff = Staff::where('user_id', $user->id)->firstOrFail();
-        
+
         // Ambil SEMUA unit yang dipimpin
         $unitsDipimpin = Unit::where('kepala_id', $staff->id)->get();
-        
-        // Buat array ID unit
-        $unitIds = $unitsDipimpin->isNotEmpty() ? $unitsDipimpin->pluck('id')->toArray() : [];
-        
+
+        // Array ID unit yang dipimpin (Akses Kontrol Dasar)
+        $allowedUnitIds = $unitsDipimpin->pluck('id')->toArray();
+
+        // Array ID layanan di mana user ini adalah PIC
         $picLayananIds = $staff->layanan()->pluck('layanan.id')->toArray();
 
+        // Ambil filter unit_id dari request
+        $requestedUnitId = $request->integer('unit_id');
+
         $query = Tiket::with(['pemohon.mahasiswa.programStudi', 'layanan.unit', 'statusTerbaru'])
-            ->where(function($mainQuery) use ($unitIds, $picLayananIds) {
-                // Logika OR: Jika dia Kepala Unit (cek array unitIds) ATAU dia PIC
-                if (!empty($unitIds)) {
-                    $mainQuery->whereHas('layanan', function ($q) use ($unitIds) {
-                        $q->whereIn('unit_id', $unitIds);
-                    });
+            ->where(function ($mainQuery) use ($allowedUnitIds, $picLayananIds, $requestedUnitId) {
+
+                // Cek apakah user memiliki akses apa pun
+                if (empty($allowedUnitIds) && empty($picLayananIds)) {
+                    $mainQuery->whereRaw('1 = 0'); // Jika tidak ada akses, batalkan semua
+                    return;
                 }
-                
+
+                $isFirstCondition = true;
+
+                // --- KONDISI KEPALA UNIT (Melalui Unit yang Dipimpin) ---
+                if (!empty($allowedUnitIds)) {
+                    $unitIdsToFilter = $requestedUnitId && in_array($requestedUnitId, $allowedUnitIds)
+                        ? [$requestedUnitId]
+                        : $allowedUnitIds;
+
+                    $mainQuery->whereHas('layanan', function ($q) use ($unitIdsToFilter) {
+                        $q->whereIn('unit_id', $unitIdsToFilter);
+                    });
+                    $isFirstCondition = false;
+                }
+
+                // --- KONDISI PIC (Melalui Layanan yang Ditangani) ---
                 if (!empty($picLayananIds)) {
-                    $mainQuery->orWhereIn('layanan_id', $picLayananIds);
+                    $picQuery = function ($q) use ($picLayananIds, $requestedUnitId) {
+                        $q->whereIn('layanan.id', $picLayananIds);
+
+                        // Jika ada filter unit yang diminta, saring juga berdasarkan unit layanan PIC
+                        if ($requestedUnitId) {
+                            $q->where('unit_id', $requestedUnitId);
+                        }
+                    };
+
+                    if ($isFirstCondition) {
+                        $mainQuery->whereHas('layanan', $picQuery);
+                    } else {
+                        $mainQuery->orWhereHas('layanan', $picQuery);
+                    }
                 }
             })
             ->latest();
 
+        // --- Filter Cepat Lainnya (Diterapkan sebagai AND ke query utama) ---
+
         if ($request->filled('q')) {
             $search = $request->q;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('no_tiket', 'like', "%{$search}%")
-                  ->orWhere('deskripsi', 'like', "%{$search}%")
-                  ->orWhereHas('pemohon', fn($u) => $u->where('name', 'like', "%{$search}%"));
+                    ->orWhere('deskripsi', 'like', "%{$search}%")
+                    ->orWhereHas('pemohon', fn($u) => $u->where('name', 'like', "%{$search}%"));
             });
         }
 
@@ -66,26 +100,26 @@ class MonitoringTiketController extends Controller
         }
 
         $tikets = $query->paginate(10)->withQueryString();
-        
+
         return view('kepala_unit.monitoring_tiket.index', compact('tikets', 'unitsDipimpin'));
     }
 
     public function show($id)
     {
         $tiket = Tiket::with([
-            'pemohon.mahasiswa.programStudi.jurusan', 
-            'layanan.unit', 
-            'riwayatStatus.user', 
-            'komentar.pengirim', 
+            'pemohon.mahasiswa.programStudi.jurusan',
+            'layanan.unit',
+            'riwayatStatus.user',
+            'komentar.pengirim',
             'detail'
         ])->findOrFail($id);
-        
+
         $this->authorizeAccess($tiket);
         $this->checkAndProcessTimer($tiket);
 
         $cacheKey = 'tiket_timer_' . $tiket->id;
         $tiket->cached_deadline = Cache::get($cacheKey);
-        
+
         $detailLayanan = null;
         $namaLayanan = $tiket->layanan->nama;
         if (Str::contains($namaLayanan, 'Surat Keterangan Aktif')) $detailLayanan = $tiket->detailSuratKetAktif;
@@ -95,8 +129,9 @@ class MonitoringTiketController extends Controller
 
         return view('kepala_unit.monitoring_tiket.show', compact('tiket', 'detailLayanan'));
     }
-    
-    public function edit($id) {
+
+    public function edit($id)
+    {
         return $this->show($id);
     }
 
@@ -109,7 +144,7 @@ class MonitoringTiketController extends Controller
         $statusSaatIni = $tiket->statusTerbaru?->status;
 
         if ($statusSaatIni !== 'Pemohon_Bermasalah') {
-             return back()->with('error', 'Akses Ditolak: Anda hanya dapat memvalidasi tiket jika Admin/PIC telah mengubah status menjadi "Pemohon Bermasalah".');
+            return back()->with('error', 'Akses Ditolak: Anda hanya dapat memvalidasi tiket jika Admin/PIC telah mengubah status menjadi "Pemohon Bermasalah".');
         }
         $request->validate([
             'status' => 'required|in:Dinilai_Selesai_oleh_Kepala,Pemohon_Bermasalah,Diselesaikan_oleh_PIC',
@@ -148,12 +183,12 @@ class MonitoringTiketController extends Controller
     {
         $user = Auth::user();
         $staff = Staff::where('user_id', $user->id)->first();
-        
+
         $unitsDipimpin = Unit::where('kepala_id', $staff->id)->get();
-        
+
         // Cek apakah tiket berasal dari SALAH SATU unit yang dipimpin
         $isHead = $unitsDipimpin->contains('id', $tiket->layanan->unit_id);
-        
+
         // Cek PIC
         $isPic = $staff->layanan()->where('layanan.id', $tiket->layanan_id)->exists();
 
@@ -166,7 +201,7 @@ class MonitoringTiketController extends Controller
     {
         // PERBAIKAN: Gunakan null safe operator (?->) untuk mencegah error jika statusTerbaru null
         if ($tiket->statusTerbaru?->status === 'Diselesaikan_oleh_PIC') {
-            
+
             $cacheKey = 'tiket_timer_' . $tiket->id;
             $deadline = Cache::get($cacheKey);
             if (!$deadline) {
@@ -176,13 +211,12 @@ class MonitoringTiketController extends Controller
                 if (Carbon::now()->greaterThan($defaultDeadline)) {
                     $this->autoCloseTicket($tiket);
                 } else {
-                    Cache::put($cacheKey, $defaultDeadline, now()->addYear()); 
+                    Cache::put($cacheKey, $defaultDeadline, now()->addYear());
                 }
-            }
-            else {
+            } else {
                 $deadlineDate = Carbon::parse($deadline);
                 if (Carbon::now()->greaterThan($deadlineDate)) {
-                    Cache::forget($cacheKey); 
+                    Cache::forget($cacheKey);
                     $this->autoCloseTicket($tiket);
                 }
             }
@@ -190,8 +224,9 @@ class MonitoringTiketController extends Controller
             Cache::forget('tiket_timer_' . $tiket->id);
         }
     }
-    
-    private function autoCloseTicket($tiket) {
+
+    private function autoCloseTicket($tiket)
+    {
         // PERBAIKAN: Gunakan null safe operator (?->)
         if ($tiket->statusTerbaru?->status !== 'Dinilai_Selesai_oleh_Pemohon') {
             RiwayatStatusTiket::create([
@@ -199,7 +234,7 @@ class MonitoringTiketController extends Controller
                 'user_id' => Auth::id(),
                 'status' => 'Dinilai_Selesai_oleh_Pemohon',
             ]);
-            $tiket->touch(); 
+            $tiket->touch();
         }
     }
 
@@ -213,16 +248,24 @@ class MonitoringTiketController extends Controller
         ]);
 
         $cacheKey = 'tiket_timer_' . $tiket->id;
-        $amount = (int) $request->amount; 
+        $amount = (int) $request->amount;
         $unit = $request->unit;
-        $tiket->touch(); 
+        $tiket->touch();
         $newDeadline = Carbon::now();
-        
+
         switch ($unit) {
-            case 'seconds': $newDeadline->addSeconds($amount); break;
-            case 'minutes': $newDeadline->addMinutes($amount); break;
-            case 'hours':   $newDeadline->addHours($amount); break;
-            case 'days':    $newDeadline->addDays($amount); break;
+            case 'seconds':
+                $newDeadline->addSeconds($amount);
+                break;
+            case 'minutes':
+                $newDeadline->addMinutes($amount);
+                break;
+            case 'hours':
+                $newDeadline->addHours($amount);
+                break;
+            case 'days':
+                $newDeadline->addDays($amount);
+                break;
         }
         Cache::put($cacheKey, $newDeadline, now()->addYear());
 

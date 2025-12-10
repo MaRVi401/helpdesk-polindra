@@ -128,7 +128,7 @@
                                 <div class="input-group input-group-merge w-auto">
                                     <span class="input-group-text py-1"><i class="bx bx-search"></i></span>
                                     <input type="text" name="q" class="form-control form-control-sm"
-                                        placeholder="Cari No/Judul..." value="{{ request('q') }}">
+                                        placeholder="Cari No Tiket / Nama..." value="{{ request('q') }}">
                                 </div>
                             </form>
                         </div>
