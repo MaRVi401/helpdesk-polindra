@@ -37,7 +37,6 @@ class AdminTicketController extends Controller
         $validStatuses = $this->validStatuses;
         $searchQuery = $request->input('q');
         $statusFilter = $request->input('status');
-        // $perPage tidak digunakan lagi karena kita tidak menggunakan pagination standar di view baru
 
         // 1. Ambil SEMUA Layanan
         $queryLayanan = Layanan::where('status_arsip', false)->with('unit');

@@ -1,6 +1,6 @@
 @extends('layouts/contentNavbarLayout')
 @use('Illuminate\Support\Str')
-@section('title', 'Detail Tiket #' . $tiket->no_tiket)
+@section('title', 'Detail Tiket ' . $tiket->no_tiket)
 
 @section('content')
 <style>

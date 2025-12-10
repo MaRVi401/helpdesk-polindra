@@ -98,7 +98,6 @@
                 <select name="status" id="status-filter" onchange="this.form.submit()">
                     <option value="">Semua Status</option>
                     @foreach($statuses as $status)
-                        {{-- Tampilkan label status yang rapi di filter --}}
                         <option value="{{ $status }}" {{ $statusFilter == $status ? 'selected' : '' }}>
                             {{ str_replace('_', ' ', $status) }}
                         </option>

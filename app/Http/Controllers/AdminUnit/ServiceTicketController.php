@@ -25,6 +25,7 @@ class ServiceTicketController extends Controller
 
     public function index(Request $request)
     {
+        $validStatuses = $this->validStatuses; // <-- Pastikan ini disebarkan ke view
         $user = Auth::user();
         $data_staf = Staff::where('user_id', $user->id)->firstOrFail();
         $picLayananID = $data_staf->layanan()->pluck('layanan.id')->toArray();
@@ -32,25 +33,55 @@ class ServiceTicketController extends Controller
         if (empty($picLayananID)) {
             return view('content.apps.admin_unit.ticket.index', [
                 'data_layanan' => collect([]),
-                'isPic' => false
+                'totalTiket' => 0, // Tambahkan total tiket 0
+                'isPic' => false,
+                'validStatuses' => $validStatuses, // Kirim juga statusnya
             ]);
         }
-
+        
+        $searchQuery = $request->input('q');
+        $statusFilter = $request->input('status');
+        
         $data_layanan = Layanan::whereIn('id', $picLayananID)
             ->with([
-                'tiket' => function ($query) {
-                    $query->with(['pemohon.mahasiswa', 'statusTerbaru'])
-                        ->latest();
+                'tiket' => function ($query) use ($searchQuery, $statusFilter) {
+                    $query->with(['pemohon.mahasiswa', 'statusTerbaru']);
+
+                    // A. Filter Pencarian (No Tiket / Nama Pemohon)
+                    if ($searchQuery) {
+                        $query->where(function ($q) use ($searchQuery) {
+                            $q->where('no_tiket', 'like', "%{$searchQuery}%")
+                              ->orWhereHas('pemohon', function ($subQ) use ($searchQuery) {
+                                  $subQ->where('name', 'like', "%{$searchQuery}%");
+                              });
+                        });
+                    }
+
+                    // B. Filter Status
+                    if ($statusFilter) {
+                        $query->whereHas('statusTerbaru', function ($q) use ($statusFilter) {
+                            $q->where('status', $statusFilter);
+                        });
+                    }
+
+                    // Secara default, Admin Unit TIDAK melihat tiket yang sudah selesai (Dinilai_Selesai_oleh_Pemohon) 
+                    // kecuali diminta melalui filter, dan tidak melihat status 'Diajukan' karena seharusnya cepat berubah ke 'Ditangani'.
+                    // Untuk Admin Unit, kita tidak perlu membatasi status defaultnya, biarkan semua tiket muncul secara default 
+                    // dan biarkan filter yang membatasi.
+                    
+                    $query->latest();
                 }
             ])
             ->get();
-
+        
         $totalTiket = 0;
-        foreach ($data_layanan as $layanan) {
+        
+        $data_layanan = $data_layanan->each(function ($layanan) use (&$totalTiket) {
             $totalTiket += $layanan->tiket->count();
-        }
+        })->filter(fn($layanan) => $layanan->tiket->isNotEmpty());
 
-        return view('content.apps.admin_unit.ticket.index', compact('data_layanan', 'totalTiket'));
+
+        return view('content.apps.admin_unit.ticket.index', compact('data_layanan', 'totalTiket', 'validStatuses'));
     }
 
 
@@ -199,7 +230,6 @@ class ServiceTicketController extends Controller
 
             return redirect()->route('admin_unit.ticket.show', $tiket->id)
                 ->with('success', 'Status tiket berhasil diperbarui.');
-
         } catch (\Exception $e) {
             return back()->with('error', 'Error: ' . $e->getMessage());
         }

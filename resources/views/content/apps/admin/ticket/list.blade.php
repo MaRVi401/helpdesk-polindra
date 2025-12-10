@@ -257,4 +257,25 @@
             @endforelse
         @endif
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const statusSelect = document.querySelector('select[name="status"]');
+            if (statusSelect) {
+                statusSelect.addEventListener('change', function() {
+                    this.form.submit();
+                });
+            }
+
+            const searchInput = document.querySelector('input[name="q"]');
+            if (searchInput) {
+                searchInput.addEventListener('keyup', function(e) {
+                    if (e.key === 'Enter') {
+                        this.form.submit();
+                    }
+                });
+            }
+
+        });
+    </script>
 @endsection
