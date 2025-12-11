@@ -108,7 +108,7 @@ class MonitoringTiketController extends Controller
 
         $tikets = $query->latest()->paginate(10)->withQueryString();
 
-        return view('kepala_unit.monitoring_tiket.index', compact('tikets', 'unitsDipimpin'));
+        return view('content.apps.kepala_unit.monitoring_tiket.index', compact('tikets', 'unitsDipimpin'));
     }
 
     public function show($id)
@@ -134,7 +134,7 @@ class MonitoringTiketController extends Controller
         elseif (Str::contains($namaLayanan, 'Ubah Data')) $detailLayanan = $tiket->detailUbahDataMhs;
         elseif (Str::contains($namaLayanan, 'Publikasi')) $detailLayanan = $tiket->detailReqPublikasi;
 
-        return view('kepala_unit.monitoring_tiket.show', compact('tiket', 'detailLayanan'));
+        return view('content.apps.kepala_unit.monitoring_tiket.show', compact('tiket', 'detailLayanan'));
     }
 
     public function edit($id)

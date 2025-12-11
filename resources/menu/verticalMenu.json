@@ -16,9 +16,25 @@
       "slug": "dashboard",
       "roles": [
         "super_admin",
-        "admin_unit",
-        "kepala_unit",
         "mahasiswa"
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "url": "/kepala-unit/dashboard",
+      "icon": "menu-icon icon-base ti tabler-smart-home",
+      "slug": "dashboard",
+      "roles": [
+        "kepala_unit"
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "url": "/admin-unit/dashboard",
+      "icon": "menu-icon icon-base ti tabler-smart-home",
+      "slug": "dashboard",
+      "roles": [
+        "admin_unit"
       ]
     },
     {

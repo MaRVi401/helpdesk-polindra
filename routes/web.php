@@ -35,6 +35,7 @@ use App\Http\Controllers\KepalaUnit\KelolaPicController;
 use App\Http\Controllers\AdminUnit\ServiceTicketController as AdminUnitServiceTicketController;
 use App\Http\Controllers\Admin\PositionController;
 use App\Http\Controllers\Admin\PositionControllerOld;
+use App\Http\Controllers\KepalaUnit\DashboardController as KepalaUnitDashboardController;
 
 // FOR TESTING BLADE
 Route::get('/test', [TestPage::class, 'index'])->name('page.index');
@@ -178,6 +179,7 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
     // Kepala Unit
     Route::middleware(['role:kepala_unit'])->group(function () {
         Route::prefix('kepala-unit')->name('kepala-unit.')->group(function () {
+            Route::get('/dashboard', [KepalaUnitDashboardController::class, 'index'])->name('dashboard');
             Route::get('/monitoring-tiket', [MonitoringTiketController::class, 'index'])->name('monitoring.index');
             Route::get('/monitoring-tiket/{tiket}', [MonitoringTiketController::class, 'show'])->name('monitoring.show');
             Route::put('/monitoring-tiket/{tiket}', [MonitoringTiketController::class, 'update'])->name('monitoring.update');

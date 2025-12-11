@@ -29,12 +29,12 @@ class KelolaPicController extends Controller
 
         // Ambil layanan milik SEMUA unit tersebut
         $layanans = Layanan::with(['penanggungJawab.user'])
-                    ->whereIn('unit_id', $unitIds) // Pakai whereIn
+                    ->whereIn('unit_id', $unitIds)
                     ->orderBy('prioritas', 'asc')
                     ->get();
 
         // Kirim variabel $units (jamak) ke view
-        return view('kepala_unit.kelola_pic.index', compact('units', 'layanans'));
+        return view('content.apps.kepala_unit.kelola_pic.index', compact('units', 'layanans'));
     }
 
     /**
@@ -70,7 +70,7 @@ class KelolaPicController extends Controller
         // Kirim $unit spesifik milik layanan ini untuk breadcrumb/info di view edit
         $unit = $layanan->unit;
 
-        return view('kepala_unit.kelola_pic.edit', compact('layanan', 'availableStaff', 'currentPICS', 'unit'));
+        return view('content.apps.kepala_unit.kelola_pic.edit', compact('layanan', 'availableStaff', 'currentPICS', 'unit'));
     }
 
     /**
