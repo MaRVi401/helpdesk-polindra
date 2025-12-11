@@ -73,14 +73,7 @@ class DashboardController extends Controller
         // Tiket Perlu Aksi Anda (Menunggu Keputusan Kepala Unit)
         $tiketPerluAksi = (clone $baseQuery)->whereHas('statusTerbaru', function ($query) {
             $query->whereIn('status', [
-                // 1. PIC telah selesai dan menunggu penilaian Pemohon/Kepala Unit
-                'Diselesaikan_oleh_PIC',
-
-                // 2. Pemohon menolak penyelesaian, yang mungkin memerlukan intervensi Kepala Unit
-                'Dinilai_Belum_Selesai_oleh_Pemohon',
-
-                // 3. Masalah serius yang mungkin memerlukan intervensi Kepala Unit
-                'Pemohon_Bermasalah',
+                'Pemohon_Bermasalah'
             ]);
         })->count();
 
