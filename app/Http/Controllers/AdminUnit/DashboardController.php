@@ -79,7 +79,7 @@ class DashboardController extends Controller
             'tiketSelesai', 
             'latestTikets',   
             'unit',
-            'layananNames' // Mengirimkan nama layanan yang menjadi tanggung jawabnya
+            'layananNames'
         ));
     }
 }

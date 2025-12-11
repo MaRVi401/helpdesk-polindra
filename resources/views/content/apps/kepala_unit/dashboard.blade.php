@@ -91,7 +91,7 @@
                                 <div class="card-body pb-0 px-0 px-md-4">
                                     {{-- Ganti path gambar dengan asset yang Anda miliki --}}
                                     <img
-                                        src="{{ asset('assets/img/illustrations/man-with-laptop-light.png') }}"
+                                        src="{{ asset('https://spada.kemdiktisaintek.go.id/images/adpk2.png') }}"
                                         height="140"
                                         alt="View Badge User"
                                     />
