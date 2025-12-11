@@ -36,6 +36,7 @@ use App\Http\Controllers\AdminUnit\ServiceTicketController as AdminUnitServiceTi
 use App\Http\Controllers\Admin\PositionController;
 use App\Http\Controllers\Admin\PositionControllerOld;
 use App\Http\Controllers\KepalaUnit\DashboardController as KepalaUnitDashboardController;
+use App\Http\Controllers\AdminUnit\DashboardController as AdminUnitDashboardController;
 
 // FOR TESTING BLADE
 Route::get('/test', [TestPage::class, 'index'])->name('page.index');
@@ -196,6 +197,7 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
     });
     // Admin Unit
     Route::middleware(['auth', 'role:admin_unit'])->prefix('admin-unit')->name('admin_unit.')->group(function () {
+        Route::get('/dashboard', [AdminUnitDashboardController::class, 'index'])->name('dashboard');
         Route::get('/service-ticket', [AdminUnitServiceTicketController::class, 'index'])->name('ticket.index');
         Route::get('/service-ticket/{id}', [AdminUnitServiceTicketController::class, 'show'])->name('ticket.show');
         Route::put('/service-ticket/{id}', [AdminUnitServiceTicketController::class, 'update'])->name('ticket.update');
