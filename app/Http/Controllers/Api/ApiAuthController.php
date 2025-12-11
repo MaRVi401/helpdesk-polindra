@@ -60,7 +60,7 @@ class ApiAuthController extends Controller
 
         // 1. Cek Domain Kampus
         $email = $request->email;
-        $allowed = ['student.polindra.ac.id', 'gmail.com']; // Tambahkan gmail.com untuk testing jika perlu
+        $allowed = ['student.polindra.ac.id']; // Tambahkan gmail.com untuk testing jika perlu
         $domain = substr(strrchr($email, "@"), 1);
         
         // if (!in_array($domain, $allowed)) {
@@ -78,7 +78,7 @@ class ApiAuthController extends Controller
                 'google_id' => $request->google_id,
                 'password' => Hash::make('password_default_sso_' . rand(1000,9999)), // Password acak
                 'avatar' => $request->avatar,
-                'role' => 'mahasiswa' // Default role
+                'role' => 'mahasiswa' 
             ]);
             
             // Assign role spatie jika ada
@@ -95,7 +95,7 @@ class ApiAuthController extends Controller
         // 3. Buat Token
         try {
             $token = $user->createToken('mobile-sso')->plainTextToken;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error("Error Create Token: " . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Gagal membuat token akses. Cek server logs.'], 500);
         }
