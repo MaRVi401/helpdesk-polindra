@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
           searchable: false,
           render: function (data, type, full, meta) {
             if (!data || data === '-') {
-              return '<span class="badge bg-label-secondary">No Image</span>';
+              return '<span class="badge bg-label-secondary">Tidak ada gambar</span>';
             }
             return `<img src="${baseUrl}storage/${data}" alt="Gambar" width="100" height="50" class="rounded view-image-trigger" style="cursor: pointer;" data-image="${baseUrl}storage/${data}">`;
           }

@@ -63,7 +63,7 @@
           <label for="gambar" class="form-label">Gambar (Image)</label>
           <input class="form-control @error('gambar') is-invalid @enderror" type="file" id="gambar" name="gambar"
             accept="image/jpeg,image/png,image/jpg,image/gif" />
-          <small class="text-muted">Format: JPEG, PNG, JPG. Maksimal 2MB. (400 x 200)</small>
+          <small class="text-warning">Format: JPEG, PNG, JPG. Maksimal 2MB. (Ukuran: 648 x 400)</small>
           @error('gambar')
             <div class="invalid-feedback">{{ $message }}</div>
           @enderror

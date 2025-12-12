@@ -9,7 +9,7 @@ use App\Http\Controllers\Admin\ManageUsers\StudentController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\StudyProgramController;
 use App\Http\Controllers\Admin\UnitController;
-use App\Http\Controllers\Admin\UnitControllerOld;
+// use App\Http\Controllers\Admin\UnitControllerOld;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\CompleteProfileController;
 use App\Http\Controllers\Mahasiswa\ServiceTicketController;
@@ -18,25 +18,22 @@ use App\Http\Controllers\Profile\UserProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Pages\TestPage;
 use App\Http\Controllers\Admin\FaqController;
-use App\Http\Controllers\Mahasiswa\FaqController as ServiceDeskFAQ;
+use App\Http\Controllers\Mahasiswa\FeatureController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Pages\DashboardController;
 use App\Http\Controllers\Auth\GoogleLoginController;
-use App\Http\Controllers\Admin\ArtikelController;
-use App\Http\Controllers\Admin\JurusanController;
-use App\Http\Controllers\Admin\LayananController;
-use App\Http\Controllers\Admin\KelolaFaqController;
-use App\Http\Controllers\Mahasiswa\TiketController;
-use App\Http\Controllers\Admin\AdminTiketController;
-use App\Http\Controllers\Admin\ProgramStudiController;
-use App\Http\Controllers\Admin\KategoriArtikelController;
+// use App\Http\Controllers\Admin\ArtikelController;
+// use App\Http\Controllers\Admin\JurusanController;
+// use App\Http\Controllers\Admin\LayananController;
+// use App\Http\Controllers\Admin\KelolaFaqController;
+// use App\Http\Controllers\Mahasiswa\TiketController;
+// use App\Http\Controllers\Admin\AdminTiketController;
+// use App\Http\Controllers\Admin\ProgramStudiController;
+// use App\Http\Controllers\Admin\KategoriArtikelController;
 use App\Http\Controllers\KepalaUnit\MonitoringTiketController;
 use App\Http\Controllers\KepalaUnit\KelolaPicController;
 use App\Http\Controllers\AdminUnit\ServiceTicketController as AdminUnitServiceTicketController;
 use App\Http\Controllers\Admin\PositionController;
-use App\Http\Controllers\Admin\PositionControllerOld;
-use App\Http\Controllers\KepalaUnit\DashboardController as KepalaUnitDashboardController;
-use App\Http\Controllers\AdminUnit\DashboardController as AdminUnitDashboardController;
 
 // FOR TESTING BLADE
 Route::get('/test', [TestPage::class, 'index'])->name('page.index');
@@ -133,7 +130,9 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
         Route::post('service-ticket/{id}/comment', [ServiceTicketController::class, 'serviceTicketComment'])->name('service.ticket.comment');
         Route::patch('service-ticket/{id}/status-confirm', [ServiceTicketController::class, 'statusConfirm'])->name('service.ticket.statusConfirm');
         Route::put('/service-ticket/{id}/update-timer', [ServiceController::class, 'updateTimer'])->name('service-ticket.updateTimer');
-        Route::get('/servicedesk-faq', [ServiceDeskFAQ::class, 'index'])->name('servicedesk.faq.index');
+        Route::get('/servicedesk-faq', [FeatureController::class, 'faq'])->name('servicedesk.faq.index');
+        Route::get('/servicedesk-article', [FeatureController::class, 'article'])->name('servicedesk.article.index');
+        
     });
 
 
@@ -180,7 +179,6 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
     // Kepala Unit
     Route::middleware(['role:kepala_unit'])->group(function () {
         Route::prefix('kepala-unit')->name('kepala-unit.')->group(function () {
-            Route::get('/dashboard', [KepalaUnitDashboardController::class, 'index'])->name('dashboard');
             Route::get('/monitoring-tiket', [MonitoringTiketController::class, 'index'])->name('monitoring.index');
             Route::get('/monitoring-tiket/{tiket}', [MonitoringTiketController::class, 'show'])->name('monitoring.show');
             Route::put('/monitoring-tiket/{tiket}', [MonitoringTiketController::class, 'update'])->name('monitoring.update');
@@ -197,7 +195,6 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
     });
     // Admin Unit
     Route::middleware(['auth', 'role:admin_unit'])->prefix('admin-unit')->name('admin_unit.')->group(function () {
-        Route::get('/dashboard', [AdminUnitDashboardController::class, 'index'])->name('dashboard');
         Route::get('/service-ticket', [AdminUnitServiceTicketController::class, 'index'])->name('ticket.index');
         Route::get('/service-ticket/{id}', [AdminUnitServiceTicketController::class, 'show'])->name('ticket.show');
         Route::put('/service-ticket/{id}', [AdminUnitServiceTicketController::class, 'update'])->name('ticket.update');

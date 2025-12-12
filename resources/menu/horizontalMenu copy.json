@@ -1,6 +1,12 @@
 {
   "menu": [
     {
+      "url": "/dashboard",
+      "name": "Dashboard",
+      "icon": "menu-icon icon-base ti tabler-smart-home",
+      "slug": "dashboard"
+    },
+    {
       "name": "Layanan",
       "url": "/service-ticket/create",
       "icon": "menu-icon icon-base ti tabler-layout",
@@ -11,6 +17,18 @@
       "name": "Permohonan Layanan Saya",
       "icon": "menu-icon icon-base ti tabler-layout-2",
       "slug": "service-ticket.index"
+    },
+    {
+      "url": "/dashboard",
+      "name": "Tentang Kami",
+      "icon": "menu-icon icon-base ti tabler-building-cottage",
+      "slug": ""
+    },
+    {
+      "url": "/",
+      "name": "Dokumentasi",
+      "icon": "menu-icon icon-base ti tabler-file-description",
+      "slug": ""
     },
     {
       "url": "/servicedesk-article",

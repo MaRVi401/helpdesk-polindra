@@ -14,12 +14,7 @@
     <img src="{{ asset('assets/img/pages/faq-banner.png') }}" class="scaleX-n1-rtl faq-banner-img z-n1 rounded"
       alt="background image" />
     <h4 class="text-center text-white mb-2">Hai, ada yang bisa kami bantu?</h4>
-    <p class="text-center text-white mb-0 px-4">pilih kategori untuk menemukan bantuan yang Kamu butuhkan dengan cepat.</p>
-    <div class="input-wrapper mt-4 input-group input-group-merge">
-      <span class="input-group-text" id="basic-addon1"><i class="icon-base ti tabler-search icon-xs"></i></span>
-      <input type="text" class="form-control" placeholder="Cari artikel..." aria-label="Search"
-        aria-describedby="basic-addon1" />
-    </div>
+    <p class="text-center text-white mb-0 px-4">Pilih kategori untuk menemukan bantuan yang Kamu butuhkan dengan cepat.</p>
   </div>
   <div class="row mt-6">
     {{-- NAVIGATION --}}

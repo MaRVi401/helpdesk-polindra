@@ -134,7 +134,7 @@ class ArticleController extends Controller
 
       $data_artikel->delete();
 
-      return redirect()->route('article.index')->with('success', 'Artikel berhasil dihapus');
+      return redirect()->route('article.index')->with('success', 'Artikel berhasil dihapus.');
     } catch (\Exception $e) {
       return redirect()->route('article.index')->with('error', 'Gagal menghapus artikel: ' . $e->getMessage());
     }
