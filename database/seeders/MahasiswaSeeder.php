@@ -30,7 +30,7 @@ class MahasiswaSeeder extends Seeder
             ['name' => 'Bintang Rizqy Andi Al Khalifi', 'nim' => '2305007', 'prodi' => $prodiRPL, 'tahun' => '2023'],
             ['name' => 'Daniel Sinaga', 'nim' => '2305008', 'prodi' => $prodiRPL, 'tahun' => '2023'],
             ['name' => 'Eka Dava Fadilah Juliansah', 'nim' => '2305009', 'prodi' => $prodiRPL, 'tahun' => '2023'],
-            ['name' => 'Fadillah Rohman', 'nim' => '2305010', 'prodi' => $prodiRPL, 'tahun' => '2023'],
+            ['name' => 'Fadillah Rohman', 'nim' => '23050100', 'prodi' => $prodiRPL, 'tahun' => '2023'],
             ['name' => 'Hamzah Fauzi Pratama', 'nim' => '2305011', 'prodi' => $prodiRPL, 'tahun' => '2023'],
             ['name' => 'Indra', 'nim' => '2305012', 'prodi' => $prodiRPL, 'tahun' => '2023'],
             ['name' => 'Khoerul Paroid', 'nim' => '2305013', 'prodi' => $prodiRPL, 'tahun' => '2023'],

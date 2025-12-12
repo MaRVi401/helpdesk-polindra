@@ -118,10 +118,10 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
         // POSITION MANAGEMENT (SUPER ADMIN)
         // Route::resource('position', PositionControllerOld::class)->names('position');
         Route::resource('position', PositionController::class)->names('position');
-        
+
         // TICKET MANAGEMENT (SUPER ADMIN) 
         Route::resource('tiket', AdminTicketController::class)->names('ticket');
-        
+
     });
 
     // SERVICE TICKET (MAHASISWA)
@@ -132,7 +132,7 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
         Route::put('/service-ticket/{id}/update-timer', [ServiceController::class, 'updateTimer'])->name('service-ticket.updateTimer');
         Route::get('/servicedesk-faq', [FeatureController::class, 'faq'])->name('servicedesk.faq.index');
         Route::get('/servicedesk-article', [FeatureController::class, 'article'])->name('servicedesk.article.index');
-        
+        Route::get('/servicedesk/article/{slug}', [FeatureController::class, 'articleDetail'])->name('servicedesk.article.detail');
     });
 
 

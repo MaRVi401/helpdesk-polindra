@@ -3,7 +3,7 @@
 @endphp
 @extends('layouts/layoutMaster')
 
-@section('title', 'Service Desk FAQ')
+@section('title', 'Frequently Asked Questions')
 
 @section('page-style')
   @vite('resources/assets/vendor/scss/pages/page-faq.scss')
@@ -13,6 +13,7 @@
   <div class="faq-header d-flex flex-column justify-content-center align-items-center h-px-300 position-relative">
     <img src="{{ asset('assets/img/pages/faq-banner.png') }}" class="scaleX-n1-rtl faq-banner-img z-n1 rounded"
       alt="background image" />
+    <h3 class="text-center text-white mb-2 fw-bold">Frequently Asked Questions</h3>
     <h4 class="text-center text-white mb-2">Hai, ada yang bisa kami bantu?</h4>
     <p class="text-center text-white mb-0 px-4">Pilih kategori untuk menemukan bantuan yang Kamu butuhkan dengan cepat.</p>
   </div>

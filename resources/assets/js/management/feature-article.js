@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="card-body text-center py-5">
               <i class="icon-base ti tabler-article-off icon-30px text-danger mb-3"></i>
               <h5 class="mb-2">Tidak Ada Artikel</h5>
-              <p class="text-muted">Tidak ada artikel yang sesuai dengan pencarian Anda.</p>
+              <p class="text-muted">Tidak ada artikel yang sesuai dengan pencarian Kamu.</p>
             </div>
           </div>
         </div>

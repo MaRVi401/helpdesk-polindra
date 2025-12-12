@@ -7,6 +7,7 @@ use App\Models\KategoriArtikel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class ArticleController extends Controller
@@ -50,9 +51,21 @@ class ArticleController extends Controller
       $path = $request->file('gambar')->storeAs('article', $originalName, 'public');
     }
 
+    // Generate slug dari judul
+    $slug = Str::slug($request->judul);
+    
+    // Pastikan slug unik
+    $originalSlug = $slug;
+    $counter = 1;
+    while (Artikel::where('slug', $slug)->exists()) {
+      $slug = $originalSlug . '-' . $counter;
+      $counter++;
+    }
+
     Artikel::create([
       'user_id' => Auth::id(),
       'judul' => $request->judul,
+      'slug' => $slug,
       'kategori_id' => $request->kategori_id,
       'status' => $request->status,
       'deskripsi' => $request->deskripsi,
@@ -94,6 +107,7 @@ class ArticleController extends Controller
     ], [
       'judul.unique' => 'Judul ini sudah digunakan oleh artikel lain.',
     ]);
+    
     // Simpan path lama
     $path = $data_artikel->gambar;
 
@@ -111,8 +125,23 @@ class ArticleController extends Controller
       $path = $request->file('gambar')->storeAs('article', $originalName, 'public');
     }
 
+    // Generate slug baru jika judul berubah
+    $slug = $data_artikel->slug;
+    if ($request->judul !== $data_artikel->judul) {
+      $slug = Str::slug($request->judul);
+      
+      // Pastikan slug unik (kecuali untuk artikel ini sendiri)
+      $originalSlug = $slug;
+      $counter = 1;
+      while (Artikel::where('slug', $slug)->where('id', '!=', $id)->exists()) {
+        $slug = $originalSlug . '-' . $counter;
+        $counter++;
+      }
+    }
+
     $data_artikel->update([
       'judul' => $request->judul,
+      'slug' => $slug,
       'kategori_id' => $request->kategori_id,
       'status' => $request->status,
       'deskripsi' => $request->deskripsi,

@@ -3,7 +3,7 @@
   $configData = Helper::appClasses();
 @endphp
 
-@section('title', 'Service Desk Artikel')
+@section('title', 'Artikel Service Desk')
 
 @section('vendor-style')
   @vite(['resources/assets/vendor/libs/plyr/plyr.scss'])
@@ -92,9 +92,9 @@
                   <p class="mt-1 line-clamp-3 mb-3" title="{{ strip_tags($artikel->deskripsi) }}">
                     {{ strip_tags($artikel->deskripsi) }}
                   </p>
-                  <button type="button" class="w-100 btn btn-primary">
+                  <a href="{{ route('servicedesk.article.detail', $artikel->slug) }}" class="w-100 btn btn-primary">
                     Selengkapnya
-                  </button>
+                  </a>
                 </div>
               </div>
             </div>

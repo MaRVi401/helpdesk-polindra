@@ -6,6 +6,7 @@ use App\Models\Artikel;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class ArtikelSeeder extends Seeder
 {
@@ -22,6 +23,7 @@ class ArtikelSeeder extends Seeder
                 'user_id' => 1,
                 'kategori_id' => 1,
                 'judul' => 'Kampus Meluncurkan Sistem Layanan Terpadu Terbaru',
+                'slug' => Str::slug('Kampus Meluncurkan Sistem Layanan Terpadu Terbaru'),
                 'deskripsi' => 'Sistem layanan terpadu resmi diluncurkan hari ini untuk meningkatkan efisiensi layanan administrasi mahasiswa dan civitas akademika.',
                 'gambar' => null,
                 'status' => 'Post',
@@ -34,6 +36,7 @@ class ArtikelSeeder extends Seeder
                 'user_id' => 1,
                 'kategori_id' => 2,
                 'judul' => 'Pemanfaatan AI dalam Pengelolaan Administrasi Kampus',
+                'slug' => Str::slug('Pemanfaatan AI dalam Pengelolaan Administrasi Kampus'),
                 'deskripsi' => 'Artikel ini membahas bagaimana teknologi kecerdasan buatan (AI) mendukung proses administrasi modern di lingkungan perguruan tinggi.',
                 'gambar' => null,
                 'status' => 'Post',
@@ -46,6 +49,7 @@ class ArtikelSeeder extends Seeder
                 'user_id' => 1,
                 'kategori_id' => 3,
                 'judul' => 'Panduan Layanan Akademik untuk Mahasiswa Baru',
+                'slug' => Str::slug('Panduan Layanan Akademik untuk Mahasiswa Baru'),
                 'deskripsi' => 'Informasi lengkap mengenai prosedur layanan akademik yang harus diketahui mahasiswa baru, mulai dari KRS hingga administrasi umum.',
                 'gambar' => null,
                 'status' => 'Post',
@@ -58,6 +62,7 @@ class ArtikelSeeder extends Seeder
                 'user_id' => 1,
                 'kategori_id' => 4,
                 'judul' => 'Jadwal Libur Akademik Semester Ini',
+                'slug' => Str::slug('Jadwal Libur Akademik Semester Ini'),
                 'deskripsi' => 'Pengumuman resmi mengenai jadwal libur akademik yang berlaku untuk seluruh program studi pada semester ini.',
                 'gambar' => null,
                 'status' => 'Post',
@@ -70,6 +75,7 @@ class ArtikelSeeder extends Seeder
                 'user_id' => 1,
                 'kategori_id' => 5,
                 'judul' => 'Dokumentasi Kegiatan Mahasiswa dalam Acara Expo Kampus',
+                'slug' => Str::slug('Dokumentasi Kegiatan Mahasiswa dalam Acara Expo Kampus'),
                 'deskripsi' => 'Rangkaian dokumentasi dan informasi kegiatan mahasiswa yang berpartisipasi dalam acara Expo Kampus tahun ini.',
                 'gambar' => null,
                 'status' => 'Post',
@@ -82,6 +88,7 @@ class ArtikelSeeder extends Seeder
                 'user_id' => 1,
                 'kategori_id' => 6,
                 'judul' => 'Panduan Lengkap Penggunaan Sistem Layanan Terpadu',
+                'slug' => Str::slug('Panduan Lengkap Penggunaan Sistem Layanan Terpadu'),
                 'deskripsi' => 'Artikel panduan ini membantu pengguna memahami cara menggunakan fitur-fitur utama dalam sistem layanan terpadu.',
                 'gambar' => null,
                 'status' => 'Post',

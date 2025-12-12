@@ -48,8 +48,8 @@ class UserRoleSeeder extends Seeder
              * 2. KEPALA UNIT → UPA TIK
             ============================*/
             $kepalaUnitUser = User::firstOrCreate(
-                ['email' => 'adisuheryadi@email.com'],
-                ['name' => 'Adi Suheryadi', 'password' => bcrypt('12345678'), 'role' => 'kepala_unit']
+                ['email' => 'kepala@email.com'],
+                ['name' => 'Nadhif Basalamah', 'password' => bcrypt('12345678'), 'role' => 'kepala_unit']
             );
 
             $kepalaUnitStaff = Staff::updateOrCreate(

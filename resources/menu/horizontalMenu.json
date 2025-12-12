@@ -16,7 +16,7 @@
       "url": "/servicedesk-article",
       "name": "Artikel",
       "icon": "menu-icon icon-base ti tabler-book",
-      "slug": "servicedesk.article.index"
+      "slug": ["servicedesk.article.index", "servicedesk.article.detail"]
     },
     {
       "url": "/servicedesk-faq",

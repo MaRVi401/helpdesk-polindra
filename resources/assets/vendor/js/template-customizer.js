@@ -78,7 +78,7 @@ class TemplateCustomizer {
     if (!window.Helpers) throw new Error('window.Helpers required.')
     this.settings = {}
     this.settings.displayCustomizer = typeof displayCustomizer !== 'undefined' ? displayCustomizer : DISPLAY_CUSTOMIZER
-    this.settings.lang = lang || 'id'
+    this.settings.lang = lang || 'en'
     if (defaultPrimaryColor) {
       this.settings.defaultPrimaryColor = defaultPrimaryColor
       primaryColorFlag = true
@@ -391,11 +391,7 @@ class TemplateCustomizer {
 
   setLang(lang, updateStorage = true, force = false) {
     if (lang === this.settings.lang && !force) return
-    if (!TemplateCustomizer.LANGUAGES[lang]) {
-      // Don't throw — fallback gracefully to 'en' and warn in console
-      console.warn(`Language "${lang}" not found! Falling back to 'en'.`)
-      lang = 'en'
-    }
+    if (!TemplateCustomizer.LANGUAGES[lang]) throw new Error(`Language "${lang}" not found!`)
 
     const t = TemplateCustomizer.LANGUAGES[lang]
 
@@ -1172,7 +1168,7 @@ class TemplateCustomizer {
 
         const rtlCb = e => {
           // For demo purpose, we will use EN as LTR and AR as RTL Language
-          this._setSetting('Lang', this.settings.lang === 'ar' ? 'id' : 'ar')
+          this._setSetting('Lang', this.settings.lang === 'ar' ? 'en' : 'ar')
           this.settings.rtl = e.target.value === 'rtl'
 
           // Cache the language setting
@@ -1194,7 +1190,7 @@ class TemplateCustomizer {
             if (e.target.value === 'rtl') {
               window.location.href = baseUrl + 'lang/ar'
             } else {
-              window.location.href = baseUrl + 'lang/id'
+              window.location.href = baseUrl + 'lang/en'
             }
           } else {
             // For front-end layouts, just reload the page
@@ -1599,9 +1595,9 @@ TemplateCustomizer.DIRECTIONS = [
 
 // Theme setting language
 TemplateCustomizer.LANGUAGES = {
-  id: {
+  en: {
     panel_header: 'Template Customizer',
-    panel_sub_header: 'Sesuaikan dan pratinjau secara real time',
+    panel_sub_header: 'Customize and preview in real time',
     theming_header: 'Theming',
     color_label: 'Primary Color',
     theme_label: 'Theme',
@@ -1613,12 +1609,52 @@ TemplateCustomizer.LANGUAGES = {
     content_label: 'Content',
     layout_navbar_label: 'Navbar Type',
     direction_label: 'Direction'
+  },
+  fr: {
+    panel_header: 'Modèle De Personnalisation',
+    panel_sub_header: 'Personnalisez et prévisualisez en temps réel',
+    theming_header: 'Thématisation',
+    color_label: 'Couleur primaire',
+    theme_label: 'Thème',
+    skin_label: 'Peaux',
+    semiDark_label: 'Demi-foncé',
+    layout_header: 'Disposition',
+    layout_label: 'Menu (Navigation)',
+    layout_header_label: "Types d'en-tête",
+    content_label: 'Contenu',
+    layout_navbar_label: 'Type de barre de navigation',
+    direction_label: 'Direction'
+  },
+  ar: {
+    panel_header: 'أداة تخصيص القالب',
+    panel_sub_header: 'تخصيص ومعاينة في الوقت الحقيقي',
+    theming_header: 'السمات',
+    color_label: 'اللون الأساسي',
+    theme_label: 'سمة',
+    skin_label: 'جلود',
+    semiDark_label: 'شبه داكن',
+    layout_header: 'تَخطِيط',
+    layout_label: 'القائمة (الملاحة)',
+    layout_header_label: 'أنواع الرأس',
+    content_label: 'محتوى',
+    layout_navbar_label: 'نوع شريط التنقل',
+    direction_label: 'اتجاه'
+  },
+  de: {
+    panel_header: 'Vorlagen-Anpasser',
+    panel_sub_header: 'Anpassen und Vorschau in Echtzeit',
+    theming_header: 'Themen',
+    color_label: 'Grundfarbe',
+    theme_label: 'Thema',
+    skin_label: 'Skins',
+    semiDark_label: 'Halbdunkel',
+    layout_header: 'Layout',
+    layout_label: 'Menü (Navigation)',
+    layout_header_label: 'Header-Typen',
+    content_label: 'Inhalt',
+    layout_navbar_label: 'Art der Navigationsleiste',
+    direction_label: 'Richtung'
   }
-}
-
-// Provide 'id' (Bahasa Indonesia) fallback — if no translations are provided, use English
-if (!TemplateCustomizer.LANGUAGES.id) {
-  TemplateCustomizer.LANGUAGES.id = TemplateCustomizer.LANGUAGES.en
 }
 
 window.TemplateCustomizer = TemplateCustomizer
@@ -1708,12 +1744,6 @@ const initializeColorPicker = () => {
 }
 
 window.onload = () => {
-  // If the Template Customizer didn't initialize, skip color picker setup
-  if (!window.templateCustomizer) {
-    // Nothing to initialize; bail out gracefully
-    return
-  }
-
   initializeColorPicker()
 
   // Get the saved color from the cookie or use default

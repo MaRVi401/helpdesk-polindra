@@ -35,4 +35,26 @@ class FeatureController extends Controller
             ['pageConfigs' => $this->pageConfigs]
         );
     }
+
+    public function articleDetail($slug)
+    {
+        $artikel = Artikel::with(['kategori', 'user'])
+            ->where('status', 'post')
+            ->where('slug', $slug)
+            ->firstOrFail();
+
+        // Artikel lain (7 artikel terbaru, exclude artikel yang sedang dibuka)
+        $artikel_lain = Artikel::with(['kategori', 'user'])
+            ->where('status', 'post')
+            ->where('id', '!=', $artikel->id)
+            ->orderBy('created_at', 'desc')
+            ->limit(7)
+            ->get();
+
+        return view(
+            'content.apps.mahasiswa.feature.article-detail',
+            compact('artikel', 'artikel_lain'),
+            ['pageConfigs' => $this->pageConfigs]
+        );
+    }
 }

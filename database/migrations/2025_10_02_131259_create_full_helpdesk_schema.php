@@ -97,6 +97,7 @@ return new class extends Migration {
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('kategori_id')->constrained('kategori_artikel');
             $table->string('judul');
+            $table->string('slug')->unique();
             $table->text('deskripsi');
             $table->string('gambar')->nullable();
             $table->enum('status', ['Draft', 'Post'])->default('Draft');
