@@ -120,7 +120,7 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
         Route::resource('position', PositionController::class)->names('position');
 
         // TICKET MANAGEMENT (SUPER ADMIN) 
-        Route::resource('tiket', AdminTicketController::class)->names('ticket');
+        Route::resource('ticket', AdminTicketController::class)->names('ticket');
 
     });
 

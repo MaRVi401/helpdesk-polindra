@@ -20,6 +20,15 @@
       ]
     },
     {
+      "url": "/ticket",
+      "name": "Daftar Semua Tiket",
+      "icon": "menu-icon icon-base ti tabler-ticket",
+      "slug": "ticket.index",
+      "roles": [
+        "super_admin"
+      ]
+    },
+    {
       "name": "Dashboard",
       "url": "/kepala-unit/dashboard",
       "icon": "menu-icon icon-base ti tabler-smart-home",
@@ -299,17 +308,6 @@
           "name": "Tambah Jabatan",
           "slug": "position.create"
         }
-      ]
-    },
-    {
-      "url": "/tiket",
-      "name": "Daftar Semua Tiket",
-      "icon": "menu-icon icon-base ti tabler-ticket",
-      "slug": [
-        "tiket.list"
-      ],
-      "roles": [
-        "super_admin"
       ]
     }
   ]

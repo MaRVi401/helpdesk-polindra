@@ -14,27 +14,31 @@
           {{-- JUDUL ARTIKEL --}}
           <h4 class="mb-2">{{ $artikel->judul }}</h4>
           {{-- NAMA PENULIS --}}
-          <h6 class="badge bg-label-primary">Penulis: {{ $artikel->user->name ?? 'Admin' }}
-          </h6>
+          <h6 class="badge bg-label-primary">Penulis: {{ $artikel->user->name ?? 'Admin' }}</h6>
           <p>{{ $artikel->created_at->translatedFormat('d F Y H:i') }}</p>
-          <hr class="my-6" />
+          <hr class="mt-6 mb-0" />
+        </div>
+      </div>
+      <div class="row g-6 mt-2">
+        <div class="col-lg-8">
           {{-- GAMBAR ARTIKEL --}}
           @if ($artikel->gambar)
-            <div class="my-6">
+            <div class="mb-6">
               <img src="{{ asset('storage/' . $artikel->gambar) }}" alt="{{ $artikel->judul }}"
                 class="img-fluid w-100 border rounded" />
             </div>
           @else
-            <div class="my-6">
+            <div class="mb-6">
               <img src="{{ asset('assets/img/pages/thumbnail-default.png') }}" alt="{{ $artikel->judul }}"
                 class="img-fluid w-100 border rounded" />
             </div>
           @endif
-          {{-- DESKRISPI --}}
+          {{-- DESKRIPSI --}}
           <div class="max-w-none">
             {!! $artikel->deskripsi !!}
           </div>
         </div>
+        {{-- KOLOM KANAN: SIDEBAR REFERENSI --}}
         <div class="col-lg-4">
           {{-- REFERENSI ARTIKEL LAIN --}}
           <div class="bg-primary text-center py-2 px-4 rounded mb-4">
