@@ -59,10 +59,7 @@
       "url": "admin-unit/service-ticket",
       "name": "Daftar Tiket Layanan",
       "icon": "menu-icon icon-base ti tabler-ticket",
-      "slug": [
-        "admin_unit.ticket.index",
-        "admin_unit.ticket.show"
-      ],
+      "slug": "admin_unit.ticket.index",
       "roles": [
         "admin_unit"
       ]

@@ -1,6 +1,12 @@
 {
   "menu": [
     {
+      "url": "/dashboard/student",
+      "name": "Dashboard",
+      "icon": "menu-icon icon-base ti tabler-smart-home",
+      "slug": "dashboard"
+    },
+    {
       "name": "Layanan",
       "url": "/service-ticket/create",
       "icon": "menu-icon icon-base ti tabler-layout",
@@ -10,13 +16,31 @@
       "url": "/service-ticket",
       "name": "Permohonan Layanan Saya",
       "icon": "menu-icon icon-base ti tabler-layout-2",
-      "slug": "service-ticket.index"
+      "slug": [
+        "service-ticket.index",
+        "service-ticket.show"
+      ]
+    },
+    {
+      "url": "/servicedesk/about-us",
+      "name": "Tentang Kami",
+      "icon": "menu-icon icon-base ti tabler-building-cottage",
+      "slug": "servicedesk.about.us"
+    },
+    {
+      "url": "/",
+      "name": "Dokumentasi",
+      "icon": "menu-icon icon-base ti tabler-file-description",
+      "slug": ""
     },
     {
       "url": "/servicedesk-article",
       "name": "Artikel",
       "icon": "menu-icon icon-base ti tabler-book",
-      "slug": ["servicedesk.article.index", "servicedesk.article.detail"]
+      "slug": [
+        "servicedesk.article.index",
+        "servicedesk.article.detail"
+      ]
     },
     {
       "url": "/servicedesk-faq",

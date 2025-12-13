@@ -9,9 +9,9 @@ use App\Http\Controllers\Admin\ManageUsers\StudentController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\StudyProgramController;
 use App\Http\Controllers\Admin\UnitController;
-// use App\Http\Controllers\Admin\UnitControllerOld;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\CompleteProfileController;
+use App\Http\Controllers\Mahasiswa\DashboardMahasiswaController;
 use App\Http\Controllers\Mahasiswa\ServiceTicketController;
 use App\Http\Controllers\Pages\LandingController;
 use App\Http\Controllers\Profile\UserProfileController;
@@ -22,14 +22,6 @@ use App\Http\Controllers\Mahasiswa\FeatureController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Pages\DashboardController;
 use App\Http\Controllers\Auth\GoogleLoginController;
-// use App\Http\Controllers\Admin\ArtikelController;
-// use App\Http\Controllers\Admin\JurusanController;
-// use App\Http\Controllers\Admin\LayananController;
-// use App\Http\Controllers\Admin\KelolaFaqController;
-// use App\Http\Controllers\Mahasiswa\TiketController;
-// use App\Http\Controllers\Admin\AdminTiketController;
-// use App\Http\Controllers\Admin\ProgramStudiController;
-// use App\Http\Controllers\Admin\KategoriArtikelController;
 use App\Http\Controllers\KepalaUnit\MonitoringTiketController;
 use App\Http\Controllers\KepalaUnit\KelolaPicController;
 use App\Http\Controllers\AdminUnit\ServiceTicketController as AdminUnitServiceTicketController;
@@ -72,7 +64,7 @@ Route::middleware('guest')->group(function () {
 // --- ROUTE FOR ALREADY LOGGED IN USERS (AUTH) ---
 Route::middleware(['auth', 'complete-profile'])->group(function () {
     // DASHBOARD USERS
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.all');
 
     // LOGOUT USERS
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -126,55 +118,17 @@ Route::middleware(['auth', 'complete-profile'])->group(function () {
 
     // SERVICE TICKET (MAHASISWA)
     Route::middleware('role:mahasiswa')->group(function () {
+        Route::get('/dashboard/student', [DashboardMahasiswaController::class, 'index'])->name('dashboard');
+
         Route::resource('service-ticket', ServiceTicketController::class);
         Route::post('service-ticket/{id}/comment', [ServiceTicketController::class, 'serviceTicketComment'])->name('service.ticket.comment');
         Route::patch('service-ticket/{id}/status-confirm', [ServiceTicketController::class, 'statusConfirm'])->name('service.ticket.statusConfirm');
         Route::put('/service-ticket/{id}/update-timer', [ServiceController::class, 'updateTimer'])->name('service-ticket.updateTimer');
         Route::get('/servicedesk-faq', [FeatureController::class, 'faq'])->name('servicedesk.faq.index');
         Route::get('/servicedesk-article', [FeatureController::class, 'article'])->name('servicedesk.article.index');
+        Route::get('/servicedesk/about-us', [FeatureController::class, 'aboutUs'])->name('servicedesk.about.us');
         Route::get('/servicedesk/article/{slug}', [FeatureController::class, 'articleDetail'])->name('servicedesk.article.detail');
     });
-
-
-    // // Super Admin
-    // Route::middleware('role:super_admin')->prefix('admin')->name('admin.')->group(function () {
-    //     ;
-    //     // Kelola Pengguna - Staff
-    //     Route::get('staff/export/excel', [StaffController::class, 'exportExcel'])->name('staff.export.excel');
-    //     Route::resource('staff', StaffController::class);
-
-    //     // Kelola FAQ
-    //     Route::get('kelolafaq/export/excel', [KelolaFaqController::class, 'exportExcel'])->name('kelolafaq.export.excel');
-    //     Route::resource('kelolafaq', KelolaFaqController::class);
-
-    //     // Kelola Jurusan
-    //     Route::get('jurusan/export/excel', [JurusanController::class, 'exportExcel'])->name('jurusan.export.excel');
-    //     Route::resource('jurusan', JurusanController::class)->names('jurusan');
-
-    //     // Kelola Program Studi
-    //     Route::get('program-studi/export/excel', [ProgramStudiController::class, 'exportExcel'])->name('program-studi.export.excel');
-    //     Route::resource('program-studi', ProgramStudiController::class)->except(['index', 'show'])->names('program-studi');
-
-    //     // Master Route Jurusan & Prodi
-    //     Route::get('jurusan/{jurusan}/program-studi', [ProgramStudiController::class, 'index'])->name('jurusan.program-studi.index');
-
-    //     // Kelola Unit
-    //     Route::get('unit/export/excel', [UnitControllerOld::class, 'exportExcel'])->name('unit.export.excel');
-    //     Route::resource('unit', UnitControllerOld::class)->names('unit');
-
-    //     // Kelola Artikel dan Kategori Artikel
-    //     Route::get('artikel/export/excel', [ArtikelController::class, 'exportExcel'])->name('artikel.export.excel');
-    //     Route::resource('artikel', ArtikelController::class)->names('artikel');
-    //     Route::resource('kategori-artikel', KategoriArtikelController::class)->names('kategori-artikel');
-
-    //     // Kelola Tiket Semua Unit
-    //     Route::get('tiket/export/excel', [AdminTiketController::class, 'exportExcel'])->name('tiket.export.excel');
-    //     Route::resource('tiket', AdminTiketController::class);
-
-    //     // Kelola PIC Layanan
-    //     Route::resource('layanan', LayananController::class);
-    // });
-
 
     // Kepala Unit
     Route::middleware(['role:kepala_unit'])->group(function () {

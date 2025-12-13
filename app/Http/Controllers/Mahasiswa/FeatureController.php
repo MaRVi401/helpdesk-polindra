@@ -57,4 +57,9 @@ class FeatureController extends Controller
             ['pageConfigs' => $this->pageConfigs]
         );
     }
+
+    public function aboutUs()
+    {
+        return view('content.apps.mahasiswa.feature.about-us', ['pageConfigs' => $this->pageConfigs]);
+    }
 }
